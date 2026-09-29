@@ -1,0 +1,599 @@
+[gd_scene load_steps=11 format=3]
+
+[ext_resource type="PackedScene" path="res://scenes/player/player_rig.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/player/camera_rig.tscn" id="2_camera"]
+[ext_resource type="PackedScene" path="res://scenes/enemies/basic_enemy.tscn" id="3_enemy"]
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="4_hud"]
+[ext_resource type="Material" path="res://materials/stone.tres" id="5_stone"]
+[ext_resource type="Material" path="res://materials/stone_light.tres" id="6_light"]
+[ext_resource type="Material" path="res://materials/accent_magenta.tres" id="7_magenta"]
+[ext_resource type="Material" path="res://materials/ramp.tres" id="8_ramp"]
+
+[sub_resource type="Environment" id="Environment_main"]
+background_mode = 1
+background_color = Color(0.014, 0.018, 0.04, 1)
+background_energy_multiplier = 0.72
+ambient_light_source = 2
+ambient_light_color = Color(0.16, 0.18, 0.34, 1)
+ambient_light_energy = 0.82
+ambient_light_sky_contribution = 0.0
+fog_enabled = true
+fog_light_color = Color(0.105, 0.09, 0.18, 1)
+fog_density = 0.0032
+
+[sub_resource type="BoxMesh" id="BoxMesh_crystal"]
+size = Vector3(0.7, 3.4, 0.7)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_main")
+
+[node name="MoonKey" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-52, -32, 0)
+light_color = Color(0.53, 0.64, 1, 1)
+light_energy = 1.35
+shadow_enabled = true
+directional_shadow_max_distance = 180.0
+
+[node name="SouthGlow" type="OmniLight3D" parent="."]
+position = Vector3(0, 9, 56)
+light_color = Color(0.85, 0.08, 0.42, 1)
+light_energy = 2.4
+omni_range = 26.0
+shadow_enabled = false
+
+[node name="CentralGlow" type="OmniLight3D" parent="."]
+position = Vector3(0, 9, 18)
+light_color = Color(0.26, 0.32, 1, 1)
+light_energy = 2.0
+omni_range = 30.0
+shadow_enabled = false
+
+[node name="UpperGlow" type="OmniLight3D" parent="."]
+position = Vector3(0, 13, -78)
+light_color = Color(0.68, 0.10, 0.52, 1)
+light_energy = 2.2
+omni_range = 32.0
+shadow_enabled = false
+
+[node name="WorldBlockout" type="Node3D" parent="."]
+
+[node name="SouthTerrace" type="Node3D" parent="WorldBlockout"]
+
+[node name="Floor" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(0, -0.5, 59)
+size = Vector3(72, 1, 34)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="InnerStrip" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(0, 0.08, 49)
+size = Vector3(34, 0.18, 12)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="SouthRailLeft" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(-36, 1.0, 60)
+size = Vector3(1.2, 3, 32)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="SouthRailRight" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(36, 1.0, 60)
+size = Vector3(1.2, 3, 32)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="SouthBackLeft" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(-23, 2.0, 76)
+size = Vector3(26, 5, 1.2)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="SouthBackRight" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(23, 2.0, 76)
+size = Vector3(26, 5, 1.2)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="SouthObeliskL" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(-19, 8, 70)
+rotation_degrees = Vector3(0, 12, -3)
+size = Vector3(3.2, 16, 3.2)
+material = ExtResource("6_light")
+
+[node name="SouthObeliskR" type="CSGBox3D" parent="WorldBlockout/SouthTerrace"]
+position = Vector3(19, 9.5, 69)
+rotation_degrees = Vector3(0, -10, 4)
+size = Vector3(3.2, 19, 3.2)
+material = ExtResource("6_light")
+
+[node name="GrandPlaza" type="Node3D" parent="WorldBlockout"]
+
+[node name="Floor" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(0, -0.5, 21)
+size = Vector3(66, 1, 48)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CenterDais" type="CSGCylinder3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(0, 0.18, 20)
+radius = 8.2
+height = 0.36
+sides = 32
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="DaisCore" type="CSGCylinder3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(0, 0.39, 20)
+radius = 3.1
+height = 0.18
+sides = 24
+material = ExtResource("7_magenta")
+
+[node name="WestArcadeLow" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(-32.5, 2.0, 22)
+size = Vector3(1, 5, 30)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="EastArcadeLow" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(32.5, 2.0, 22)
+size = Vector3(1, 5, 30)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="TowerSW" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(-28, 11, 39)
+size = Vector3(5, 22, 5)
+material = ExtResource("5_stone")
+
+[node name="TowerSE" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(28, 13, 39)
+size = Vector3(5, 26, 5)
+material = ExtResource("5_stone")
+
+[node name="TowerNW" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(-28, 15, 2)
+size = Vector3(5, 30, 5)
+material = ExtResource("5_stone")
+
+[node name="TowerNE" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(28, 12, 2)
+size = Vector3(5, 24, 5)
+material = ExtResource("5_stone")
+
+[node name="WestPlatform" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(-23.5, 1.5, 18)
+size = Vector3(11, 0.7, 16)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="EastPlatform" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(23.5, 1.5, 23)
+size = Vector3(11, 0.7, 16)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="StatueWest" type="CSGCylinder3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(-23.5, 5, 18)
+radius = 1.3
+height = 7
+sides = 7
+material = ExtResource("7_magenta")
+
+[node name="StatueEast" type="CSGCylinder3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(23.5, 5, 23)
+radius = 1.3
+height = 7
+sides = 7
+material = ExtResource("7_magenta")
+
+[node name="NorthGateLeft" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(-8.5, 6, -3)
+size = Vector3(2, 12, 3)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="NorthGateRight" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(8.5, 6, -3)
+size = Vector3(2, 12, 3)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="NorthGateTop" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
+position = Vector3(0, 11, -3)
+size = Vector3(19, 2, 3)
+material = ExtResource("6_light")
+
+[node name="NorthAvenue" type="Node3D" parent="WorldBlockout"]
+
+[node name="AvenueFloor" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, -0.45, -29)
+size = Vector3(22, 0.9, 54)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="AvenueCenter" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 0.04, -29)
+size = Vector3(7, 0.12, 50)
+material = ExtResource("8_ramp")
+
+[node name="WestColonnade" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(-12.2, 2.8, -28)
+size = Vector3(1.3, 6.5, 55)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="EastColonnade" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(12.2, 2.8, -28)
+size = Vector3(1.3, 6.5, 55)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="AvenuePillarL1" type="CSGCylinder3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(-9.5, 6, -13)
+radius = 1.0
+height = 12
+sides = 8
+material = ExtResource("6_light")
+
+[node name="AvenuePillarR1" type="CSGCylinder3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(9.5, 6, -13)
+radius = 1.0
+height = 12
+sides = 8
+material = ExtResource("6_light")
+
+[node name="AvenuePillarL2" type="CSGCylinder3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(-9.5, 8, -34)
+radius = 1.0
+height = 16
+sides = 8
+material = ExtResource("6_light")
+
+[node name="AvenuePillarR2" type="CSGCylinder3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(9.5, 8, -34)
+radius = 1.0
+height = 16
+sides = 8
+material = ExtResource("6_light")
+
+[node name="AvenuePillarL3" type="CSGCylinder3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(-9.5, 7, -49)
+radius = 1.0
+height = 14
+sides = 8
+material = ExtResource("6_light")
+
+[node name="AvenuePillarR3" type="CSGCylinder3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(9.5, 7, -49)
+radius = 1.0
+height = 14
+sides = 8
+material = ExtResource("6_light")
+
+[node name="UpperRamp" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 1.45, -59)
+rotation = Vector3(0.242, 0, 0)
+size = Vector3(20, 0.45, 15)
+use_collision = true
+material = ExtResource("8_ramp")
+
+[node name="UpperStep1" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 0.25, -53.5)
+size = Vector3(20.5, 0.25, 1.4)
+material = ExtResource("6_light")
+
+[node name="UpperStep2" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 0.65, -55)
+size = Vector3(20.5, 0.25, 1.4)
+material = ExtResource("6_light")
+
+[node name="UpperStep3" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 1.05, -56.5)
+size = Vector3(20.5, 0.25, 1.4)
+material = ExtResource("6_light")
+
+[node name="UpperStep4" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 1.45, -58)
+size = Vector3(20.5, 0.25, 1.4)
+material = ExtResource("6_light")
+
+[node name="UpperStep5" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 1.85, -59.5)
+size = Vector3(20.5, 0.25, 1.4)
+material = ExtResource("6_light")
+
+[node name="UpperStep6" type="CSGBox3D" parent="WorldBlockout/NorthAvenue"]
+position = Vector3(0, 2.25, -61)
+size = Vector3(20.5, 0.25, 1.4)
+material = ExtResource("6_light")
+
+[node name="UpperCourt" type="Node3D" parent="WorldBlockout"]
+
+[node name="Floor" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(0, 2.5, -79)
+size = Vector3(68, 1, 38)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CourtDais" type="CSGCylinder3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(0, 3.18, -79)
+radius = 7.0
+height = 0.36
+sides = 28
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="CourtCore" type="CSGCylinder3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(0, 3.39, -79)
+radius = 2.6
+height = 0.18
+sides = 20
+material = ExtResource("7_magenta")
+
+[node name="CourtWallWest" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(-34.2, 6, -79)
+size = Vector3(1, 8, 38)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CourtWallEast" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(34.2, 6, -79)
+size = Vector3(1, 8, 38)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CourtBackLeft" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(-20, 7, -98.2)
+size = Vector3(28, 10, 1.2)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CourtBackRight" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(20, 7, -98.2)
+size = Vector3(28, 10, 1.2)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CourtPillarL" type="CSGCylinder3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(-20, 11, -87)
+radius = 1.6
+height = 16
+sides = 8
+material = ExtResource("6_light")
+
+[node name="CourtPillarR" type="CSGCylinder3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(20, 11, -87)
+radius = 1.6
+height = 16
+sides = 8
+material = ExtResource("6_light")
+
+[node name="SanctumBridge" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(0, 3.0, -106)
+size = Vector3(14, 0.8, 18)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="Sanctum" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(0, 3.0, -121)
+size = Vector3(46, 1, 24)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="SanctumMonolith" type="CSGBox3D" parent="WorldBlockout/UpperCourt"]
+position = Vector3(0, 15, -128)
+size = Vector3(8, 24, 5)
+material = ExtResource("7_magenta")
+
+[node name="WestCloister" type="Node3D" parent="WorldBlockout"]
+
+[node name="Connector" type="CSGBox3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-39, -0.35, 19)
+size = Vector3(14, 0.7, 15)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="Floor" type="CSGBox3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-57, -0.5, 13)
+size = Vector3(38, 1, 50)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="InnerCourt" type="CSGBox3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-57, 0.08, 13)
+size = Vector3(18, 0.18, 28)
+material = ExtResource("6_light")
+
+[node name="WestOuterWall" type="CSGBox3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-76, 4.5, 13)
+size = Vector3(1, 9, 52)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="WestBackWall" type="CSGBox3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-57, 4.5, -12)
+size = Vector3(38, 9, 1)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="CloisterPillar1" type="CSGCylinder3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-68, 6, 0)
+radius = 1.1
+height = 12
+sides = 8
+material = ExtResource("6_light")
+
+[node name="CloisterPillar2" type="CSGCylinder3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-68, 8, 15)
+radius = 1.1
+height = 16
+sides = 8
+material = ExtResource("6_light")
+
+[node name="CloisterPillar3" type="CSGCylinder3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-68, 7, 30)
+radius = 1.1
+height = 14
+sides = 8
+material = ExtResource("6_light")
+
+[node name="WestCrystal" type="MeshInstance3D" parent="WorldBlockout/WestCloister"]
+position = Vector3(-57, 4.6, 13)
+rotation_degrees = Vector3(8, 16, -14)
+mesh = SubResource("BoxMesh_crystal")
+material_override = ExtResource("7_magenta")
+
+[node name="EastRuins" type="Node3D" parent="WorldBlockout"]
+
+[node name="Connector" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(39, -0.35, 12)
+size = Vector3(14, 0.7, 15)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="Floor" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(57, -0.5, 2)
+size = Vector3(40, 1, 58)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="BrokenUpper" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(56, 2.2, -10)
+size = Vector3(19, 0.8, 16)
+use_collision = true
+material = ExtResource("6_light")
+
+[node name="EastOuterWall" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(77, 5.5, 1)
+size = Vector3(1, 11, 60)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="EastFrontFragment" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(57, 5, 31)
+size = Vector3(40, 10, 1)
+use_collision = true
+material = ExtResource("5_stone")
+
+[node name="RuinTower1" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(69, 11, -17)
+rotation_degrees = Vector3(0, 8, 3)
+size = Vector3(5, 22, 5)
+material = ExtResource("5_stone")
+
+[node name="RuinTower2" type="CSGBox3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(45, 8, -20)
+rotation_degrees = Vector3(0, -12, -4)
+size = Vector3(4, 16, 4)
+material = ExtResource("6_light")
+
+[node name="EastCrystal1" type="MeshInstance3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(50, 4, 14)
+rotation_degrees = Vector3(12, -18, 18)
+mesh = SubResource("BoxMesh_crystal")
+material_override = ExtResource("7_magenta")
+
+[node name="EastCrystal2" type="MeshInstance3D" parent="WorldBlockout/EastRuins"]
+position = Vector3(64, 4.8, 7)
+rotation_degrees = Vector3(-15, 9, -22)
+mesh = SubResource("BoxMesh_crystal")
+material_override = ExtResource("7_magenta")
+
+[node name="Skyline" type="Node3D" parent="WorldBlockout"]
+
+[node name="FarTowerW1" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(-102, 24, 34)
+size = Vector3(11, 48, 11)
+material = ExtResource("5_stone")
+
+[node name="FarTowerW2" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(-91, 17, -33)
+size = Vector3(8, 34, 8)
+material = ExtResource("6_light")
+
+[node name="FarTowerW3" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(-110, 31, -88)
+size = Vector3(13, 62, 13)
+material = ExtResource("5_stone")
+
+[node name="FarTowerE1" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(101, 21, 28)
+size = Vector3(10, 42, 10)
+material = ExtResource("5_stone")
+
+[node name="FarTowerE2" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(94, 28, -42)
+size = Vector3(12, 56, 12)
+material = ExtResource("6_light")
+
+[node name="FarTowerE3" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(109, 18, -101)
+size = Vector3(9, 36, 9)
+material = ExtResource("5_stone")
+
+[node name="FarNorthMassL" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(-47, 25, -154)
+size = Vector3(42, 50, 18)
+material = ExtResource("5_stone")
+
+[node name="FarNorthMassR" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(47, 21, -151)
+size = Vector3(42, 42, 22)
+material = ExtResource("5_stone")
+
+[node name="FarNorthSpire" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(0, 39, -166)
+rotation_degrees = Vector3(0, 0, 4)
+size = Vector3(10, 78, 10)
+material = ExtResource("7_magenta")
+
+[node name="FarArchL" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(-17, 18, -143)
+size = Vector3(5, 36, 8)
+material = ExtResource("6_light")
+
+[node name="FarArchR" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(17, 18, -143)
+size = Vector3(5, 36, 8)
+material = ExtResource("6_light")
+
+[node name="FarArchTop" type="CSGBox3D" parent="WorldBlockout/Skyline"]
+position = Vector3(0, 34, -143)
+size = Vector3(39, 5, 8)
+material = ExtResource("6_light")
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+position = Vector3(0, 0.05, 64)
+rotation = Vector3(0, 3.14159, 0)
+
+[node name="CameraRig" parent="." instance=ExtResource("2_camera")]
+
+[node name="EnemySouth" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(-7, 0.05, 48)
+
+[node name="EnemyPlazaA" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(-8, 0.05, 22)
+
+[node name="EnemyPlazaB" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(8, 0.05, 18)
+
+[node name="EnemyAvenue" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(0, 0.05, -25)
+
+[node name="EnemyWest" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(-57, 0.05, 13)
+
+[node name="EnemyEast" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(57, 0.05, 5)
+
+[node name="EnemyUpperA" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(-8, 3.05, -78)
+
+[node name="EnemyUpperB" parent="." instance=ExtResource("3_enemy")]
+position = Vector3(8, 3.05, -82)
+
+[node name="HUD" parent="." instance=ExtResource("4_hud")]

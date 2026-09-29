@@ -1,0 +1,81 @@
+[gd_scene load_steps=12 format=3]
+
+[ext_resource type="Script" path="res://scripts/enemies/basic_enemy.gd" id="1_enemy"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="2_health"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="3_hurt"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="4_hit"]
+[ext_resource type="Material" path="res://materials/enemy_body.tres" id="5_bodymat"]
+[ext_resource type="Material" path="res://materials/enemy_accent.tres" id="6_accent"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape_enemy"]
+radius = 0.48
+height = 1.95
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_enemy"]
+radius = 0.48
+height = 1.35
+
+[sub_resource type="SphereMesh" id="SphereMesh_enemy_head"]
+radius = 0.35
+height = 0.70
+
+[sub_resource type="BoxMesh" id="BoxMesh_enemy_arm"]
+size = Vector3(0.26, 0.82, 0.26)
+
+[sub_resource type="BoxShape3D" id="BoxShape_attack"]
+size = Vector3(1.65, 1.45, 1.4)
+
+[node name="BasicEnemy" type="CharacterBody3D"]
+collision_layer = 4
+collision_mask = 3
+script = ExtResource("1_enemy")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1, 0)
+shape = SubResource("CapsuleShape_enemy")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Body" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 1.18, 0)
+mesh = SubResource("CapsuleMesh_enemy")
+material_override = ExtResource("5_bodymat")
+
+[node name="Head" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 2.1, 0)
+mesh = SubResource("SphereMesh_enemy_head")
+material_override = ExtResource("6_accent")
+
+[node name="LeftArm" type="MeshInstance3D" parent="Visual"]
+position = Vector3(-0.62, 1.35, 0.05)
+rotation = Vector3(0, 0, 0.2)
+mesh = SubResource("BoxMesh_enemy_arm")
+material_override = ExtResource("5_bodymat")
+
+[node name="RightArm" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0.62, 1.35, 0.05)
+rotation = Vector3(0, 0, -0.2)
+mesh = SubResource("BoxMesh_enemy_arm")
+material_override = ExtResource("5_bodymat")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("2_health")
+max_health = 72.0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+position = Vector3(0, 1, 0)
+script = ExtResource("3_hurt")
+health_component_path = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("CapsuleShape_enemy")
+
+[node name="AttackHitbox" type="Area3D" parent="."]
+position = Vector3(0, 1.15, 1.25)
+collision_layer = 16
+collision_mask = 32
+script = ExtResource("4_hit")
+source_path = NodePath("..")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="AttackHitbox"]
+shape = SubResource("BoxShape_attack")

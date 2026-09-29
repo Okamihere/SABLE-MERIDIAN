@@ -1,0 +1,251 @@
+[gd_scene load_steps=50 format=3]
+
+[ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
+[ext_resource type="Script" path="res://scripts/player/player_state_machine.gd" id="2_state"]
+[ext_resource type="Script" path="res://scripts/combat/combat_controller.gd" id="3_combat"]
+[ext_resource type="Script" path="res://scripts/player/lock_on_controller.gd" id="4_lock"]
+[ext_resource type="Script" path="res://scripts/components/health_component.gd" id="5_health"]
+[ext_resource type="Script" path="res://scripts/components/hurtbox_component.gd" id="6_hurt"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="7_hit"]
+[ext_resource type="Script" path="res://scripts/player/player_animation_controller.gd" id="8_anim"]
+[ext_resource type="Material" path="res://materials/player_body.tres" id="9_bodymat"]
+[ext_resource type="Material" path="res://materials/player_accent.tres" id="10_accent"]
+[ext_resource type="Skeleton" path="res://resources/skeletons/player_skeleton.tres" id="11_skeleton"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
+radius = 0.42
+height = 1.85
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_body"]
+radius = 0.32
+height = 0.85
+
+[sub_resource type="SphereMesh" id="SphereMesh_head"]
+radius = 0.26
+height = 0.52
+
+[sub_resource type="BoxMesh" id="BoxMesh_limb"]
+size = Vector3(0.16, 0.6, 0.16)
+
+[sub_resource type="BoxShape3D" id="BoxShape_light"]
+size = Vector3(1.35, 1.1, 1.55)
+
+[sub_resource type="BoxShape3D" id="BoxShape_heavy"]
+size = Vector3(1.8, 1.45, 1.85)
+
+[sub_resource type="Animation" id="Animation_idle"]
+resource_name = "idle"
+length = 2.0
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D:Hips:position")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0, 0.015, 0), Vector3(0, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D:Spine:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 1, 2),
+"transitions": PackedFloat32Array(1, 1, 1),
+"update": 0,
+"values": [Vector3(0, 0, 0), Vector3(0.015, 0, 0), Vector3(0, 0, 0)]
+}
+
+[sub_resource type="Animation" id="Animation_walk"]
+resource_name = "walk"
+length = 0.8
+loop_mode = 1
+tracks/0/type = "value"
+tracks/0/imported = false
+tracks/0/enabled = true
+tracks/0/path = NodePath("Skeleton3D:LeftLeg:rotation")
+tracks/0/interp = 1
+tracks/0/loop_wrap = true
+tracks/0/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.35, 0, 0), Vector3(0, 0, 0), Vector3(-0.35, 0, 0), Vector3(0, 0, 0), Vector3(0.35, 0, 0)]
+}
+tracks/1/type = "value"
+tracks/1/imported = false
+tracks/1/enabled = true
+tracks/1/path = NodePath("Skeleton3D:RightLeg:rotation")
+tracks/1/interp = 1
+tracks/1/loop_wrap = true
+tracks/1/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.35, 0, 0), Vector3(0, 0, 0), Vector3(0.35, 0, 0), Vector3(0, 0, 0), Vector3(-0.35, 0, 0)]
+}
+tracks/2/type = "value"
+tracks/2/imported = false
+tracks/2/enabled = true
+tracks/2/path = NodePath("Skeleton3D:LeftArm:rotation")
+tracks/2/interp = 1
+tracks/2/loop_wrap = true
+tracks/2/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(-0.25, 0, 0), Vector3(0, 0, 0), Vector3(0.25, 0, 0), Vector3(0, 0, 0), Vector3(-0.25, 0, 0)]
+}
+tracks/3/type = "value"
+tracks/3/imported = false
+tracks/3/enabled = true
+tracks/3/path = NodePath("Skeleton3D:RightArm:rotation")
+tracks/3/interp = 1
+tracks/3/loop_wrap = true
+tracks/3/keys = {
+"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
+"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
+"update": 0,
+"values": [Vector3(0.25, 0, 0), Vector3(0, 0, 0), Vector3(-0.25, 0, 0), Vector3(0, 0, 0), Vector3(0.25, 0, 0)]
+}
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine"]
+states/Idle/node = SubResource("Animation_idle")
+states/Idle/position = Vector2(100, 100)
+states/Walk/node = SubResource("Animation_walk")
+states/Walk/position = Vector2(300, 100)
+transitions = {
+"Idle": "Walk",
+"Walk": "Idle"
+}
+
+[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree"]
+nodes/StateMachine/node = SubResource("AnimationNodeStateMachine")
+nodes/StateMachine/position = Vector2(100, 100)
+
+[node name="Player" type="CharacterBody3D"]
+collision_layer = 2
+collision_mask = 5
+script = ExtResource("1_player")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+position = Vector3(0, 1, 0)
+shape = SubResource("CapsuleShape_player")
+
+[node name="Skeleton3D" type="Skeleton3D" parent="."]
+skeleton = ExtResource("11_skeleton")
+
+[node name="Hips" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"Hips"
+bone_idx = 0
+
+[node name="Spine" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"Spine"
+bone_idx = 1
+
+[node name="TorsoMesh" type="MeshInstance3D" parent="Skeleton3D/Spine"]
+mesh = SubResource("CapsuleMesh_body")
+material_override = ExtResource("9_bodymat")
+
+[node name="Head" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"Head"
+bone_idx = 2
+
+[node name="HeadMesh" type="MeshInstance3D" parent="Skeleton3D/Head"]
+mesh = SubResource("SphereMesh_head")
+material_override = ExtResource("10_accent")
+
+[node name="LeftArm" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"LeftArm"
+bone_idx = 3
+
+[node name="LeftArmMesh" type="MeshInstance3D" parent="Skeleton3D/LeftArm"]
+mesh = SubResource("BoxMesh_limb")
+material_override = ExtResource("9_bodymat")
+
+[node name="RightArm" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"RightArm"
+bone_idx = 4
+
+[node name="RightArmMesh" type="MeshInstance3D" parent="Skeleton3D/RightArm"]
+mesh = SubResource("BoxMesh_limb")
+material_override = ExtResource("10_accent")
+
+[node name="LeftLeg" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"LeftLeg"
+bone_idx = 5
+
+[node name="LeftLegMesh" type="MeshInstance3D" parent="Skeleton3D/LeftLeg"]
+mesh = SubResource("BoxMesh_limb")
+material_override = ExtResource("9_bodymat")
+
+[node name="RightLeg" type="BoneAttachment3D" parent="Skeleton3D"]
+bone_name = &"RightLeg"
+bone_idx = 6
+
+[node name="RightLegMesh" type="MeshInstance3D" parent="Skeleton3D/RightLeg"]
+mesh = SubResource("BoxMesh_limb")
+material_override = ExtResource("9_bodymat")
+
+[node name="AnimationTree" type="AnimationTree" parent="."]
+tree_root = SubResource("AnimationNodeBlendTree")
+anim_player = NodePath("../AnimationPlayer")
+
+[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
+root_node = NodePath("../Skeleton3D")
+anims/idle = SubResource("Animation_idle")
+anims/walk = SubResource("Animation_walk")
+
+[node name="PlayerAnimationController" type="Node" parent="."]
+script = ExtResource("8_anim")
+skeleton_path = NodePath("../Skeleton3D")
+animation_tree_path = NodePath("../AnimationTree")
+state_machine_path = NodePath("../StateMachine")
+combat_controller_path = NodePath("../CombatController")
+
+[node name="StateMachine" type="Node" parent="."]
+script = ExtResource("2_state")
+
+[node name="CombatController" type="Node" parent="."]
+script = ExtResource("3_combat")
+
+[node name="LockOnController" type="Node" parent="."]
+script = ExtResource("4_lock")
+
+[node name="HealthComponent" type="Node" parent="."]
+script = ExtResource("5_health")
+max_health = 100.0
+
+[node name="Hurtbox" type="Area3D" parent="."]
+position = Vector3(0, 1, 0)
+script = ExtResource("6_hurt")
+health_component_path = NodePath("../HealthComponent")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hurtbox"]
+shape = SubResource("CapsuleShape_player")
+
+[node name="Hitboxes" type="Node3D" parent="."]
+
+[node name="LightHitbox" type="Area3D" parent="Hitboxes"]
+position = Vector3(0, 1.2, 1.05)
+collision_layer = 8
+collision_mask = 32
+script = ExtResource("7_hit")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitboxes/LightHitbox"]
+shape = SubResource("BoxShape_light")
+
+[node name="HeavyHitbox" type="Area3D" parent="Hitboxes"]
+position = Vector3(0, 1.15, 1.3)
+collision_layer = 8
+collision_mask = 32
+script = ExtResource("7_hit")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitboxes/HeavyHitbox"]
+shape = SubResource("BoxShape_heavy")

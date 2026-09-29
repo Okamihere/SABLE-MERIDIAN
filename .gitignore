@@ -1,0 +1,17 @@
+# Godot 4 cache e arquivos temporários
+.godot/
+*.import
+*.tmp
+
+# Arquivos de build/exportação
+export_presets.cfg
+build/
+dist/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Arquivos de log
+*.log

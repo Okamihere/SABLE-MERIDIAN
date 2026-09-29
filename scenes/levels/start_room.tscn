@@ -1,0 +1,71 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/start_room.gd" id="1_script"]
+[ext_resource type="Material" path="res://materials/stone.tres" id="2_stone"]
+[ext_resource type="Material" path="res://materials/accent_magenta.tres" id="3_accent"]
+[ext_resource type="PackedScene" path="res://scenes/player/player_rig.tscn" id="4_player"]
+
+[sub_resource type="Environment" id="Environment_start"]
+background_mode = 1
+background_color = Color(0.01, 0.015, 0.03, 1)
+background_energy_multiplier = 0.5
+ambient_light_source = 2
+ambient_light_color = Color(0.12, 0.14, 0.28, 1)
+ambient_light_energy = 0.6
+fog_enabled = true
+fog_light_color = Color(0.08, 0.07, 0.15, 1)
+fog_density = 0.004
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+size = Vector3(20, 1, 20)
+
+[sub_resource type="BoxMesh" id="BoxMesh_pillar"]
+size = Vector3(1.5, 8, 1.5)
+
+[sub_resource type="BoxMesh" id="BoxMesh_arch"]
+size = Vector3(12, 1.5, 2)
+
+[node name="StartRoom" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_start")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+rotation_degrees = Vector3(-45, 30, 0)
+light_color = Color(0.5, 0.6, 1, 1)
+light_energy = 1.2
+shadow_enabled = true
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+position = Vector3(0, 5, 0)
+light_color = Color(0.85, 0.1, 0.4, 1)
+light_energy = 2.0
+omni_range = 20.0
+
+[node name="Floor" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.5, 0)
+mesh = SubResource("BoxMesh_floor")
+material_override = ExtResource("2_stone")
+
+[node name="PillarL" type="MeshInstance3D" parent="."]
+position = Vector3(-6, 4, -4)
+mesh = SubResource("BoxMesh_pillar")
+material_override = ExtResource("2_stone")
+
+[node name="PillarR" type="MeshInstance3D" parent="."]
+position = Vector3(6, 4, -4)
+mesh = SubResource("BoxMesh_pillar")
+material_override = ExtResource("2_stone")
+
+[node name="Arch" type="MeshInstance3D" parent="."]
+position = Vector3(0, 8, -4)
+mesh = SubResource("BoxMesh_arch")
+material_override = ExtResource("3_accent")
+
+[node name="Camera3D" type="Camera3D" parent="."]
+position = Vector3(0, 3, 10)
+rotation_degrees = Vector3(-10, 0, 0)
+
+[node name="Player" parent="." instance=ExtResource("4_player")]
+position = Vector3(0, 0.05, 0)

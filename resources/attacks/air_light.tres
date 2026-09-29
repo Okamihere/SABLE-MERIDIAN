@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+[resource]
+script = ExtResource("1")
+attack_id = &"air_light"
+damage = 10.0
+knockback = 1.4
+hit_stun = 0.24
+launch_force = 2.2
+hit_stop_duration = 0.030
+startup = 0.06
+active = 0.10
+recovery = 0.14
+combo_window_start = 0.13
+attack_cancel_window = 0.11
+style_points = 145
+forward_impulse = 0.9

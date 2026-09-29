@@ -1,0 +1,45 @@
+[gd_scene load_steps=6 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/hit_spark.gd" id="1_script"]
+
+[sub_resource type="StandardMaterial3D" id="Material_core"]
+albedo_color = Color(1, 0.72, 0.34, 1)
+emission_enabled = true
+emission = Color(1, 0.18, 0.05, 1)
+emission_energy_multiplier = 3.0
+shading_mode = 0
+
+[sub_resource type="SphereMesh" id="Sphere_core"]
+radius = 0.28
+height = 0.56
+
+[sub_resource type="StandardMaterial3D" id="Material_ring"]
+albedo_color = Color(0.4, 0.85, 1, 1)
+emission_enabled = true
+emission = Color(0.1, 0.5, 1, 1)
+emission_energy_multiplier = 2.0
+shading_mode = 0
+
+[sub_resource type="TorusMesh" id="Torus_ring"]
+inner_radius = 0.32
+outer_radius = 0.38
+rings = 12
+ring_segments = 20
+
+[node name="HitSpark" type="Node3D"]
+script = ExtResource("1_script")
+
+[node name="Core" type="MeshInstance3D" parent="."]
+mesh = SubResource("Sphere_core")
+material_override = SubResource("Material_core")
+
+[node name="Ring" type="MeshInstance3D" parent="."]
+rotation = Vector3(1.5708, 0, 0)
+mesh = SubResource("Torus_ring")
+material_override = SubResource("Material_ring")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+omni_range = 3.0
+light_color = Color(1, 0.25, 0.12, 1)
+light_energy = 2.0
+shadow_enabled = false

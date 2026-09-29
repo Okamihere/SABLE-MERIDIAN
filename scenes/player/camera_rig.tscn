@@ -1,0 +1,17 @@
+[gd_scene load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/camera/camera_controller.gd" id="1_cam"]
+
+[node name="CameraRig" type="Node3D"]
+script = ExtResource("1_cam")
+
+[node name="SpringArm3D" type="SpringArm3D" parent="."]
+spring_length = 6.4
+margin = 0.18
+collision_mask = 1
+
+[node name="Camera3D" type="Camera3D" parent="SpringArm3D"]
+current = true
+fov = 72.0
+near = 0.08
+far = 400.0
