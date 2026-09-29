@@ -1,52 +1,52 @@
-# Contribuir para SABLE - MERIDIAN
+# Contributing to SABLE - MERIDIAN
 
-Obrigado por interessares em contribuir! Este é um projeto de jogo feito em Godot 4.x. Aqui tens como podes ajudar.
+Thanks for your interest in contributing! This is a Godot 4.x game project. Here is how you can help.
 
-## Como começar
+## Getting Started
 
-1. **Faz um fork** deste repositório
-2. **Clona** o teu fork: `git clone https://github.com/TEU_USERNAME/SABLE-MERIDIAN.git`
-3. **Cria uma branch** para a tua contribuição: `git checkout -b minha-contribuicao`
-4. **Abre o projeto no Godot 4.x** e certifica-te de que tudo funciona
-5. **Faz as tuas alterações** e testa-as no editor
-6. **Commit** com mensagens claras: `git commit -m "descrição do que fizeste"`
-7. **Push** para o teu fork: `git push origin minha-contribuicao`
-8. **Abre um Pull Request** neste repositório
+1. **Fork** this repository
+2. **Clone** your fork: `git clone https://github.com/YOUR_USERNAME/SABLE-MERIDIAN.git`
+3. **Create a branch** for your contribution: `git checkout -b my-contribution`
+4. **Open the project in Godot 4.x** and make sure everything works
+5. **Make your changes** and test them in the editor
+6. **Commit** with clear messages: `git commit -m "description of what you did"`
+7. **Push** to your fork: `git push origin my-contribution`
+8. **Open a Pull Request** in this repository
 
-## O que podes contribuir
+## What You Can Contribute
 
-- **Bugs** — encontra e corrige problemas no jogo
-- **Features** — implementa novas mecânicas, inimigos, níveis
-- **Design** — melhora visuais, animações, efeitos
-- **Áudio** — adiciona sons ou música
-- **Documentação** — melhora este README ou outros ficheiros
-- **Tradução** — traduz o jogo para outros idiomas
-- **Testes** — adiciona testes ou validações
+- **Bugs** — find and fix issues in the game
+- **Features** — implement new mechanics, enemies, levels
+- **Design** — improve visuals, animations, effects
+- **Audio** — add sounds or music
+- **Documentation** — improve this README or other files
+- **Translation** — translate the game into other languages
+- **Tests** — add tests or validations
 
-## Regras importantes
+## Important Rules
 
-- **Testa antes de abrir PR** — abre o projeto no Godot e verifica se compila e roda sem erros
-- **Mantém o estilo** — segue o padrão de código existente (GDScript com indentação por tabs)
-- **Commits pequenos** — faz commits focados em uma coisa de cada vez
-- **Descreve bem o PR** — explica o que fizeste, porquê, e como testar
+- **Test before opening a PR** — open the project in Godot and verify it compiles and runs without errors
+- **Keep the style** — follow the existing code pattern (GDScript with tab indentation)
+- **Small commits** — make commits focused on one thing at a time
+- **Describe your PR well** — explain what you did, why, and how to test it
 
-## Estrutura do projeto
+## Project Structure
 
 ```
 SABLE-MERIDIAN/
-├── scenes/          # Cenas do jogo (player, inimigos, níveis)
-├── scripts/         # Scripts GDScript
-├── resources/       # Recursos (sprites, sons, materiais)
-├── effects/         # Efeitos visuais
-├── materials/       # Materiais Godot
-├── tools/           # Ferramentas de teste e validação
-└── project.godot    # Configuração do projeto
+├── scenes/          # Game scenes (player, enemies, levels)
+├── scripts/         # GDScript files
+├── resources/       # Sprites, sounds, materials
+├── effects/         # Visual effects
+├── materials/       # Godot materials
+├── tools/           # Test & validation tools
+└── project.godot    # Project configuration
 ```
 
-## Dúvidas?
+## Questions?
 
-Abre uma **Issue** com a label `question` ou entra em contacto.
+Open an **Issue** with the `question` label or get in touch.
 
 ---
 
-Obrigado por ajudares a tornar este jogo melhor! 🎮
+Thanks for helping make this game better! 🎮

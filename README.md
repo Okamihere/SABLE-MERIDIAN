@@ -2,82 +2,84 @@
 
 A self-contained third-person action prototype using only Godot primitives and GDScript.
 
-## Run
-1. Open this folder in Godot 4.x.
-2. Run the project (`F6/F5` depending on your workflow; main scene is configured).
-3. Click the game window to capture the mouse.
+## Quick Start
+
+1. Open this folder in **Godot 4.x**
+2. Run the project (`F5` / `F6` — main scene is pre-configured)
+3. Click the game window to capture the mouse
 
 ## Controls
-- WASD: move
-- Space: jump
-- Shift: dodge
-- Left Mouse: light attack
-- Right Mouse: heavy attack
-- Q: toggle lock-on
-- Esc: release/capture mouse
-- F3: toggle combat debug overlay/volumes
 
-## Combat notes
-- Chain light attacks for a four-hit combo.
-- After the second light, heavy becomes a launcher.
-- In the air, light attacks help keep launched targets suspended.
-- Dodge late into an incoming enemy hit to trigger a perfect dodge.
+| Key | Action |
+|-----|--------|
+| `WASD` | Move |
+| `Space` | Jump |
+| `Shift` | Dodge |
+| `Left Mouse` | Light attack |
+| `Right Mouse` | Heavy attack |
+| `Q` | Toggle lock-on |
+| `Esc` | Release/capture mouse |
+| `F3` | Toggle combat debug overlay |
 
-## World layout
-The prototype is now a large but finite environment rather than a single enclosed arena. The playable blockout spans multiple connected districts and uses distant skyline geometry to create an open-world-like sense of scale without requiring actual open-world streaming.
+## Combat
 
-## Fall recovery
-If the player falls below the playable world, the controller automatically returns to the last stable grounded position. `fall_limit_y`, `respawn_height_offset` and `safe_position_delay` are exported under **Fall Recovery** on the Player node.
+- Chain light attacks for a **four-hit combo**
+- After the second light, heavy becomes a **launcher**
+- In the air, light attacks keep launched targets suspended
+- Dodge late into an incoming hit to trigger a **perfect dodge**
 
-## Entrada no jogo
-A sala inicial permite testar os controles. Pressione **Enter** para entrar na cidade.
-**Esc** libera/captura o mouse; após morrer, a cena reinicia automaticamente.
+## Wall Movement & Orbs
 
-## Verificação de jogabilidade
-Execute `godot --headless --path . --script tools/test_gameplay.gd` para testar a sala inicial, entrada na cidade, dano por colisão, proteção contra autoacerto, alcance do lock-on, morte e reinício.
+- Jump against a wall and hold toward it — the character **grips for 0.4s**, then slides slowly
+- Press **Space again** to kick off; chain jumps between walls
+- You start with **2 wall jumps per air sequence**; touching the ground refills the reserve
+- Each **blue orb** found increases the limit by **+1** (3 orbs placed in the prototype)
+- Orb collection is saved to `user://wall_orbs.cfg` and persists across deaths and restarts
 
-O pátio de treino inclui blocos de salto, marcações de esquiva e dois bonecos indestrutíveis para praticar lock-on e ataques. As seis dicas são concluídas por ações, em qualquer ordem; Enter permite sair a qualquer momento.
+## World
 
-## Poder de parede e orbes
+The prototype is a large but finite environment with multiple connected districts and distant skyline geometry for an open-world feel. The starting room lets you test controls — press **Enter** to enter the city.
 
-Pule contra uma parede e mantenha a direção apontando para ela. O personagem segura por 0,4 segundo e depois desliza lentamente. Pressione **Espaço novamente** para saltar para longe dela; vire a direção para a outra parede para encadear saltos.
+## Fall Recovery
 
-Você começa com **2 saltos de parede por sequência aérea**. Tocar o chão ou recuperar uma queda repõe a reserva; ataques, dano e esquiva não permitem agarrar. O contador PAREDE mostra a reserva atual. O pátio tem um corredor de treino à direita.
+If the player falls below the playable world, the controller automatically returns to the last stable grounded position. `fall_limit_y`, `respawn_height_offset`, and `safe_position_delay` are exported under **Fall Recovery** on the Player node.
 
-Cada orbe azul encontrada aumenta o limite em **+1**. Há três orbes colocadas no protótipo. A coleta fica salva em `user://wall_orbs.cfg` e sobrevive à morte e ao reinício do jogo. Isso salva somente as melhorias, não a posição ou todo o progresso do jogo.
+## HUD & Mana
 
-## Organização do código
+The HUD shows health (red), mana (blue), wall jumps, style rank, and pickup notifications. Mana starts at 100 and regenerates at 8/s after 1.5s without spending. No current ability consumes mana yet — the system is ready for future powers.
 
-- `scripts/player`: movimento, estados, lock-on, poses procedurais e poder de parede.
-- `scripts/combat`, `scripts/components`: ataques, vida e áreas de dano.
-- `scripts/levels`: tutorial e comportamento dos coletáveis/bonecos.
-- `scripts/systems`: entradas, estilo e persistência das orbes.
-- `scenes/collectibles/wall_orb.tscn`: orbe reutilizável. Cada instância precisa de um `orb_id` único e estável.
-- `resources/skeletons/player_skeleton.tscn`: Skeleton3D válido, instanciado pelo personagem atual `player_rig.tscn`.
-- `scenes/player/player.tscn`: versão legada, mantida como referência.
-- `tools`: validações. `.godot` é cache; arquivos `.gd.uid` acompanham seus scripts.
+## Responsive UI
 
-### Testar
+The interface adapts to any window size — compact panels on small screens, scaled-up on larger ones, ultrawide support included. Validated at 320×568 up to 3840×2160.
+
+## Testing
 
 ```sh
 python3 tools/validate_project.py
 godot --headless --path . --editor --quit
 godot --headless --path . --script tools/test_gameplay.gd
 godot --headless --path . --script tools/test_wall_movement.gd
+godot --headless --path . --script tools/test_hud.gd
+godot --headless --path . --script tools/test_responsive.gd
 ```
 
-O teste de parede usa um arquivo temporário próprio, sem modificar seu progresso salvo. Testes headless não substituem avaliar visualmente câmera, animações e sensação dos controles.
+## Project Structure
 
-## Interface, vida e mana
+```
+SABLE-MERIDIAN/
+├── scenes/          # Game scenes (player, enemies, levels)
+├── scripts/         # GDScript files
+├── resources/       # Sprites, sounds, materials
+├── effects/         # Visual effects
+├── materials/       # Godot materials
+├── tools/           # Test & validation tools
+└── project.godot    # Project configuration
+```
 
-O pátio e a cidade compartilham o HUD: vida vermelha, mana azul, saltos de parede, estilo e avisos de coleta. Os números mostram os valores atuais; as barras fazem transições curtas.
+## Documentation
 
-A reserva de mana começa em 100. Por enquanto, nenhum movimento ou golpe a consome. O componente já oferece consumo validado e regeneração de 8 por segundo após 1,5 segundo sem gasto, para integrar poderes futuros. Vida e mana voltam ao máximo no reinício da cena; esses valores não são persistidos.
-
-Execute `godot --headless --path . --script tools/test_hud.gd` para verificar dano, cura, mana, limites, regeneração e sincronização entre cenas.
-
-## Telas e redimensionamento
-
-A interface acompanha o tamanho real da janela. Em telas pequenas ou verticais, usa painéis compactos, texto com quebra de linha e dicas reduzidas; em telas maiores, amplia a escala. Ultrawide aproveita a largura disponível. O indicador de alvo acompanha a projeção da câmera na nova escala.
-
-Validação de layout: `godot --headless --path . --script tools/test_responsive.gd`. A matriz cobre 320×568, 360×640, 640×360, 800×600, 1024×768, 1280×720, 1920×1080, 2560×1080, 3440×1440 e 3840×2160. Isso verifica adaptação visual; o jogo ainda usa teclado e mouse, sem controles de toque.
+- [Contributing Guide](CONTRIBUTING.md) — how to help with the project
+- [Development Notes](DEV_NOTES.md) — architecture & conventions
+- [Roadmap](ROADMAP.md) — development phases & goals
+- [TODO](TODO.md) — upcoming tasks & ideas
+- [Validation Report](VALIDATION_REPORT.md) — test results & coverage

@@ -1,43 +1,53 @@
-# Guia de desenvolvimento — SABLE MERIDIAN
+# Development Guide — SABLE MERIDIAN
 
-## Responsabilidades
+## Responsibilities
 
-PlayerController controla movimento e dano; CombatController temporiza ataques via AttackData; LockOnController escolhe alvos; PlayerStateMachine centraliza estados. Os scripts têm cabeçalhos explicando suas responsabilidades e comentários nas regras menos óbvias.
+| Component | Role |
+|-----------|------|
+| `PlayerController` | Movement, damage intake, wall grip |
+| `CombatController` | Attack timing via `AttackData` |
+| `LockOnController` | Target selection & switching |
+| `PlayerStateMachine` | Centralized state management |
+| `PlayerAnimationController` | Procedural Skeleton3D poses (no AnimationTree) |
+| `GameManager` | Input, style score, global time effects |
+| `Progression` | Orb IDs, wall jump limit, local save |
 
-PlayerAnimationController anima Skeleton3D por poses procedurais, sem AnimationTree. Hips é raiz; Spine é filho de Hips e Head é filho de Spine; braços e pernas são filhos de Hips. Malhas rígidas acompanham BoneAttachment3D. As janelas de dano são controladas pelo combate, não pelas animações.
+## Animation
 
-GameManager mantém entradas, estilo e efeitos globais de tempo. Progression mantém somente IDs de orbes coletadas, calcula o limite de saltos e salva em arquivo local. Save completo, configurações e checkpoints ainda são futuros.
+Hips is the root; Spine is child of Hips; Head is child of Spine; arms and legs are children of Hips. Rigid meshes follow `BoneAttachment3D`. Damage windows are controlled by combat, not animations.
 
-## Paredes e melhorias
+## Wall Movement
 
-WallMovement é um componente criado pelo jogador. Só detecta superfícies verticais na camada World, na direção pressionada. O impulso inicial tem uma breve proteção contra retorno imediato à parede. A reserva base é dois saltos; cada ID de orbe adiciona um. Chão e recuperação de queda zeram o gasto.
+`WallMovement` is a player-created component. It only detects vertical surfaces on the **World** layer in the pressed direction. The initial impulse has brief protection against immediate re-grip. Base reserve is **2 jumps**; each orb ID adds one. Ground touch and fall recovery reset the spend.
 
-Agarre é temporário e depois vira deslizamento. Liberar a direção solta a parede. Ataques, dano, morte e esquiva têm prioridade. O contador aparece pelo autoload Progression.
+Grip is temporary, then becomes a slide. Releasing the direction drops the wall. Attacks, damage, death, and dodge take priority. The counter is displayed via the `Progression` autoload.
 
-Para espalhar melhorias, instancie `scenes/collectibles/wall_orb.tscn` e defina `orb_id` único no inspetor. Não altere IDs já publicados: eles identificam a coleta salva. Uma orbe sem ID não concede melhoria. Coletas duplicadas não aumentam o limite.
+To place upgrades, instance `scenes/collectibles/wall_orb.tscn` and set a unique `orb_id` in the inspector. **Do not change published IDs** — they identify saved pickups. An orb without an ID grants no upgrade. Duplicate pickups do not increase the limit.
 
-## Convenções
+## Conventions
 
-Camadas físicas: 1 mundo, 2 jogador, 3 inimigos, 4 golpes do jogador, 5 golpes de inimigos, 6 hurtboxes. Personagens olham em +Z; a câmera usa -Z.
+- **Physics layers:** 1 World, 2 Player, 3 Enemies, 4 Player hits, 5 Enemy hits, 6 Hurtboxes
+- Characters face **+Z**; camera uses **-Z**
+- Hitboxes ignore their owner and hit each hurtbox once per activation
+- Monitoring is changed deferred to respect physics callbacks
+- Death signal is synchronous — do not overwrite `DEAD` after applying fatal damage
+- Combat timers use physics delta; buffer and combo expiry use real time
+- `GameManager` generation counter prevents old timers from interrupting new time effects
 
-Hitboxes ignoram seu dono e atingem cada hurtbox uma vez por ativação. Monitoramento é alterado de forma adiada para respeitar callbacks da física. O sinal de morte é síncrono: não sobrescreva DEAD depois de aplicar dano fatal.
+## Flow & Limits
 
-Tempos de combate usam delta da física; buffer e expiração de combo usam tempo real. O contador de geração do GameManager evita que timers antigos interrompam novos efeitos de tempo.
+The starting room opens the city via **Enter**. Training is optional and its lessons are not saved. The city is a finite blockout; enemies do not use navigation yet. The scene `player.tscn` is legacy; maps use `player_rig.tscn`.
 
-## Fluxo e limites
+Run the checks listed in the README. Tests use the development Godot with assertions enabled. Art, camera near walls, and movement balance still need manual evaluation.
 
-O pátio inicial abre a cidade por Enter. O treino é opcional e suas lições não são salvas. A cidade é um blockout finito; inimigos ainda não usam navegação. A cena `player.tscn` é legada; os mapas usam `player_rig.tscn`.
+## Shared HUD & Mana
 
-Execute as verificações listadas no README. Os testes usam o Godot de desenvolvimento com asserções habilitadas. Arte, câmera junto a paredes e equilíbrio do movimento ainda precisam de avaliação manual.
+`scenes/ui/hud.tscn` is used in both tutorial and city. Its `StyleBoxFlat` can be edited in Godot. Wall jump display and notifications belong to the HUD; `Progression` holds the data and notification timing without creating visual controls.
 
-## HUD compartilhado e mana
+`PlayerController` creates `ManaComponent` before registering the player. Future powers should check `mana.try_spend(cost)` before acting. No current ability is wired to that consumption. Regeneration stops when the player dies. The HUD reads initial values and follows health/mana signals; it disconnects old bindings when receiving a new player.
 
-`scenes/ui/hud.tscn` é usado no tutorial e na cidade. Seus StyleBoxFlat podem ser editados no Godot. A apresentação de saltos de parede e avisos pertence ao HUD; Progression mantém os dados e o tempo do aviso, sem criar controles visuais.
+## Responsive Layout
 
-PlayerController cria ManaComponent antes de registrar o jogador. Poderes futuros devem verificar `mana.try_spend(custo)` antes de agir. Nenhuma habilidade atual foi ligada a esse consumo. A regeneração para quando o jogador morre. O HUD lê valores iniciais e acompanha sinais de vida e mana; desconecta vínculos antigos ao receber outro jogador.
+Global stretch is disabled to measure the viewport in real pixels. The HUD applies its own scale from **0.85 to 2.5** and organizes panels in logical coordinates. Below **900 width** or **600 height**, it uses compact mode. The tutorial `CanvasLayer` uses the same scale.
 
-## Layout responsivo
-
-O stretch global está desativado para medir o viewport em pixels reais. O HUD aplica uma escala própria de 0,85 a 2,5 e organiza os painéis em coordenadas lógicas. Abaixo de 900 unidades de largura ou 600 de altura, usa o modo compacto. O CanvasLayer do tutorial usa a mesma escala.
-
-O sinal size_changed recalcula o layout; a altura de textos com quebra de linha é ajustada após o passe dos containers. Mudanças de lição também reposicionam o painel inferior. Ao projetar um alvo 3D, divida a posição de tela pela escala do HUD.
+The `size_changed` signal recalculates layout; text height with line wrapping is adjusted after the container pass. Lesson changes also reposition the bottom panel. When projecting a 3D target, divide screen position by the HUD scale.

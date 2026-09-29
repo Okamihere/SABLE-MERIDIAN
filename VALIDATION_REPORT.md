@@ -1,14 +1,20 @@
-# Relatório de validação
+# Validation Report
 
-Revisão em Godot 4.7.2. Comandos reproduzíveis no README.
+Reviewed on **Godot 4.7.2**. Reproducible commands in the README.
 
-- Verificação estática: recursos, cena inicial, hierarquias e rig atual; caches ignorados.
-- Importação pelo editor headless: cenas e scripts aceitos pelo Godot.
-- Regressão de jogabilidade: chão, câmera, timer de animação, autoacerto, bonecos, dicas de combate, transição à cidade, golpes reais, lock-on, morte e reinício.
-- Regressão de paredes: detecção de superfície, agarre, deslizamento, saltos em paredes opostas, limite, recarga no chão, bloqueio durante outros estados, coleta real, persistência e prevenção de duplicação.
+## Checks Performed
 
-Os testes não garantem ausência de todos os bugs. Não cobrem todas as rotas do mapa, todos os combos, desempenho ou aparência. A sensação do salto de parede e a câmera exigem avaliação manual. Não foi feita nova inspeção visual nesta revisão.
+| Check | Description |
+|-------|-------------|
+| **Static** | Resources, main scene, hierarchies and current rig; caches ignored |
+| **Headless import** | Scenes and scripts accepted by Godot editor |
+| **Gameplay regression** | Ground, camera, animation timer, self-hit, dummies, combat tips, city transition, real hits, lock-on, death and restart |
+| **Wall regression** | Surface detection, grip, sliding, opposite wall jumps, limit, ground refill, blocking during other states, real pickup, persistence and duplicate prevention |
 
-## Revisão da interface
+## Coverage Notes
 
-Vida, mana, consumo inválido, regeneração, limites e vínculos após troca de cena/morte são cobertos por `tools/test_hud.gd`. Capturas do pátio e da cidade foram inspecionadas em 1280×720, incluindo barras após dano e gasto de mana pelo teste. Não houve alteração na inteligência dos inimigos nesta revisão.
+Tests do not guarantee the absence of all bugs. They do not cover all map routes, all combos, performance or appearance. Wall jump feel and camera require manual evaluation. No new visual inspection was performed in this review.
+
+## UI Review
+
+Health, mana, invalid spend, regeneration, limits and bindings after scene change/death are covered by `tools/test_hud.gd`. Courtyard and city screenshots were inspected at 1280×720, including bars after damage and mana spend by the test. No enemy AI changes were made in this review.
