@@ -1,34 +1,43 @@
-# DEV NOTES
+# Guia de desenvolvimento — SABLE MERIDIAN
 
-## Architecture choices
-- `PlayerController` owns locomotion and defensive movement only.
-- `CombatController` owns attacks, buffers, combo routing and temporary hitbox activation.
-- `LockOnController` is isolated from both locomotion and camera.
-- `HealthComponent`, `HitboxComponent` and `HurtboxComponent` are reusable Nodes/Areas.
-- `GameManager` is an autoload for input bootstrap, style/combo bookkeeping and global time effects.
-- Camera is a world sibling of the player rather than a player child, allowing independent lag and lock-on framing.
-- Primitive visuals are children under `Visual`; future imported rigs can replace that branch without changing gameplay components.
+## Responsabilidades
 
-## Prototype conventions
-- Layers: 1 world, 2 player body, 3 enemy body, 4 player hitboxes, 5 enemy hitboxes, 6 hurtboxes.
-- Attacks are data-driven through `AttackData` resources.
-- Runtime input bindings are ensured by `GameManager` so the prototype remains robust if `project.godot` is regenerated.
-- Perfect dodge is registered when an enemy hitbox contacts the player during the perfect-dodge portion of i-frames.
+PlayerController controla movimento e dano; CombatController temporiza ataques via AttackData; LockOnController escolhe alvos; PlayerStateMachine centraliza estados. Os scripts têm cabeçalhos explicando suas responsabilidades e comentários nas regras menos óbvias.
 
-## Runtime validation
-The generation environment had no `godot`, `godot4` or headless Godot executable. Static checks were used instead; run the project once in Godot 4.x before treating it as production-ready.
+PlayerAnimationController anima Skeleton3D por poses procedurais, sem AnimationTree. Hips é raiz; Spine é filho de Hips e Head é filho de Spine; braços e pernas são filhos de Hips. Malhas rígidas acompanham BoneAttachment3D. As janelas de dano são controladas pelo combate, não pelas animações.
 
-## Animation system — 2026-09-29
-- Replaced primitive visual tweens with a Skeleton3D + AnimationTree rig.
-- `PlayerAnimationController` drives procedural animation for combat/dodge/hit/death states.
-- AnimationTree uses AnimationNodeStateMachine for locomotion (idle/walk) with blend transitions.
-- Bone hierarchy: Hips → Spine → Head, LeftArm, RightArm, LeftLeg, RightLeg.
-- Meshes are children of BoneAttachment3D nodes for proper skeletal deformation.
-- CombatController notifies animation controller on attack start for synchronized motion.
+GameManager mantém entradas, estilo e efeitos globais de tempo. Progression mantém somente IDs de orbes coletadas, calcula o limite de saltos e salva em arquivo local. Save completo, configurações e checkpoints ainda são futuros.
 
-## World scale pass — 2026-09-29
-- Replaced the compact arena layout with a large finite city blockout composed of connected districts: South Terrace, Grand Plaza, North Avenue, Upper Court, West Cloister, East Ruins and a northern Sanctum.
-- Added non-playable skyline masses and distant monumental architecture to make the playable space read like part of a much larger city without becoming an open world.
-- Reduced fog density and increased camera draw distance so distant landmarks remain visible and help navigation.
-- The world intentionally keeps real edges/gaps. Falling below `fall_limit_y` now returns the player to the most recent stable grounded position rather than leaving the character in the void.
-- Fall recovery cancels active combat/lock-on, clears velocity and snaps the camera back to the player to avoid a delayed camera catch-up after teleporting.
+## Paredes e melhorias
+
+WallMovement é um componente criado pelo jogador. Só detecta superfícies verticais na camada World, na direção pressionada. O impulso inicial tem uma breve proteção contra retorno imediato à parede. A reserva base é dois saltos; cada ID de orbe adiciona um. Chão e recuperação de queda zeram o gasto.
+
+Agarre é temporário e depois vira deslizamento. Liberar a direção solta a parede. Ataques, dano, morte e esquiva têm prioridade. O contador aparece pelo autoload Progression.
+
+Para espalhar melhorias, instancie `scenes/collectibles/wall_orb.tscn` e defina `orb_id` único no inspetor. Não altere IDs já publicados: eles identificam a coleta salva. Uma orbe sem ID não concede melhoria. Coletas duplicadas não aumentam o limite.
+
+## Convenções
+
+Camadas físicas: 1 mundo, 2 jogador, 3 inimigos, 4 golpes do jogador, 5 golpes de inimigos, 6 hurtboxes. Personagens olham em +Z; a câmera usa -Z.
+
+Hitboxes ignoram seu dono e atingem cada hurtbox uma vez por ativação. Monitoramento é alterado de forma adiada para respeitar callbacks da física. O sinal de morte é síncrono: não sobrescreva DEAD depois de aplicar dano fatal.
+
+Tempos de combate usam delta da física; buffer e expiração de combo usam tempo real. O contador de geração do GameManager evita que timers antigos interrompam novos efeitos de tempo.
+
+## Fluxo e limites
+
+O pátio inicial abre a cidade por Enter. O treino é opcional e suas lições não são salvas. A cidade é um blockout finito; inimigos ainda não usam navegação. A cena `player.tscn` é legada; os mapas usam `player_rig.tscn`.
+
+Execute as verificações listadas no README. Os testes usam o Godot de desenvolvimento com asserções habilitadas. Arte, câmera junto a paredes e equilíbrio do movimento ainda precisam de avaliação manual.
+
+## HUD compartilhado e mana
+
+`scenes/ui/hud.tscn` é usado no tutorial e na cidade. Seus StyleBoxFlat podem ser editados no Godot. A apresentação de saltos de parede e avisos pertence ao HUD; Progression mantém os dados e o tempo do aviso, sem criar controles visuais.
+
+PlayerController cria ManaComponent antes de registrar o jogador. Poderes futuros devem verificar `mana.try_spend(custo)` antes de agir. Nenhuma habilidade atual foi ligada a esse consumo. A regeneração para quando o jogador morre. O HUD lê valores iniciais e acompanha sinais de vida e mana; desconecta vínculos antigos ao receber outro jogador.
+
+## Layout responsivo
+
+O stretch global está desativado para medir o viewport em pixels reais. O HUD aplica uma escala própria de 0,85 a 2,5 e organiza os painéis em coordenadas lógicas. Abaixo de 900 unidades de largura ou 600 de altura, usa o modo compacto. O CanvasLayer do tutorial usa a mesma escala.
+
+O sinal size_changed recalcula o layout; a altura de textos com quebra de linha é ajustada após o passe dos containers. Mudanças de lição também reposicionam o painel inferior. Ao projetar um alvo 3D, divida a posição de tela pela escala do HUD.

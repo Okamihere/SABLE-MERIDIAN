@@ -1,4 +1,6 @@
 #!/usr/bin/env python3
+"""Verifica estrutura e referências; o parser do Godot continua sendo necessário."""
+
 from pathlib import Path
 import re
 import sys
@@ -6,9 +8,16 @@ import sys
 root = Path(__file__).resolve().parents[1]
 errors: list[str] = []
 references: list[tuple[Path, str]] = []
+def source_files():
+    """Ignora caches e histórico: somente fontes entram na validação."""
+    return [p for p in root.rglob("*") if p.is_file()
+            and not {".git", ".godot"}.intersection(p.relative_to(root).parts)]
+
+
+files = source_files()
 text_exts = {".gd", ".tscn", ".tres", ".godot", ".md"}
 
-for path in root.rglob("*"):
+for path in files:
     if not path.is_file() or path.suffix not in text_exts:
         continue
     try:
@@ -43,7 +52,10 @@ required = [
     "scripts/components/hitbox_component.gd",
     "scripts/components/hurtbox_component.gd",
     "scripts/systems/style_meter.gd",
-    "scenes/player/player.tscn",
+    "scenes/player/player_rig.tscn",
+    "resources/skeletons/player_skeleton.tscn",
+    "scenes/levels/start_room.tscn",
+    "scenes/enemies/training_dummy.tscn",
     "scenes/enemies/basic_enemy.tscn",
     "scenes/levels/main.tscn",
     "scenes/ui/hud.tscn",
@@ -57,7 +69,7 @@ for rel in required:
 
 # Parse scene node declarations enough to catch broken parent paths.
 node_re = re.compile(r'^\[node name="([^"]+)"(?: type="[^"]+")?(?: parent="([^"]+)")?.*\]$')
-for scene_path in root.rglob("*.tscn"):
+for scene_path in (p for p in files if p.suffix == ".tscn"):
     known = {"."}
     for lineno, raw in enumerate(scene_path.read_text(encoding="utf-8").splitlines(), 1):
         m = node_re.match(raw)
@@ -78,7 +90,7 @@ for scene_path in root.rglob("*.tscn"):
 
 # Basic bracket sanity for GDScript while ignoring strings/comments roughly.
 pairs = {')': '(', ']': '[', '}': '{'}
-for script_path in root.rglob("*.gd"):
+for script_path in (p for p in files if p.suffix == ".gd"):
     text = script_path.read_text(encoding="utf-8")
     stack: list[tuple[str, int]] = []
     in_single = in_double = False
@@ -115,16 +127,16 @@ for script_path in root.rglob("*.gd"):
         errors.append(f"UNCLOSED BRACKET: {script_path.relative_to(root)}:{lineno} {ch}")
 
 # NodePath target sanity for the player's exported defaults.
-player_scene = (root / "scenes/player/player.tscn").read_text(encoding="utf-8")
+player_scene = (root / "scenes/player/player_rig.tscn").read_text(encoding="utf-8")
 for expected_node in [
     "StateMachine", "CombatController", "LockOnController", "HealthComponent", "Hurtbox",
-    "Hitboxes/LightHitbox", "Hitboxes/HeavyHitbox", "Visual/RightArmPivot"
+    "Hitboxes/LightHitbox", "Hitboxes/HeavyHitbox", "Skeleton3D", "PlayerAnimationController"
 ]:
     leaf = expected_node.split("/")[-1]
     if f'name="{leaf}"' not in player_scene:
         errors.append(f"Player scene likely missing node: {expected_node}")
 
-file_count = sum(1 for p in root.rglob('*') if p.is_file())
+file_count = len(files)
 print(f"Scanned {file_count} files")
 print(f"Checked {len(references)} res:// references")
 if errors:

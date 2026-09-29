@@ -1,4 +1,4 @@
-[gd_scene load_steps=50 format=3]
+[gd_scene load_steps=18 format=3]
 
 [ext_resource type="Script" path="res://scripts/player/player.gd" id="1_player"]
 [ext_resource type="Script" path="res://scripts/player/player_state_machine.gd" id="2_state"]
@@ -10,7 +10,7 @@
 [ext_resource type="Script" path="res://scripts/player/player_animation_controller.gd" id="8_anim"]
 [ext_resource type="Material" path="res://materials/player_body.tres" id="9_bodymat"]
 [ext_resource type="Material" path="res://materials/player_accent.tres" id="10_accent"]
-[ext_resource type="Skeleton" path="res://resources/skeletons/player_skeleton.tres" id="11_skeleton"]
+[ext_resource type="PackedScene" path="res://resources/skeletons/player_skeleton.tscn" id="11_skeleton"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape_player"]
 radius = 0.42
@@ -33,102 +33,6 @@ size = Vector3(1.35, 1.1, 1.55)
 [sub_resource type="BoxShape3D" id="BoxShape_heavy"]
 size = Vector3(1.8, 1.45, 1.85)
 
-[sub_resource type="Animation" id="Animation_idle"]
-resource_name = "idle"
-length = 2.0
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Skeleton3D:Hips:position")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 1, 2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0, 0.015, 0), Vector3(0, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Skeleton3D:Spine:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 1, 2),
-"transitions": PackedFloat32Array(1, 1, 1),
-"update": 0,
-"values": [Vector3(0, 0, 0), Vector3(0.015, 0, 0), Vector3(0, 0, 0)]
-}
-
-[sub_resource type="Animation" id="Animation_walk"]
-resource_name = "walk"
-length = 0.8
-loop_mode = 1
-tracks/0/type = "value"
-tracks/0/imported = false
-tracks/0/enabled = true
-tracks/0/path = NodePath("Skeleton3D:LeftLeg:rotation")
-tracks/0/interp = 1
-tracks/0/loop_wrap = true
-tracks/0/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0.35, 0, 0), Vector3(0, 0, 0), Vector3(-0.35, 0, 0), Vector3(0, 0, 0), Vector3(0.35, 0, 0)]
-}
-tracks/1/type = "value"
-tracks/1/imported = false
-tracks/1/enabled = true
-tracks/1/path = NodePath("Skeleton3D:RightLeg:rotation")
-tracks/1/interp = 1
-tracks/1/loop_wrap = true
-tracks/1/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(-0.35, 0, 0), Vector3(0, 0, 0), Vector3(0.35, 0, 0), Vector3(0, 0, 0), Vector3(-0.35, 0, 0)]
-}
-tracks/2/type = "value"
-tracks/2/imported = false
-tracks/2/enabled = true
-tracks/2/path = NodePath("Skeleton3D:LeftArm:rotation")
-tracks/2/interp = 1
-tracks/2/loop_wrap = true
-tracks/2/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(-0.25, 0, 0), Vector3(0, 0, 0), Vector3(0.25, 0, 0), Vector3(0, 0, 0), Vector3(-0.25, 0, 0)]
-}
-tracks/3/type = "value"
-tracks/3/imported = false
-tracks/3/enabled = true
-tracks/3/path = NodePath("Skeleton3D:RightArm:rotation")
-tracks/3/interp = 1
-tracks/3/loop_wrap = true
-tracks/3/keys = {
-"times": PackedFloat32Array(0, 0.2, 0.4, 0.6, 0.8),
-"transitions": PackedFloat32Array(1, 1, 1, 1, 1),
-"update": 0,
-"values": [Vector3(0.25, 0, 0), Vector3(0, 0, 0), Vector3(-0.25, 0, 0), Vector3(0, 0, 0), Vector3(0.25, 0, 0)]
-}
-
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine"]
-states/Idle/node = SubResource("Animation_idle")
-states/Idle/position = Vector2(100, 100)
-states/Walk/node = SubResource("Animation_walk")
-states/Walk/position = Vector2(300, 100)
-transitions = {
-"Idle": "Walk",
-"Walk": "Idle"
-}
-
-[sub_resource type="AnimationNodeBlendTree" id="AnimationNodeBlendTree"]
-nodes/StateMachine/node = SubResource("AnimationNodeStateMachine")
-nodes/StateMachine/position = Vector2(100, 100)
-
 [node name="Player" type="CharacterBody3D"]
 collision_layer = 2
 collision_mask = 5
@@ -138,8 +42,7 @@ script = ExtResource("1_player")
 position = Vector3(0, 1, 0)
 shape = SubResource("CapsuleShape_player")
 
-[node name="Skeleton3D" type="Skeleton3D" parent="."]
-skeleton = ExtResource("11_skeleton")
+[node name="Skeleton3D" parent="." instance=ExtResource("11_skeleton")]
 
 [node name="Hips" type="BoneAttachment3D" parent="Skeleton3D"]
 bone_name = &"Hips"
@@ -193,21 +96,10 @@ bone_idx = 6
 mesh = SubResource("BoxMesh_limb")
 material_override = ExtResource("9_bodymat")
 
-[node name="AnimationTree" type="AnimationTree" parent="."]
-tree_root = SubResource("AnimationNodeBlendTree")
-anim_player = NodePath("../AnimationPlayer")
-
-[node name="AnimationPlayer" type="AnimationPlayer" parent="."]
-root_node = NodePath("../Skeleton3D")
-anims/idle = SubResource("Animation_idle")
-anims/walk = SubResource("Animation_walk")
-
 [node name="PlayerAnimationController" type="Node" parent="."]
 script = ExtResource("8_anim")
 skeleton_path = NodePath("../Skeleton3D")
-animation_tree_path = NodePath("../AnimationTree")
 state_machine_path = NodePath("../StateMachine")
-combat_controller_path = NodePath("../CombatController")
 
 [node name="StateMachine" type="Node" parent="."]
 script = ExtResource("2_state")

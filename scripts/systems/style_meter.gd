@@ -1,6 +1,9 @@
 class_name StyleMeter
 extends Node
 
+## Pontuação e ranking de estilo com penalidade por repetir o mesmo ataque.
+## O combo expira em tempo real; perder o combo não apaga a pontuação acumulada.
+
 signal changed(combo: int, score: int, rank: String)
 
 var combo_count: int = 0

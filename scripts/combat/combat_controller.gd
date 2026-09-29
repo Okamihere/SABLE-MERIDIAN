@@ -1,6 +1,9 @@
 class_name CombatController
 extends Node
 
+## Executa ataques definidos em AttackData e controla as janelas das hitboxes.
+## Guarda entradas por um curto período e encadeia golpes conforme o combo atual.
+
 @export var input_buffer_time: float = 0.18
 @export var combo_window: float = 0.18
 @export var attack_cancel_window: float = 0.16
@@ -87,6 +90,7 @@ func _capture_attack_input() -> void:
 	elif Input.is_action_just_pressed("heavy_attack"):
 		_buffer_action(&"heavy")
 
+## O buffer usa tempo real; o hit stop não prolonga comandos antigos.
 func _buffer_action(action: StringName) -> void:
 	_buffered_action = action
 	_buffer_expire_at = Time.get_ticks_msec() / 1000.0 + input_buffer_time
@@ -108,6 +112,7 @@ func _try_start_buffered() -> void:
 	else:
 		_start_attack(HEAVY, 0)
 
+## O golpe pesado após o segundo leve vira launcher; demais rotas usam AttackData.
 func _continue_from_buffer() -> void:
 	if Time.get_ticks_msec() / 1000.0 > _buffer_expire_at:
 		_buffered_action = &""

@@ -1,5 +1,8 @@
 extends Node3D
 
+## Efeito curto de impacto feito com malhas e luz.
+## Libera a instância ao terminar; pooling de efeitos ainda não foi implementado.
+
 @onready var core: MeshInstance3D = $Core
 @onready var ring: MeshInstance3D = $Ring
 @onready var light: OmniLight3D = $OmniLight3D

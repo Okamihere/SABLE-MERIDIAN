@@ -1,6 +1,9 @@
 class_name ThirdPersonCameraController
 extends Node3D
 
+## Câmera em terceira pessoa com órbita, suavização e enquadramento do lock-on.
+## O SpringArm3D evita atravessar o cenário; impactos aplicam tremor e variação de FOV.
+
 @export var player_path: NodePath = NodePath("../Player")
 @export var mouse_sensitivity: float = 0.0028
 @export var min_pitch_degrees: float = -55.0

@@ -1,6 +1,9 @@
 class_name LockOnController
 extends Node
 
+## Escolhe alvos pela proximidade e posição na tela.
+## Libera referências inválidas, alvos mortos e alvos fora do alcance.
+
 signal target_changed(target: Node3D)
 
 @export var max_distance: float = 24.0
@@ -48,6 +51,12 @@ func clear_target() -> void:
 	target_changed.emit(null)
 
 func get_target() -> Node3D:
+	if not is_instance_valid(current_target):
+		current_target = null
+		return null
+	if (get_parent() as Node3D).global_position.distance_to(current_target.global_position) > max_distance:
+		clear_target()
+		return null
 	if is_instance_valid(current_target):
 		if current_target.has_method("is_alive") and not current_target.call("is_alive"):
 			clear_target()

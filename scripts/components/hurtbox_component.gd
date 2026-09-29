@@ -1,6 +1,9 @@
 class_name HurtboxComponent
 extends Area3D
 
+## Área que recebe golpes e os encaminha ao personagem responsável.
+## Usa HealthComponent como alternativa quando não há receptor personalizado.
+
 signal hit_received(hitbox: HitboxComponent)
 
 @export var receiver_path: NodePath = NodePath("..")

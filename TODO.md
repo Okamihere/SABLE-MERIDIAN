@@ -1,7 +1,8 @@
 # TODO
 
 - [x] Replace placeholder body meshes with a Skeleton3D character rig.
-- [x] Add AnimationTree and animation-driven hitbox windows.
+- [x] Animações procedurais e janelas de dano controladas pelo combate.
+- [x] Agarre, saltos de parede e orbes de melhoria com persistência própria.
 - Add target switching left/right while locked on.
 - Add double jump as an unlockable movement option.
 - Add weapons and larger data-driven combo trees.

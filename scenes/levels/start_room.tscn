@@ -1,9 +1,18 @@
-[gd_scene load_steps=9 format=3]
+[gd_scene load_steps=71 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/start_room.gd" id="1_script"]
 [ext_resource type="Material" path="res://materials/stone.tres" id="2_stone"]
 [ext_resource type="Material" path="res://materials/accent_magenta.tres" id="3_accent"]
 [ext_resource type="PackedScene" path="res://scenes/player/player_rig.tscn" id="4_player"]
+
+[ext_resource type="PackedScene" path="res://scenes/player/camera_rig.tscn" id="5_camera"]
+
+[ext_resource type="PackedScene" path="res://scenes/enemies/training_dummy.tscn" id="6_dummy"]
+[ext_resource type="Material" path="res://materials/stone_light.tres" id="7_light"]
+
+[ext_resource type="PackedScene" path="res://scenes/collectibles/wall_orb.tscn" id="wall_orb"]
+
+[ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="shared_hud"]
 
 [sub_resource type="Environment" id="Environment_start"]
 background_mode = 1
@@ -17,13 +26,193 @@ fog_light_color = Color(0.08, 0.07, 0.15, 1)
 fog_density = 0.004
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
-size = Vector3(20, 1, 20)
+size = Vector3(28, 1, 32)
 
 [sub_resource type="BoxMesh" id="BoxMesh_pillar"]
 size = Vector3(1.5, 8, 1.5)
 
 [sub_resource type="BoxMesh" id="BoxMesh_arch"]
-size = Vector3(12, 1.5, 2)
+size = Vector3(9, 1.5, 2)
+
+[sub_resource type="BoxShape3D" id="Floor_shape"]
+size = Vector3(28, 1, 32)
+
+[sub_resource type="BoxMesh" id="WestWall_mesh"]
+size = Vector3(0.5, 2.5, 32)
+
+[sub_resource type="BoxShape3D" id="WestWall_shape"]
+size = Vector3(0.5, 2.5, 32)
+
+[sub_resource type="BoxMesh" id="EastWall_mesh"]
+size = Vector3(0.5, 2.5, 32)
+
+[sub_resource type="BoxShape3D" id="EastWall_shape"]
+size = Vector3(0.5, 2.5, 32)
+
+[sub_resource type="BoxMesh" id="SouthWall_mesh"]
+size = Vector3(28, 2.5, 0.5)
+
+[sub_resource type="BoxShape3D" id="SouthWall_shape"]
+size = Vector3(28, 2.5, 0.5)
+
+[sub_resource type="BoxMesh" id="NorthWall_mesh"]
+size = Vector3(28, 2.5, 0.5)
+
+[sub_resource type="BoxShape3D" id="NorthWall_shape"]
+size = Vector3(28, 2.5, 0.5)
+
+[sub_resource type="BoxMesh" id="ButtressLeft_0_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="ButtressLeft_0_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="LanternLeft_0_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="ButtressLeft_1_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="ButtressLeft_1_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="LanternLeft_1_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="ButtressLeft_2_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="ButtressLeft_2_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="LanternLeft_2_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="ButtressLeft_3_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="ButtressLeft_3_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="LanternLeft_3_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="GuideLeft_0_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="GuideLeft_1_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="GuideLeft_2_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="GuideLeft_3_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="Buttress1_0_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="Buttress1_0_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="Lantern1_0_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="Buttress1_1_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="Buttress1_1_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="Lantern1_1_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="Buttress1_2_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="Buttress1_2_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="Lantern1_2_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="Buttress1_3_mesh"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxShape3D" id="Buttress1_3_shape"]
+size = Vector3(1, 4, 1.4)
+
+[sub_resource type="BoxMesh" id="Lantern1_3_mesh"]
+size = Vector3(0.18, 0.9, 0.35)
+
+[sub_resource type="BoxMesh" id="Guide1_0_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="Guide1_1_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="Guide1_2_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="Guide1_3_mesh"]
+size = Vector3(0.12, 0.025, 2.5)
+
+[sub_resource type="BoxMesh" id="JumpStepA_mesh"]
+size = Vector3(3, 0.6, 2.2)
+
+[sub_resource type="BoxShape3D" id="JumpStepA_shape"]
+size = Vector3(3, 0.6, 2.2)
+
+[sub_resource type="BoxMesh" id="JumpStepB_mesh"]
+size = Vector3(3, 1.3, 2.2)
+
+[sub_resource type="BoxShape3D" id="JumpStepB_shape"]
+size = Vector3(3, 1.3, 2.2)
+
+[sub_resource type="BoxMesh" id="JumpStepC_mesh"]
+size = Vector3(3, 0.6, 2.2)
+
+[sub_resource type="BoxShape3D" id="JumpStepC_shape"]
+size = Vector3(3, 0.6, 2.2)
+
+[sub_resource type="BoxMesh" id="DodgeMarker0_mesh"]
+size = Vector3(3, 0.05, 0.15)
+
+[sub_resource type="BoxMesh" id="DodgeMarker1_mesh"]
+size = Vector3(3, 0.05, 0.15)
+
+[sub_resource type="BoxMesh" id="DodgeMarker2_mesh"]
+size = Vector3(3, 0.05, 0.15)
+
+[sub_resource type="BoxMesh" id="BannerLeft_mesh"]
+size = Vector3(1.2, 3, 0.15)
+
+[sub_resource type="BoxMesh" id="BannerPoleLeft_mesh"]
+size = Vector3(0.15, 5, 0.15)
+
+[sub_resource type="BoxShape3D" id="BannerPoleLeft_shape"]
+size = Vector3(0.15, 5, 0.15)
+
+[sub_resource type="BoxMesh" id="Banner1_mesh"]
+size = Vector3(1.2, 3, 0.15)
+
+[sub_resource type="BoxMesh" id="BannerPole1_mesh"]
+size = Vector3(0.15, 5, 0.15)
+
+[sub_resource type="BoxShape3D" id="BannerPole1_shape"]
+size = Vector3(0.15, 5, 0.15)
+
+[sub_resource type="StyleBoxFlat" id="tutorial_panel"]
+bg_color = Color(0.025, 0.031, 0.045, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.46, 0.39, 0.27, 0.75)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
 
 [node name="StartRoom" type="Node3D"]
 script = ExtResource("1_script")
@@ -49,23 +238,393 @@ mesh = SubResource("BoxMesh_floor")
 material_override = ExtResource("2_stone")
 
 [node name="PillarL" type="MeshInstance3D" parent="."]
-position = Vector3(-6, 4, -4)
+position = Vector3(-4, 4, 12)
 mesh = SubResource("BoxMesh_pillar")
 material_override = ExtResource("2_stone")
 
 [node name="PillarR" type="MeshInstance3D" parent="."]
-position = Vector3(6, 4, -4)
+position = Vector3(4, 4, 12)
 mesh = SubResource("BoxMesh_pillar")
 material_override = ExtResource("2_stone")
 
 [node name="Arch" type="MeshInstance3D" parent="."]
-position = Vector3(0, 8, -4)
+position = Vector3(0, 8, 12)
 mesh = SubResource("BoxMesh_arch")
 material_override = ExtResource("3_accent")
 
-[node name="Camera3D" type="Camera3D" parent="."]
-position = Vector3(0, 3, 10)
-rotation_degrees = Vector3(-10, 0, 0)
+[node name="CameraRig" parent="." instance=ExtResource("5_camera")]
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
-position = Vector3(0, 0.05, 0)
+position = Vector3(0, 0.05, -10)
+
+[node name="FloorBody" type="StaticBody3D" parent="."]
+position = Vector3(0, -0.5, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="FloorBody"]
+shape = SubResource("Floor_shape")
+
+[node name="WestWall" type="MeshInstance3D" parent="."]
+position = Vector3(-14, 1.25, 0)
+mesh = SubResource("WestWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="WestWall"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="WestWall/Body"]
+shape = SubResource("WestWall_shape")
+
+[node name="EastWall" type="MeshInstance3D" parent="."]
+position = Vector3(14, 1.25, 0)
+mesh = SubResource("EastWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="EastWall"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="EastWall/Body"]
+shape = SubResource("EastWall_shape")
+
+[node name="SouthWall" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.25, -16)
+mesh = SubResource("SouthWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="SouthWall"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall/Body"]
+shape = SubResource("SouthWall_shape")
+
+[node name="NorthWall" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.25, 16)
+mesh = SubResource("NorthWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="NorthWall"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall/Body"]
+shape = SubResource("NorthWall_shape")
+
+[node name="ButtressLeft_0" type="MeshInstance3D" parent="."]
+position = Vector3(-13, 2, -12)
+mesh = SubResource("ButtressLeft_0_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="ButtressLeft_0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ButtressLeft_0/Body"]
+shape = SubResource("ButtressLeft_0_shape")
+
+[node name="LanternLeft_0" type="MeshInstance3D" parent="."]
+position = Vector3(-12.4, 2.5, -12)
+mesh = SubResource("LanternLeft_0_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="ButtressLeft_1" type="MeshInstance3D" parent="."]
+position = Vector3(-13, 2, -4)
+mesh = SubResource("ButtressLeft_1_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="ButtressLeft_1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ButtressLeft_1/Body"]
+shape = SubResource("ButtressLeft_1_shape")
+
+[node name="LanternLeft_1" type="MeshInstance3D" parent="."]
+position = Vector3(-12.4, 2.5, -4)
+mesh = SubResource("LanternLeft_1_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="ButtressLeft_2" type="MeshInstance3D" parent="."]
+position = Vector3(-13, 2, 4)
+mesh = SubResource("ButtressLeft_2_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="ButtressLeft_2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ButtressLeft_2/Body"]
+shape = SubResource("ButtressLeft_2_shape")
+
+[node name="LanternLeft_2" type="MeshInstance3D" parent="."]
+position = Vector3(-12.4, 2.5, 4)
+mesh = SubResource("LanternLeft_2_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="ButtressLeft_3" type="MeshInstance3D" parent="."]
+position = Vector3(-13, 2, 12)
+mesh = SubResource("ButtressLeft_3_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="ButtressLeft_3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="ButtressLeft_3/Body"]
+shape = SubResource("ButtressLeft_3_shape")
+
+[node name="LanternLeft_3" type="MeshInstance3D" parent="."]
+position = Vector3(-12.4, 2.5, 12)
+mesh = SubResource("LanternLeft_3_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="GuideLeft_0" type="MeshInstance3D" parent="."]
+position = Vector3(-1.7, 0.015, -7)
+mesh = SubResource("GuideLeft_0_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="GuideLeft_1" type="MeshInstance3D" parent="."]
+position = Vector3(-1.7, 0.015, -2)
+mesh = SubResource("GuideLeft_1_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="GuideLeft_2" type="MeshInstance3D" parent="."]
+position = Vector3(-1.7, 0.015, 3)
+mesh = SubResource("GuideLeft_2_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="GuideLeft_3" type="MeshInstance3D" parent="."]
+position = Vector3(-1.7, 0.015, 8)
+mesh = SubResource("GuideLeft_3_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Buttress1_0" type="MeshInstance3D" parent="."]
+position = Vector3(13, 2, -12)
+mesh = SubResource("Buttress1_0_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="Buttress1_0"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Buttress1_0/Body"]
+shape = SubResource("Buttress1_0_shape")
+
+[node name="Lantern1_0" type="MeshInstance3D" parent="."]
+position = Vector3(12.4, 2.5, -12)
+mesh = SubResource("Lantern1_0_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Buttress1_1" type="MeshInstance3D" parent="."]
+position = Vector3(13, 2, -4)
+mesh = SubResource("Buttress1_1_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="Buttress1_1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Buttress1_1/Body"]
+shape = SubResource("Buttress1_1_shape")
+
+[node name="Lantern1_1" type="MeshInstance3D" parent="."]
+position = Vector3(12.4, 2.5, -4)
+mesh = SubResource("Lantern1_1_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Buttress1_2" type="MeshInstance3D" parent="."]
+position = Vector3(13, 2, 4)
+mesh = SubResource("Buttress1_2_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="Buttress1_2"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Buttress1_2/Body"]
+shape = SubResource("Buttress1_2_shape")
+
+[node name="Lantern1_2" type="MeshInstance3D" parent="."]
+position = Vector3(12.4, 2.5, 4)
+mesh = SubResource("Lantern1_2_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Buttress1_3" type="MeshInstance3D" parent="."]
+position = Vector3(13, 2, 12)
+mesh = SubResource("Buttress1_3_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="Buttress1_3"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Buttress1_3/Body"]
+shape = SubResource("Buttress1_3_shape")
+
+[node name="Lantern1_3" type="MeshInstance3D" parent="."]
+position = Vector3(12.4, 2.5, 12)
+mesh = SubResource("Lantern1_3_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Guide1_0" type="MeshInstance3D" parent="."]
+position = Vector3(1.7, 0.015, -7)
+mesh = SubResource("Guide1_0_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Guide1_1" type="MeshInstance3D" parent="."]
+position = Vector3(1.7, 0.015, -2)
+mesh = SubResource("Guide1_1_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Guide1_2" type="MeshInstance3D" parent="."]
+position = Vector3(1.7, 0.015, 3)
+mesh = SubResource("Guide1_2_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="Guide1_3" type="MeshInstance3D" parent="."]
+position = Vector3(1.7, 0.015, 8)
+mesh = SubResource("Guide1_3_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="JumpStepA" type="MeshInstance3D" parent="."]
+position = Vector3(-8, 0.3, -5)
+mesh = SubResource("JumpStepA_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="JumpStepA"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JumpStepA/Body"]
+shape = SubResource("JumpStepA_shape")
+
+[node name="JumpStepB" type="MeshInstance3D" parent="."]
+position = Vector3(-8, 0.65, -1.8)
+mesh = SubResource("JumpStepB_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="JumpStepB"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JumpStepB/Body"]
+shape = SubResource("JumpStepB_shape")
+
+[node name="JumpStepC" type="MeshInstance3D" parent="."]
+position = Vector3(-8, 0.3, 1.4)
+mesh = SubResource("JumpStepC_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="JumpStepC"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="JumpStepC/Body"]
+shape = SubResource("JumpStepC_shape")
+
+[node name="DodgeMarker0" type="MeshInstance3D" parent="."]
+position = Vector3(8, 0.025, -5)
+mesh = SubResource("DodgeMarker0_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="DodgeMarker1" type="MeshInstance3D" parent="."]
+position = Vector3(8, 0.025, -1)
+mesh = SubResource("DodgeMarker1_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="DodgeMarker2" type="MeshInstance3D" parent="."]
+position = Vector3(8, 0.025, 3)
+mesh = SubResource("DodgeMarker2_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="BannerLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-10, 3, 10)
+mesh = SubResource("BannerLeft_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="BannerPoleLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-10, 2.5, 10)
+mesh = SubResource("BannerPoleLeft_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="BannerPoleLeft"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BannerPoleLeft/Body"]
+shape = SubResource("BannerPoleLeft_shape")
+
+[node name="Banner1" type="MeshInstance3D" parent="."]
+position = Vector3(10, 3, 10)
+mesh = SubResource("Banner1_mesh")
+material_override = ExtResource("3_accent")
+
+[node name="BannerPole1" type="MeshInstance3D" parent="."]
+position = Vector3(10, 2.5, 10)
+mesh = SubResource("BannerPole1_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="BannerPole1"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="BannerPole1/Body"]
+shape = SubResource("BannerPole1_shape")
+
+[node name="Dummy0" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(-3, 0, 6)
+
+[node name="Dummy1" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(3, 0, 6)
+
+[node name="JumpSign" type="Label3D" parent="."]
+position = Vector3(-8, 2.8, 2.6)
+rotation_degrees = Vector3(0, 180, 0)
+font_size = 42
+outline_size = 8
+pixel_size = 0.008
+text = "01 / SALTO\nESPAÇO • atravesse os blocos"
+modulate = Color(0.8, 0.86, 1, 1)
+
+[node name="DodgeSign" type="Label3D" parent="."]
+position = Vector3(8, 2.4, 4)
+rotation_degrees = Vector3(0, 180, 0)
+font_size = 42
+outline_size = 8
+pixel_size = 0.008
+text = "02 / ESQUIVA\nSHIFT + direção"
+modulate = Color(0.8, 0.86, 1, 1)
+
+[node name="CombatSign" type="Label3D" parent="."]
+position = Vector3(0, 3.5, 8)
+rotation_degrees = Vector3(0, 180, 0)
+font_size = 42
+outline_size = 8
+pixel_size = 0.008
+text = "03 / COMBATE\nQ • fixar alvo\nMouse esquerdo / direito • atacar"
+modulate = Color(0.8, 0.86, 1, 1)
+
+[node name="ExitSign" type="Label3D" parent="."]
+position = Vector3(0, 5.5, 12)
+rotation_degrees = Vector3(0, 180, 0)
+font_size = 56
+outline_size = 8
+pixel_size = 0.008
+text = "SABLE MERIDIAN\nENTER • entrar na cidade"
+modulate = Color(0.8, 0.86, 1, 1)
+
+[node name="Instructions" type="CanvasLayer" parent="."]
+[node name="Panel" type="PanelContainer" parent="Instructions"]
+theme_override_styles/panel = SubResource("tutorial_panel")
+anchor_left = 0.5
+anchor_right = 0.5
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = -440.0
+offset_right = 440.0
+offset_top = -220.0
+offset_bottom = -76.0
+mouse_filter = 2
+[node name="Margin" type="MarginContainer" parent="Instructions/Panel"]
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+[node name="Help" type="Label" parent="Instructions/Panel/Margin"]
+mouse_filter = 2
+theme_override_font_sizes/font_size = 20
+horizontal_alignment = 1
+text = "PÁTIO DE TREINO"
+
+[node name="Orb_training_alcove" parent="." instance=ExtResource("wall_orb")]
+position = Vector3(-11, 1, 11)
+orb_id = "training_alcove"
+
+[node name="WallTrainingLeft" type="CSGBox3D" parent="."]
+position = Vector3(6.5, 3, -10)
+size = Vector3(0.5, 6, 5)
+use_collision = true
+material = ExtResource("7_light")
+
+[node name="WallTrainingRight" type="CSGBox3D" parent="."]
+position = Vector3(9.5, 3, -10)
+size = Vector3(0.5, 6, 5)
+use_collision = true
+material = ExtResource("7_light")
+
+[node name="WallSign" type="Label3D" parent="."]
+position = Vector3(8, 3, -7)
+rotation_degrees = Vector3(0, 180, 0)
+font_size = 34
+pixel_size = 0.008
+text = "PAREDES\nPule e segure a direção contra a parede\nESPAÇO: saltar para o outro lado\nO chão recarrega os saltos"
+
+[node name="HUD" parent="." instance=ExtResource("shared_hud")]

@@ -1,0 +1,68 @@
+extends SceneTree
+## Regressão isolada: nunca grava no arquivo de progresso real.
+func _initialize() -> void:
+	run.call_deferred()
+	watchdog.call_deferred()
+func watchdog() -> void:
+	await create_timer(25).timeout
+	push_error("Wall regression timeout")
+	quit(1)
+func frames(n: int) -> void:
+	for i in n:
+		await physics_frame
+		await process_frame
+func run() -> void:
+	var progression = root.get_node("Progression")
+	progression.save_path = "user://test_wall_orbs_%d.cfg" % Time.get_ticks_usec()
+	progression.collected.clear()
+	change_scene_to_file("res://scenes/levels/start_room.tscn")
+	await frames(60)
+	var p = current_scene.get_node("Player")
+	p.set_physics_process(false)
+	p.position = Vector3(7.2, 3, -10)
+	p.velocity = Vector3.ZERO
+	p.move_and_slide()
+	await frames(2)
+	var w = p.wall_movement
+	assert(w.remaining() == 2)
+	assert(w.find_wall(p, Vector3.LEFT).x > 0.9)
+	p.velocity.y = -10
+	w.update_motion(p, Vector3.LEFT, 0.016, true)
+	assert(w.gripping and p.velocity.y == 0, "Wall must briefly hold falling player")
+	w.update_motion(p, Vector3.LEFT, 0.5, true)
+	assert(p.velocity.y >= -w.slide_speed)
+	Input.action_press("jump")
+	w.update_motion(p, Vector3.LEFT, 0.016, true)
+	assert(w.used_jumps == 1 and p.velocity.x > 0 and p.velocity.y > 0)
+	Input.action_release("jump")
+	await frames(2)
+	p.position = Vector3(8.8, 4, -10)
+	Input.action_press("jump")
+	w.update_motion(p, Vector3.RIGHT, 0.25, true)
+	assert(w.used_jumps == 2 and p.velocity.x < 0, "Must jump off opposite wall")
+	Input.action_release("jump")
+	await frames(2)
+	Input.action_press("jump")
+	w.update_motion(p, Vector3.RIGHT, 0.25, true)
+	assert(w.used_jumps == 2 and w.remaining() == 0, "Budget must prevent third jump")
+	Input.action_release("jump")
+	w.update_motion(p, Vector3.RIGHT, 0.25, false)
+	assert(not w.gripping, "Cannot cling during combat/hit")
+	p.position = Vector3(0, 0.05, -10)
+	p.velocity = Vector3(0,-10,0)
+	p.set_physics_process(true)
+	await frames(30)
+	assert(w.remaining() == 2, "Ground must refill budget")
+	p.position = Vector3(-11,0.05,11)
+	await frames(10)
+	assert(progression.max_wall_jumps() == 3, "Orb overlap must upgrade")
+	assert(not progression.collect("training_alcove"), "Duplicate orb must not upgrade twice")
+	progression.collected.clear()
+	progression.load_progress()
+	assert(progression.max_wall_jumps() == 3, "Upgrade must survive save/load")
+	reload_current_scene()
+	await frames(15)
+	assert(current_scene.get_node_or_null("Orb_training_alcove") == null, "Collected orb must stay absent")
+	DirAccess.remove_absolute(progression.save_path)
+	print("PASS: wall hold, slide, alternating jumps, budget, grounding, blocked states, orb collision, persistence, deduplication")
+	quit()

@@ -1,6 +1,9 @@
 class_name BasicEnemy
 extends CharacterBody3D
 
+## Inimigo básico com perseguição, antecipação de ataque, dano e lançamento.
+## Usa separação entre vizinhos; navegação com desvio de obstáculos ainda é futura.
+
 enum State { IDLE, CHASE, ATTACK, HIT, LAUNCHED, DEAD }
 
 @export var move_speed: float = 3.7
@@ -65,7 +68,7 @@ func _physics_process(delta: float) -> void:
 		_hit_stun_left = 0.26
 
 func _update_chase(delta: float) -> void:
-	if not is_instance_valid(_player):
+	if not is_instance_valid(_player) or (_player.has_method("is_alive") and not _player.call("is_alive")):
 		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
 		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
 		return
@@ -134,6 +137,8 @@ func receive_hitbox(hitbox: HitboxComponent) -> bool:
 		return false
 	if not health.damage(hitbox.damage):
 		return false
+	if _dead:
+		return true
 	attack_hitbox.end_attack()
 	_attack_live = false
 	var source_position := global_position - global_transform.basis.z
@@ -182,7 +187,7 @@ func _on_died() -> void:
 	_dead = true
 	state = State.DEAD
 	attack_hitbox.end_attack()
-	hurtbox.monitorable = false
+	hurtbox.set_deferred("monitorable", false)
 	collision_layer = 0
 	collision_mask = 0
 	var tween := create_tween()

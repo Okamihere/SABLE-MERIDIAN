@@ -1,6 +1,9 @@
 class_name AttackData
 extends Resource
 
+## Dados compartilhados de um golpe; edite os arquivos em resources/attacks.
+## Tempos são segundos; forças alteram velocidade. Não guarda estado de execução.
+
 @export var attack_id: StringName = &"attack"
 @export var damage: float = 10.0
 @export var knockback: float = 4.0

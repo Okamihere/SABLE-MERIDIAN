@@ -34,5 +34,6 @@ A Godot 4.x vertical slice focused on responsive third-person stylish action com
 ## Phase 8 — Environment Polish
 - Monumental blockout silhouettes, stairs, platforms, arches, fog and dramatic lighting.
 
-## Validation strategy
-Godot CLI is not available in the generation environment. The project therefore includes `tools/validate_project.py` for static path/reference checks. Final runtime validation should be performed by opening the project in Godot 4.x and running the main scene.
+## Validação
+
+Use os comandos do README: validação estática, importação no Godot, teste de combate/tutorial e teste de paredes/orbes. As melhorias de parede já têm persistência própria; o sistema de save completo permanece no roadmap.

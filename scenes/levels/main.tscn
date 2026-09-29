@@ -1,4 +1,4 @@
-[gd_scene load_steps=11 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player_rig.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/player/camera_rig.tscn" id="2_camera"]
@@ -8,6 +8,8 @@
 [ext_resource type="Material" path="res://materials/stone_light.tres" id="6_light"]
 [ext_resource type="Material" path="res://materials/accent_magenta.tres" id="7_magenta"]
 [ext_resource type="Material" path="res://materials/ramp.tres" id="8_ramp"]
+
+[ext_resource type="PackedScene" path="res://scenes/collectibles/wall_orb.tscn" id="wall_orb"]
 
 [sub_resource type="Environment" id="Environment_main"]
 background_mode = 1
@@ -597,3 +599,11 @@ position = Vector3(-8, 3.05, -78)
 position = Vector3(8, 3.05, -82)
 
 [node name="HUD" parent="." instance=ExtResource("4_hud")]
+
+[node name="Orb_south_obelisk" parent="." instance=ExtResource("wall_orb")]
+position = Vector3(-20, 1, 72)
+orb_id = "south_obelisk"
+
+[node name="Orb_sanctum_rear" parent="." instance=ExtResource("wall_orb")]
+position = Vector3(12, 4.5, -129)
+orb_id = "sanctum_rear"

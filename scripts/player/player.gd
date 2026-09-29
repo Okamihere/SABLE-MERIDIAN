@@ -1,16 +1,9 @@
 class_name PlayerController
 extends CharacterBody3D
 
-## PlayerController
-##
-## Owns locomotion and defensive movement. Combat is handled by CombatController,
-## lock-on by LockOnController, and animation by PlayerAnimationController.
-##
-## Architecture:
-## - This script: movement, dodge, jump, fall recovery, hit stun
-## - CombatController: attacks, buffers, combo routing, hitboxes
-## - LockOnController: target acquisition and facing
-## - PlayerAnimationController: procedural animation via AnimationTree
+## Controla movimento, salto, esquiva, dano e recuperação de quedas.
+## Combate, seleção de alvo e poses ficam em componentes separados.
+
 
 @export var move_speed: float = 6.5
 @export var run_speed: float = 9.5
@@ -34,7 +27,10 @@ extends CharacterBody3D
 @onready var combat: CombatController = $CombatController
 @onready var lock_on: LockOnController = $LockOnController
 @onready var health: HealthComponent = $HealthComponent
-@onready var animation_controller: PlayerAnimationController = $PlayerAnimationController
+@onready var animation_controller: PlayerAnimationController = get_node_or_null("PlayerAnimationController") as PlayerAnimationController
+
+var mana: ManaComponent
+var wall_movement: WallMovement
 
 var _dodge_elapsed: float = 0.0
 var _dodge_cooldown_left: float = 0.0
@@ -49,12 +45,19 @@ var _last_safe_position: Vector3
 var _safe_grounded_time: float = 0.0
 
 func _ready() -> void:
+	mana = ManaComponent.new()
+	mana.name = "ManaComponent"
+	add_child(mana)
+	wall_movement = WallMovement.new()
+	wall_movement.name = "WallMovement"
+	add_child(wall_movement)
 	_spawn_position = global_position
 	_last_safe_position = global_position
 	GameManager.register_player(self)
 	health.died.connect(_on_died)
 
 func _physics_process(delta: float) -> void:
+	wall_movement.gripping = false
 	if not _dead:
 		_track_safe_position(delta)
 		if global_position.y <= fall_limit_y:
@@ -85,10 +88,16 @@ func _physics_process(delta: float) -> void:
 		return
 	if state_machine.allows_locomotion():
 		_update_locomotion(delta)
+	elif combat.is_attacking():
+		velocity.x = move_toward(velocity.x, 0.0, deceleration * delta)
+		velocity.z = move_toward(velocity.z, 0.0, deceleration * delta)
+	var wall_direction := _camera_relative_direction(Input.get_vector("move_left", "move_right", "move_forward", "move_back"))
+	wall_movement.update_motion(self, wall_direction, delta, state_machine.allows_locomotion())
 	move_and_slide()
 	_update_air_state()
 
 
+## Só grava chão estável; evita reaparecer em posições de ataque ou queda.
 func _track_safe_position(delta: float) -> void:
 	if is_on_floor() and state_machine.state not in [PlayerStateMachine.State.DODGE, PlayerStateMachine.State.HIT, PlayerStateMachine.State.DEAD]:
 		_safe_grounded_time += delta
@@ -98,7 +107,9 @@ func _track_safe_position(delta: float) -> void:
 		_safe_grounded_time = 0.0
 
 
+## Cancela ações e reposiciona a câmera junto do jogador, sem recarregar o mapa.
 func _respawn_from_fall() -> void:
+	wall_movement.reset()
 	combat.cancel_attack()
 	lock_on.clear_target()
 	velocity = Vector3.ZERO
@@ -142,7 +153,7 @@ func _update_locomotion(delta: float) -> void:
 	elif direction.length_squared() > 0.01:
 		var target_yaw := atan2(direction.x, direction.z)
 		rotation.y = lerp_angle(rotation.y, target_yaw, clampf(rotation_speed * delta, 0.0, 1.0))
-	if grounded:
+	if grounded and velocity.y <= 0.0:
 		state_machine.set_state(PlayerStateMachine.State.MOVE if direction.length_squared() > 0.01 else PlayerStateMachine.State.IDLE)
 
 
@@ -186,7 +197,8 @@ func _start_dodge() -> void:
 	state_machine.set_state(PlayerStateMachine.State.DODGE)
 	var dodge_yaw := atan2(_dodge_direction.x, _dodge_direction.z)
 	rotation.y = dodge_yaw
-	animation_controller.notify_dodge_started(dodge_duration)
+	if animation_controller != null:
+		animation_controller.notify_dodge_started(dodge_duration)
 
 
 func _update_dodge(delta: float) -> void:
@@ -210,6 +222,8 @@ func receive_hitbox(hitbox: HitboxComponent) -> bool:
 	if not health.damage(hitbox.damage):
 		return false
 	GameManager.player_damaged()
+	if _dead:
+		return true
 	combat.cancel_attack()
 	var source_position := global_position - global_transform.basis.z
 	if is_instance_valid(hitbox.source) and hitbox.source is Node3D:
@@ -224,7 +238,8 @@ func receive_hitbox(hitbox: HitboxComponent) -> bool:
 	velocity.y = maxf(velocity.y, hitbox.launch_force)
 	_hit_stun_left = hitbox.hit_stun
 	state_machine.set_state(PlayerStateMachine.State.HIT)
-	animation_controller.notify_hit_started(hitbox.hit_stun)
+	if animation_controller != null:
+		animation_controller.notify_hit_started(hitbox.hit_stun)
 	var camera := get_viewport().get_camera_3d()
 	if camera != null and camera.get_parent() != null and camera.get_parent().get_parent() is ThirdPersonCameraController:
 		(camera.get_parent().get_parent() as ThirdPersonCameraController).hit_impulse(0.11, true)
@@ -266,9 +281,16 @@ func _update_air_state() -> void:
 		state_machine.set_state(PlayerStateMachine.State.JUMP if velocity.y > 0.0 else PlayerStateMachine.State.FALL)
 
 
+## A morte reinicia a cena atual; ainda não existe sistema de checkpoints.
 func _on_died() -> void:
 	_dead = true
+	mana.regeneration_enabled = false
 	combat.cancel_attack()
 	state_machine.set_state(PlayerStateMachine.State.DEAD)
 	velocity = Vector3.ZERO
-	animation_controller.notify_dead()
+	lock_on.clear_target()
+	if animation_controller != null:
+		animation_controller.notify_dead()
+	await get_tree().create_timer(2.0).timeout
+	GameManager.reset_style()
+	get_tree().reload_current_scene()

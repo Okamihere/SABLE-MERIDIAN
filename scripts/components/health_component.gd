@@ -1,6 +1,9 @@
 class_name HealthComponent
 extends Node
 
+## Vida reutilizável com sinais de dano, cura e morte.
+## Emite died uma vez por vida; a reação e o reinício pertencem ao personagem.
+
 signal damaged(amount: float, current_health: float, max_health: float)
 signal healed(amount: float, current_health: float, max_health: float)
 signal died
@@ -27,5 +30,6 @@ func heal(amount: float) -> void:
 	current_health = minf(max_health, current_health + amount)
 	healed.emit(current_health - previous, current_health, max_health)
 
+## Reinicializa os valores silenciosamente; não emite sinais de cura.
 func reset() -> void:
 	current_health = max_health

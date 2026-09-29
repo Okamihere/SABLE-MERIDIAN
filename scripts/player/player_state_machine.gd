@@ -1,6 +1,9 @@
 class_name PlayerStateMachine
 extends Node
 
+## Centraliza o estado do jogador e avisa os componentes quando ele muda.
+## As regras de movimento consultam este estado para respeitar ataques e dano.
+
 signal state_changed(previous: State, current: State)
 
 enum State { IDLE, MOVE, JUMP, FALL, DODGE, ATTACK, AIR_ATTACK, HIT, DEAD }

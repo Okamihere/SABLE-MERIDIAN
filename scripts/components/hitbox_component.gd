@@ -1,6 +1,9 @@
 class_name HitboxComponent
 extends Area3D
 
+## Área ofensiva: aceita um acerto por hurtbox em cada ativação.
+## Ignora o próprio dono e adia mudanças de monitoramento para fora da física.
+
 signal hit_landed(hurtbox: HurtboxComponent, hitbox: HitboxComponent)
 
 @export var damage: float = 10.0
@@ -12,6 +15,7 @@ signal hit_landed(hurtbox: HurtboxComponent, hitbox: HitboxComponent)
 @export var style_points: int = 100
 @export var source_path: NodePath = NodePath("../..")
 
+var _attack_enabled: bool = false
 var source: Node
 var _already_hit: Dictionary = {}
 var _debug_mesh: MeshInstance3D
@@ -32,27 +36,31 @@ func configure_from_attack(data: AttackData) -> void:
 	attack_id = data.attack_id
 	style_points = data.style_points
 
+## Abre uma nova janela e esquece os alvos atingidos no golpe anterior.
 func begin_attack() -> void:
 	_already_hit.clear()
-	monitoring = true
+	_attack_enabled = true
+	set_deferred("monitoring", true)
 	if is_instance_valid(_debug_mesh):
 		_debug_mesh.visible = GameManager.DEBUG_COMBAT
 
+## Bloqueia dano imediatamente; a alteração física é aplicada de forma adiada.
 func end_attack() -> void:
-	monitoring = false
+	_attack_enabled = false
+	set_deferred("monitoring", false)
 
 func _process(_delta: float) -> void:
 	if is_instance_valid(_debug_mesh):
 		_debug_mesh.visible = GameManager.DEBUG_COMBAT and monitoring
 
 func _on_area_entered(area: Area3D) -> void:
-	if not (area is HurtboxComponent):
+	if not _attack_enabled or not (area is HurtboxComponent):
 		return
 	var hurtbox := area as HurtboxComponent
 	var instance_id := hurtbox.get_instance_id()
 	if _already_hit.has(instance_id):
 		return
-	if is_instance_valid(source) and hurtbox.is_ancestor_of(source):
+	if is_instance_valid(source) and source.is_ancestor_of(hurtbox):
 		return
 	_already_hit[instance_id] = true
 	if hurtbox.receive_hit(self):

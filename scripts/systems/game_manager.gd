@@ -1,5 +1,8 @@
 extends Node
 
+## Autoload compartilhado entre cenas: entradas, jogador, estilo e efeitos de tempo.
+## Não salva progresso em disco; as configurações de entrada são criadas em execução.
+
 signal style_changed(combo: int, score: int, rank: String)
 signal debug_changed(enabled: bool)
 signal player_registered(player: Node)
@@ -61,6 +64,7 @@ func hit_stop(duration: float) -> void:
 func perfect_dodge_slow_motion() -> void:
 	_apply_time_scale(0.35, 0.32)
 
+## A geração impede um timer antigo de desfazer um efeito de tempo mais recente.
 func _apply_time_scale(scale: float, duration: float) -> void:
 	_time_scale_generation += 1
 	var generation := _time_scale_generation
@@ -72,6 +76,7 @@ func _apply_time_scale(scale: float, duration: float) -> void:
 func _on_style_meter_changed(combo: int, score: int, rank: String) -> void:
 	style_changed.emit(combo, score, rank)
 
+## Cria apenas vínculos ausentes para evitar duplicação ao trocar de cena.
 func _ensure_inputs() -> void:
 	_bind_key("move_forward", KEY_W)
 	_bind_key("move_back", KEY_S)
