@@ -1,15 +1,15 @@
-# Roadmap — SABLE MERIDIAN Combat Prototype
+# Roadmap — SABLE MERIDIAN
 
 ## Goal
 
-A Godot 4.x vertical slice focused on responsive third-person stylish action combat, built from replaceable primitive placeholders.
+A Godot 4.x vertical slice focused on responsive third-person stylish action combat.
 
 ## Phases
 
 ### Phase 1 — Foundation
 - [x] Project structure, autoload, runtime input bootstrap
-- [x] Gothic-fantasy blockout arena with two connected combat spaces
-- [x] `CharacterBody3D` player, responsive camera-relative movement, jump and air control
+- [x] Gothic-fantasy blockout arena
+- [x] `CharacterBody3D` player, camera-relative movement, jump and air control
 - [x] `SpringArm3D` third-person camera with smoothing and wall collision
 
 ### Phase 2 — Combat Core
@@ -17,7 +17,7 @@ A Godot 4.x vertical slice focused on responsive third-person stylish action com
 - [x] Player attacks, damage delivery, dummy enemy and health feedback
 
 ### Phase 3 — Combo
-- [x] Player state machine, input buffer, light chain, heavy attack, launcher and aerial attacks
+- [x] Player state machine, input buffer, light chain, heavy attack, launcher
 - [x] Basic juggle support and attack cancel timing
 
 ### Phase 4 — Defense
@@ -29,7 +29,7 @@ A Godot 4.x vertical slice focused on responsive third-person stylish action com
 - [x] Separation steering for multiple enemies
 
 ### Phase 6 — Game Feel
-- [x] Hit stop, camera shake/FOV kick, placeholder procedural attack motion and impact flash
+- [x] Hit stop, camera shake/FOV kick, procedural attack motion and impact flash
 
 ### Phase 7 — Style System
 - [x] Combo count, style score, repetition penalty, ranks D/C/B/A/S and HUD
@@ -37,6 +37,12 @@ A Godot 4.x vertical slice focused on responsive third-person stylish action com
 ### Phase 8 — Environment Polish
 - [x] Monumental blockout silhouettes, stairs, platforms, arches, fog and dramatic lighting
 
-## Validation
+## Future
 
-Use the commands from the README: static validation, Godot import, combat/tutorial test, and wall/orb test. Wall upgrades already have their own persistence; the full save system remains on the roadmap.
+- [ ] Target switching while locked on
+- [ ] Double jump as unlockable
+- [ ] Weapons and data-driven combo trees
+- [ ] Navigation/pathfinding for complex levels
+- [ ] Boss archetypes and encounter director
+- [ ] Pooled VFX, trails, decals, dynamic audio
+- [ ] Save system, settings and remappable input UI
