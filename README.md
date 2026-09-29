@@ -3,6 +3,7 @@
 A stylish third-person action prototype built with **Godot 4.x** — combos, dodges, wall-running and a gothic city to explore.
 
 ![Engine](https://img.shields.io/badge/Godot-4.x-blue)
+![Version](https://img.shields.io/badge/Version-0.1--prototype-orange)
 ![Status](https://img.shields.io/badge/Status-Prototype-green)
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
