@@ -1,4 +1,4 @@
-# ROADMAP — Nocturne Vector Combat Prototype
+# ROADMAP — SABLE MERIDIAN Combat Prototype
 
 ## Goal
 A Godot 4.x vertical slice focused on responsive third-person stylish action combat, built from replaceable primitive placeholders.

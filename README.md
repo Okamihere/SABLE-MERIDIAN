@@ -1,4 +1,4 @@
-# Nocturne Vector — Godot 4 Combat Prototype
+# SABLE MERIDIAN — Godot 4 Combat Prototype
 
 A self-contained third-person action prototype using only Godot primitives and GDScript.
 
