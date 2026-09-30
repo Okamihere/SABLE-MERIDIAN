@@ -2,38 +2,75 @@ class_name BasicEnemy
 extends CharacterBody3D
 
 ## Inimigo básico com perseguição, antecipação de ataque, dano e lançamento.
+##
 ## Usa separação entre vizinhos; navegação com desvio de obstáculos ainda é futura.
+## A IA é baseada em estados simples:
+## - IDLE: parado, aguardando jogador entrar no alcance
+## - CHASE: perseguindo o jogador
+## - ATTACK: executando ataque com windup, active e recovery
+## - HIT: recebendo dano (hit stun)
+## - LAUNCHED: lançado pelo ar após golpe com launch_force
+## - DEAD: morto, animação de morte e liberação de memória
+##
+## Uso típico:
+##   - Instanciar a cena basic_enemy.tscn
+##   - O inimigo se adiciona automaticamente ao grupo "enemies"
+##   - Configurar parâmetros no Inspector (velocidade, dano, etc.)
 
+## Enumeração de estados do inimigo.
 enum State { IDLE, CHASE, ATTACK, HIT, LAUNCHED, DEAD }
 
+## Velocidade de movimento do inimigo.
 @export var move_speed: float = 3.7
+## Aceleração do inimigo.
 @export var acceleration: float = 14.0
+## Velocidade de rotação do inimigo.
 @export var rotation_speed: float = 8.0
+## Força da gravidade.
 @export var gravity: float = 24.0
+## Alcance de detecção do jogador.
 @export var detection_range: float = 18.0
+## Distância preferida do jogador.
 @export var preferred_distance: float = 2.4
+## Alcance de ataque.
 @export var attack_range: float = 2.8
+## Tempo de recarga do ataque (em segundos).
 @export var attack_cooldown: float = 1.25
+## Raio de separação entre inimigos.
 @export var separation_radius: float = 1.8
+## Força da separação entre inimigos.
 @export var separation_strength: float = 2.4
 
+## Referência ao componente de vida.
 @onready var health: HealthComponent = $HealthComponent
+## Referência à hurtbox.
 @onready var hurtbox: HurtboxComponent = $Hurtbox
+## Referência à hitbox de ataque.
 @onready var attack_hitbox: HitboxComponent = $AttackHitbox
+## Referência ao nó visual.
 @onready var visual: Node3D = $Visual
 
+## Estado atual do inimigo.
 var state: State = State.IDLE
+## Referência ao jogador.
 var _player: Node3D
+## Tempo restante de recarga do ataque (em segundos).
 var _attack_cooldown_left: float = 0.5
+## Tempo decorrido do ataque atual (em segundos).
 var _attack_elapsed: float = 0.0
+## Indica se a hitbox de ataque está ativa.
 var _attack_live: bool = false
+## Tempo restante de hit stun (em segundos).
 var _hit_stun_left: float = 0.0
+## Indica se o inimigo está morto.
 var _dead: bool = false
 
+## Constantes de tempo do ataque.
 const ATTACK_WINDUP := 0.42
 const ATTACK_ACTIVE := 0.16
 const ATTACK_RECOVERY := 0.42
 
+## Inicializa o inimigo: adiciona ao grupo "enemies" e configura hitbox.
 func _ready() -> void:
 	add_to_group("enemies")
 	health.died.connect(_on_died)
@@ -45,6 +82,7 @@ func _ready() -> void:
 	attack_hitbox.attack_id = &"enemy_swipe"
 	attack_hitbox.source = self
 
+## Processa física do inimigo: IA, movimento e gravidade.
 func _physics_process(delta: float) -> void:
 	if _dead:
 		return
@@ -67,7 +105,10 @@ func _physics_process(delta: float) -> void:
 		state = State.HIT
 		_hit_stun_left = 0.26
 
+## Atualiza lógica de perseguição e decisão de ataque.
 func _update_chase(delta: float) -> void:
+	if not is_instance_valid(_player):
+		_player = GameManager.player as Node3D
 	if not is_instance_valid(_player) or (_player.has_method("is_alive") and not _player.call("is_alive")):
 		velocity.x = move_toward(velocity.x, 0.0, acceleration * delta)
 		velocity.z = move_toward(velocity.z, 0.0, acceleration * delta)
@@ -93,6 +134,7 @@ func _update_chase(delta: float) -> void:
 	if direction.length_squared() > 0.01:
 		rotation.y = lerp_angle(rotation.y, atan2(direction.x, direction.z), clampf(rotation_speed * delta, 0.0, 1.0))
 
+## Inicia o ataque com animação de windup.
 func _start_attack() -> void:
 	state = State.ATTACK
 	_attack_elapsed = 0.0
@@ -103,6 +145,7 @@ func _start_attack() -> void:
 	tween.tween_property(visual, "scale", Vector3(1.08, 0.92, 1.08), ATTACK_WINDUP).set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_IN)
 	tween.tween_property(visual, "scale", Vector3.ONE, ATTACK_ACTIVE + ATTACK_RECOVERY).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
+## Atualiza o ataque em andamento: windup, active e recovery.
 func _update_attack(delta: float) -> void:
 	_attack_elapsed += delta
 	if is_instance_valid(_player):
@@ -121,6 +164,7 @@ func _update_attack(delta: float) -> void:
 		state = State.CHASE
 		_attack_cooldown_left = attack_cooldown
 
+## Atualiza hit stun após receber dano.
 func _update_hit(delta: float) -> void:
 	_hit_stun_left -= delta
 	velocity.x = move_toward(velocity.x, 0.0, 12.0 * delta)
@@ -128,10 +172,14 @@ func _update_hit(delta: float) -> void:
 	if _hit_stun_left <= 0.0:
 		state = State.CHASE
 
+## Atualiza estado de lançado (no ar após golpe com launch_force).
 func _update_launched(delta: float) -> void:
 	velocity.x = move_toward(velocity.x, 0.0, 2.5 * delta)
 	velocity.z = move_toward(velocity.z, 0.0, 2.5 * delta)
 
+## Recebe um golpe de uma hitbox.
+## @param hitbox A hitbox que acertou o inimigo.
+## @return true se o golpe foi aceito, false se o inimigo já estava morto.
 func receive_hitbox(hitbox: HitboxComponent) -> bool:
 	if _dead:
 		return false
@@ -160,12 +208,18 @@ func receive_hitbox(hitbox: HitboxComponent) -> bool:
 	_flash_hit()
 	return true
 
+## Verifica se o inimigo está vivo.
+## @return true se está vivo, false se está morto.
 func is_alive() -> bool:
 	return not _dead
 
+## Retorna o nome do estado atual.
+## @return Nome do estado (ex: "IDLE", "CHASE", "ATTACK").
 func get_state_name() -> String:
 	return State.keys()[state]
 
+## Calcula vetor de separação para evitar sobreposição entre inimigos.
+## @return Vetor 3D de separação.
 func _separation_vector() -> Vector3:
 	var result := Vector3.ZERO
 	for other in get_tree().get_nodes_in_group("enemies"):
@@ -178,11 +232,14 @@ func _separation_vector() -> Vector3:
 			result += offset.normalized() * (1.0 - distance / separation_radius)
 	return result
 
+## Animação de flash ao receber dano.
 func _flash_hit() -> void:
 	var tween := create_tween()
 	tween.tween_property(visual, "scale", Vector3(1.18, 0.82, 1.18), 0.045)
 	tween.tween_property(visual, "scale", Vector3.ONE, 0.11).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
+## Chamado quando o inimigo morre.
+## Desativa colisões e anima a morte.
 func _on_died() -> void:
 	_dead = true
 	state = State.DEAD

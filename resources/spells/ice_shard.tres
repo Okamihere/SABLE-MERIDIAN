@@ -1,0 +1,13 @@
+[gd_resource type="Resource" script_class="SpellResource" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spell_resource.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/effects/projectile.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+spell_name = "Estilhaço de Gelo"
+mana_cost = 15.0
+cooldown = 0.8
+damage = 15.0
+icon = null
+projectile_scene = ExtResource("2")

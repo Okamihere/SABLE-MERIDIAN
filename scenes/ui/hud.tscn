@@ -1,307 +1,287 @@
-[gd_scene load_steps=7 format=3]
+[gd_scene load_steps=12 format=3]
 
 [ext_resource type="Script" path="res://scripts/ui/hud.gd" id="hud"]
+[ext_resource type="Theme" path="res://resources/ui/game_theme.tres" id="theme"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/NotoSerifDisplay-Medium.ttf" id="display_font"]
 
-[sub_resource type="StyleBoxFlat" id="panel"]
-bg_color = Color(0.025, 0.031, 0.045, 0.94)
-content_margin_left = 22.0
+[sub_resource type="StyleBoxFlat" id="glass"]
+bg_color = Color(0.018, 0.024, 0.041, 0.82)
 border_width_left = 1
-content_margin_top = 22.0
 border_width_top = 1
-content_margin_right = 22.0
 border_width_right = 1
-content_margin_bottom = 22.0
 border_width_bottom = 1
-border_color = Color(0.46, 0.39, 0.27, 0.75)
+border_color = Color(0.72, 0.58, 0.39, 0.34)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_left = 8
+corner_radius_bottom_right = 8
+shadow_color = Color(0, 0, 0, 0.26)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="track"]
+bg_color = Color(0.07, 0.08, 0.12, 0.96)
 corner_radius_top_left = 3
 corner_radius_top_right = 3
 corner_radius_bottom_left = 3
 corner_radius_bottom_right = 3
 
+[sub_resource type="StyleBoxEmpty" id="empty_track"]
 
-[sub_resource type="StyleBoxFlat" id="track"]
-bg_color = Color(0.08, 0.065, 0.09, 1)
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_left = 2
-corner_radius_bottom_right = 2
-
+[sub_resource type="StyleBoxFlat" id="health_trail"]
+bg_color = Color(0.93, 0.48, 0.51, 0.63)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
 
 [sub_resource type="StyleBoxFlat" id="health"]
-bg_color = Color(0.82, 0.22, 0.32, 1)
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_left = 2
-corner_radius_bottom_right = 2
+bg_color = Color(0.86, 0.22, 0.34, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
 
+[sub_resource type="StyleBoxFlat" id="mana_trail"]
+bg_color = Color(0.52, 0.78, 1, 0.64)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
 
 [sub_resource type="StyleBoxFlat" id="mana"]
-bg_color = Color(0.22, 0.63, 0.94, 1)
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-corner_radius_top_left = 2
-corner_radius_top_right = 2
-corner_radius_bottom_left = 2
-corner_radius_bottom_right = 2
+bg_color = Color(0.23, 0.6, 0.94, 1)
+corner_radius_top_left = 3
+corner_radius_top_right = 3
+corner_radius_bottom_left = 3
+corner_radius_bottom_right = 3
 
-
-[sub_resource type="StyleBoxFlat" id="line"]
-bg_color = Color(0.65, 0.52, 0.31, 0.45)
-content_margin_left = 0.0
-content_margin_top = 0.0
-content_margin_right = 0.0
-content_margin_bottom = 0.0
-corner_radius_top_left = 0
-corner_radius_top_right = 0
-corner_radius_bottom_left = 0
-corner_radius_bottom_right = 0
-
+[sub_resource type="StyleBoxFlat" id="notice_glass"]
+bg_color = Color(0.018, 0.024, 0.041, 0.94)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.83, 0.69, 0.43, 0.66)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_left = 6
+corner_radius_bottom_right = 6
+shadow_color = Color(0, 0, 0, 0.4)
+shadow_size = 14
 
 [node name="HUD" type="CanvasLayer"]
+layer = 10
 script = ExtResource("hud")
 
 [node name="Root" type="Control" parent="."]
 layout_mode = 3
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 1280.0
+offset_bottom = 720.0
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Vitals" type="Control" parent="Root"]
+offset_left = 20.0
+offset_top = 20.0
+offset_right = 306.0
+offset_bottom = 130.0
 mouse_filter = 2
 
-[node name="Vitals" type="PanelContainer" parent="Root"]
-offset_left = 32.0
-offset_top = 28.0
-offset_right = 464.0
+[node name="Frame" type="Panel" parent="Root/Vitals"]
+offset_right = 286.0
+offset_bottom = 110.0
 mouse_filter = 2
-theme_override_styles/panel = SubResource("panel")
+theme_override_styles/panel = SubResource("glass")
 
-[node name="Stack" type="VBoxContainer" parent="Root/Vitals"]
-layout_mode = 2
+[node name="TopRule" type="ColorRect" parent="Root/Vitals"]
+offset_left = 15.0
+offset_top = 9.0
+offset_right = 78.0
+offset_bottom = 11.0
 mouse_filter = 2
-theme_override_constants/separation = 12
+color = Color(0.83, 0.69, 0.43, 0.8)
 
-[node name="Brand" type="Label" parent="Root/Vitals/Stack"]
-layout_mode = 2
+[node name="HealthTitle" type="Label" parent="Root/Vitals"]
+offset_left = 20.0
+offset_top = 16.0
+offset_right = 95.0
+offset_bottom = 37.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 19
-theme_override_colors/font_color = Color(0.88, 0.76, 0.54, 1)
-text = "S A B L E   M E R I D I A N"
-
-
-[node name="LocationLabel" type="Label" parent="Root/Vitals/Stack"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(0.48, 0.53, 0.61, 1)
-text = "PÁTIO DE TREINO"
-
-
-[node name="HealthRow" type="HBoxContainer" parent="Root/Vitals/Stack"]
-layout_mode = 2
-mouse_filter = 2
-
-[node name="HealthTitle" type="Label" parent="Root/Vitals/Stack/HealthRow"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.97, 0.56, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.98, 0.74, 0.76, 1)
 text = "VIDA"
-size_flags_horizontal = 3
 
-[node name="HealthValue" type="Label" parent="Root/Vitals/Stack/HealthRow"]
+[node name="HealthValue" type="Label" parent="Root/Vitals"]
 unique_name_in_owner = true
-layout_mode = 2
+offset_left = 165.0
+offset_top = 17.0
+offset_right = 266.0
+offset_bottom = 37.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.97, 0.56, 0.6, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.97, 0.93, 0.91, 1)
 text = "100 / 100"
+horizontal_alignment = 2
 
-
-[node name="HealthBar" type="ProgressBar" parent="Root/Vitals/Stack"]
+[node name="HealthTrail" type="ProgressBar" parent="Root/Vitals"]
 unique_name_in_owner = true
-layout_mode = 2
+offset_left = 20.0
+offset_top = 39.0
+offset_right = 266.0
+offset_bottom = 47.0
 mouse_filter = 2
-custom_minimum_size = Vector2(388, 18)
 value = 100.0
 show_percentage = false
 theme_override_styles/background = SubResource("track")
+theme_override_styles/fill = SubResource("health_trail")
+
+[node name="HealthBar" type="ProgressBar" parent="Root/Vitals"]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 39.0
+offset_right = 266.0
+offset_bottom = 47.0
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("empty_track")
 theme_override_styles/fill = SubResource("health")
 
-[node name="ManaRow" type="HBoxContainer" parent="Root/Vitals/Stack"]
-layout_mode = 2
+[node name="ManaTitle" type="Label" parent="Root/Vitals"]
+offset_left = 20.0
+offset_top = 61.0
+offset_right = 95.0
+offset_bottom = 82.0
 mouse_filter = 2
-
-[node name="ManaTitle" type="Label" parent="Root/Vitals/Stack/ManaRow"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.48, 0.77, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.67, 0.85, 1, 1)
 text = "MANA"
-size_flags_horizontal = 3
 
-[node name="ManaValue" type="Label" parent="Root/Vitals/Stack/ManaRow"]
+[node name="ManaValue" type="Label" parent="Root/Vitals"]
 unique_name_in_owner = true
-layout_mode = 2
+offset_left = 165.0
+offset_top = 61.0
+offset_right = 266.0
+offset_bottom = 82.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 18
-theme_override_colors/font_color = Color(0.48, 0.77, 1, 1)
+theme_override_font_sizes/font_size = 13
+theme_override_colors/font_color = Color(0.91, 0.96, 1, 1)
 text = "100 / 100"
+horizontal_alignment = 2
 
-
-[node name="ManaBar" type="ProgressBar" parent="Root/Vitals/Stack"]
+[node name="ManaTrail" type="ProgressBar" parent="Root/Vitals"]
 unique_name_in_owner = true
-layout_mode = 2
+offset_left = 20.0
+offset_top = 84.0
+offset_right = 266.0
+offset_bottom = 92.0
 mouse_filter = 2
-custom_minimum_size = Vector2(388, 12)
 value = 100.0
 show_percentage = false
 theme_override_styles/background = SubResource("track")
+theme_override_styles/fill = SubResource("mana_trail")
+
+[node name="ManaBar" type="ProgressBar" parent="Root/Vitals"]
+unique_name_in_owner = true
+offset_left = 20.0
+offset_top = 84.0
+offset_right = 266.0
+offset_bottom = 92.0
+mouse_filter = 2
+value = 100.0
+show_percentage = false
+theme_override_styles/background = SubResource("empty_track")
 theme_override_styles/fill = SubResource("mana")
 
-[node name="ManaHint" type="Label" parent="Root/Vitals/Stack"]
-layout_mode = 2
+[node name="HitFlash" type="ColorRect" parent="Root/Vitals"]
+offset_right = 286.0
+offset_bottom = 110.0
 mouse_filter = 2
-theme_override_font_sizes/font_size = 14
-theme_override_colors/font_color = Color(0.45, 0.53, 0.64, 1)
-text = "Reserva para futuros poderes"
-
-
-[node name="Divider" type="HSeparator" parent="Root/Vitals/Stack"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_styles/separator = SubResource("line")
-
-[node name="WallLabel" type="Label" parent="Root/Vitals/Stack"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 17
-theme_override_colors/font_color = Color(0.88, 0.76, 0.54, 1)
-text = "PAREDE   2 / 2"
-
-
-[node name="StylePanel" type="PanelContainer" parent="Root"]
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -254.0
-offset_right = -32.0
-offset_top = 28.0
-grow_horizontal = 0
-mouse_filter = 2
-theme_override_styles/panel = SubResource("panel")
-
-[node name="Stack" type="VBoxContainer" parent="Root/StylePanel"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_constants/separation = 4
-
-[node name="Caption" type="Label" parent="Root/StylePanel/Stack"]
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(0.88, 0.76, 0.54, 1)
-text = "E S T I L O"
-horizontal_alignment = 1
-
-[node name="RankLabel" type="Label" parent="Root/StylePanel/Stack"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 64
-theme_override_colors/font_color = Color(0.86, 0.77, 0.61, 1)
-text = "D"
-horizontal_alignment = 1
-
-[node name="ComboLabel" type="Label" parent="Root/StylePanel/Stack"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 19
-theme_override_colors/font_color = Color(0.9, 0.9, 0.94, 1)
-text = "0 ACERTOS"
-horizontal_alignment = 1
-
-[node name="StyleLabel" type="Label" parent="Root/StylePanel/Stack"]
-unique_name_in_owner = true
-layout_mode = 2
-mouse_filter = 2
-theme_override_font_sizes/font_size = 15
-theme_override_colors/font_color = Color(0.51, 0.56, 0.65, 1)
-text = "0000 PONTOS"
-horizontal_alignment = 1
+modulate = Color(1, 1, 1, 0)
+color = Color(0.95, 0.26, 0.34, 0.25)
 
 [node name="LockIndicator" type="Label" parent="Root"]
 unique_name_in_owner = true
-mouse_filter = 2
-theme_override_font_sizes/font_size = 42
-theme_override_colors/font_color = Color(1, 0.72, 0.35, 1)
-text = "◇"
-layout_mode = 0
+visible = false
 offset_right = 54.0
 offset_bottom = 54.0
+mouse_filter = 2
+pivot_offset = Vector2(27, 27)
+theme_override_fonts/font = ExtResource("display_font")
+theme_override_font_sizes/font_size = 46
+theme_override_colors/font_color = Color(1, 0.78, 0.46, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+text = "◇"
 horizontal_alignment = 1
 vertical_alignment = 1
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
 
-[node name="NoticeLabel" type="Label" parent="Root"]
+[node name="Notice" type="PanelContainer" parent="Root"]
+visible = false
+offset_right = 520.0
+offset_bottom = 94.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("notice_glass")
+
+[node name="NoticeMargin" type="MarginContainer" parent="Root/Notice"]
+mouse_filter = 2
+theme_override_constants/margin_left = 18
+theme_override_constants/margin_right = 18
+theme_override_constants/margin_top = 12
+theme_override_constants/margin_bottom = 12
+
+[node name="NoticeRow" type="HBoxContainer" parent="Root/Notice/NoticeMargin"]
+mouse_filter = 2
+theme_override_constants/separation = 16
+
+[node name="NoticeIcon" type="Label" parent="Root/Notice/NoticeMargin/NoticeRow"]
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("display_font")
+theme_override_font_sizes/font_size = 34
+theme_override_colors/font_color = Color(0.91, 0.74, 0.47, 1)
+text = "◇"
+vertical_alignment = 1
+
+[node name="NoticeCopy" type="VBoxContainer" parent="Root/Notice/NoticeMargin/NoticeRow"]
+custom_minimum_size = Vector2(270, 0)
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_constants/separation = 2
+
+[node name="NoticeTitle" type="Label" parent="Root/Notice/NoticeMargin/NoticeRow/NoticeCopy"]
 unique_name_in_owner = true
 mouse_filter = 2
-theme_override_font_sizes/font_size = 22
-theme_override_colors/font_color = Color(0.61, 0.88, 1, 1)
-text = ""
-layout_mode = 0
-anchor_left = 0.5
-anchor_right = 0.5
-offset_left = -420.0
-offset_right = 420.0
-offset_top = 32.0
-horizontal_alignment = 1
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("display_font")
+theme_override_font_sizes/font_size = 20
+theme_override_colors/font_color = Color(0.98, 0.92, 0.82, 1)
+text = "ORBE ENCONTRADA"
 
-[node name="Controls" type="Label" parent="Root"]
-mouse_filter = 2
-theme_override_font_sizes/font_size = 17
-theme_override_colors/font_color = Color(0.68, 0.7, 0.76, 1)
-text = "WASD  Mover     ESPAÇO  Pular     SHIFT  Esquivar     MOUSE  Atacar     Q  Alvo     ESC  Cursor"
-layout_mode = 0
-anchor_left = 0.5
-anchor_right = 0.5
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = -650.0
-offset_right = 650.0
-offset_top = -44.0
-offset_bottom = -18.0
-horizontal_alignment = 1
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
-
-[node name="DebugLabel" type="Label" parent="Root"]
+[node name="NoticeDetail" type="Label" parent="Root/Notice/NoticeMargin/NoticeRow/NoticeCopy"]
 unique_name_in_owner = true
 mouse_filter = 2
-theme_override_font_sizes/font_size = 16
-theme_override_colors/font_color = Color(0.4, 1, 0.72, 1)
-text = "DEBUG"
-layout_mode = 0
-offset_left = 32.0
-offset_top = 390.0
-theme_override_colors/font_shadow_color = Color(0, 0, 0, 1)
-theme_override_constants/shadow_offset_x = 2
-theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.75, 0.8, 0.87, 1)
+text = "Mais um salto entre paredes."
+clip_text = true
+
+[node name="WallHint" type="PanelContainer" parent="Root"]
+visible = false
+offset_right = 260.0
+offset_bottom = 40.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("glass")
+
+[node name="HintMargin" type="MarginContainer" parent="Root/WallHint"]
+mouse_filter = 2
+theme_override_constants/margin_left = 16
+theme_override_constants/margin_right = 16
+theme_override_constants/margin_top = 7
+theme_override_constants/margin_bottom = 7
+
+[node name="HintText" type="Label" parent="Root/WallHint/HintMargin"]
+mouse_filter = 2
+theme_override_font_sizes/font_size = 14
+theme_override_colors/font_color = Color(0.93, 0.87, 0.74, 1)
+text = "ESPAÇO  •  SALTAR DA PAREDE"
+horizontal_alignment = 1

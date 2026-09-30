@@ -1,0 +1,203 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/pause_menu.gd" id="1_script"]
+[ext_resource type="Theme" path="res://resources/ui/game_theme.tres" id="2_theme"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/NotoSerifDisplay-Medium.ttf" id="3_display"]
+
+[sub_resource type="StyleBoxFlat" id="panel"]
+bg_color = Color(0.028, 0.037, 0.065, 0.98)
+content_margin_left = 0.0
+content_margin_top = 0.0
+content_margin_right = 0.0
+content_margin_bottom = 0.0
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.68, 0.52, 0.31, 0.9)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+shadow_color = Color(0, 0, 0, 0.5)
+shadow_size = 18
+
+[node name="PauseMenu" type="CanvasLayer"]
+layer = 100
+script = ExtResource("1_script")
+
+[node name="Root" type="Control" parent="."]
+visible = false
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0
+theme = ExtResource("2_theme")
+
+[node name="Backdrop" type="ColorRect" parent="Root"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.008, 0.012, 0.025, 0.82)
+
+[node name="Panel" type="PanelContainer" parent="Root"]
+custom_minimum_size = Vector2(500, 0)
+theme_override_styles/panel = SubResource("panel")
+
+[node name="Margin" type="MarginContainer" parent="Root/Panel"]
+layout_mode = 2
+theme_override_constants/margin_left = 34
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 34
+theme_override_constants/margin_bottom = 28
+
+[node name="Content" type="VBoxContainer" parent="Root/Panel/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Brand" type="Label" parent="Root/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_display")
+theme_override_colors/font_color = Color(0.78, 0.66, 0.44, 1)
+theme_override_font_sizes/font_size = 15
+text = "S A B L E   M E R I D I A N"
+horizontal_alignment = 1
+
+[node name="PausePage" type="VBoxContainer" parent="Root/Panel/Margin/Content"]
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/Content/PausePage"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_display")
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 37
+text = "PAUSA"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="Root/Panel/Margin/Content/PausePage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.68, 0.79, 1)
+theme_override_font_sizes/font_size = 15
+text = "A jornada pode esperar um momento."
+horizontal_alignment = 1
+
+[node name="Spacer" type="Control" parent="Root/Panel/Margin/Content/PausePage"]
+custom_minimum_size = Vector2(0, 14)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="ResumeButton" type="Button" parent="Root/Panel/Margin/Content/PausePage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "VOLTAR AO JOGO"
+
+[node name="OptionsButton" type="Button" parent="Root/Panel/Margin/Content/PausePage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "OPÇÕES"
+
+[node name="ControlsButton" type="Button" parent="Root/Panel/Margin/Content/PausePage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "ATALHOS / CONTROLES"
+
+[node name="TitleButton" type="Button" parent="Root/Panel/Margin/Content/PausePage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "VOLTAR PARA TELA INICIAL"
+
+[node name="QuitButton" type="Button" parent="Root/Panel/Margin/Content/PausePage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "SAIR DO JOGO"
+
+[node name="OptionsPage" type="VBoxContainer" parent="Root/Panel/Margin/Content"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/Content/OptionsPage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 32
+text = "VÍDEO"
+horizontal_alignment = 1
+
+[node name="MonitorLabel" type="Label" parent="Root/Panel/Margin/Content/OptionsPage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.84, 0.9, 1)
+text = "Monitor"
+
+[node name="MonitorSelector" type="OptionButton" parent="Root/Panel/Margin/Content/OptionsPage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="ModeLabel" type="Label" parent="Root/Panel/Margin/Content/OptionsPage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.84, 0.9, 1)
+text = "Modo de exibição"
+
+[node name="ModeSelector" type="OptionButton" parent="Root/Panel/Margin/Content/OptionsPage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="ResolutionLabel" type="Label" parent="Root/Panel/Margin/Content/OptionsPage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.75, 0.84, 0.9, 1)
+text = "Resolução da janela"
+
+[node name="ResolutionSelector" type="OptionButton" parent="Root/Panel/Margin/Content/OptionsPage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+
+[node name="ResolutionHint" type="Label" parent="Root/Panel/Margin/Content/OptionsPage"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.54, 0.64, 0.73, 1)
+theme_override_font_sizes/font_size = 13
+text = "Na tela cheia, a janela acompanha o monitor."
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="Root/Panel/Margin/Content/OptionsPage"]
+custom_minimum_size = Vector2(0, 12)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="BackButton" type="Button" parent="Root/Panel/Margin/Content/OptionsPage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "VOLTAR"
+
+[node name="ControlsPage" type="VBoxContainer" parent="Root/Panel/Margin/Content"]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="Root/Panel/Margin/Content/ControlsPage"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_display")
+theme_override_colors/font_color = Color(0.92, 0.95, 1, 1)
+theme_override_font_sizes/font_size = 30
+text = "ATALHOS / CONTROLES"
+horizontal_alignment = 1
+
+[node name="List" type="ScrollContainer" parent="Root/Panel/Margin/Content/ControlsPage"]
+custom_minimum_size = Vector2(0, 420)
+layout_mode = 2
+horizontal_scroll_mode = 0
+
+[node name="Rows" type="VBoxContainer" parent="Root/Panel/Margin/Content/ControlsPage/List"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 6
+
+[node name="BackButton" type="Button" parent="Root/Panel/Margin/Content/ControlsPage"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+text = "VOLTAR"

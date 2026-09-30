@@ -1,0 +1,20 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=10 format=3]
+[ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
+[ext_resource type="Resource" path="res://resources/attacks/light_1.tres" id="l1"]
+[ext_resource type="Resource" path="res://resources/attacks/light_2.tres" id="l2"]
+[ext_resource type="Resource" path="res://resources/attacks/light_3.tres" id="l3"]
+[ext_resource type="Resource" path="res://resources/attacks/light_4.tres" id="l4"]
+[ext_resource type="Resource" path="res://resources/attacks/heavy.tres" id="heavy"]
+[ext_resource type="Resource" path="res://resources/attacks/launcher.tres" id="launcher"]
+[ext_resource type="Resource" path="res://resources/attacks/air_light.tres" id="air_light"]
+[ext_resource type="Resource" path="res://resources/attacks/air_heavy.tres" id="air_heavy"]
+[resource]
+script = ExtResource("weapon")
+weapon_id = &"staff"
+display_name = "Cajado"
+identity = "Alcance médio, pressão e controle de espaço. O segundo golpe abre o launcher."
+light_chain = Array[Resource]([ExtResource("l1"), ExtResource("l2"), ExtResource("l3"), ExtResource("l4")])
+heavy = ExtResource("heavy")
+launcher = ExtResource("launcher")
+air_light = ExtResource("air_light")
+air_heavy = ExtResource("air_heavy")

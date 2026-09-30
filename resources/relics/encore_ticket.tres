@@ -1,0 +1,11 @@
+[gd_resource type="Resource" script_class="RelicData" load_steps=4 format=3]
+[ext_resource type="Script" path="res://scripts/resources/relic_data.gd" id="relic"]
+[ext_resource type="Script" path="res://scripts/resources/encore_ticket_behavior.gd" id="behavior_script"]
+[sub_resource type="Resource" id="behavior"]
+script = ExtResource("behavior_script")
+[resource]
+script = ExtResource("relic")
+relic_id = &"encore_ticket"
+display_name = "Bilhete do Bis"
+identity = "Uma esquiva perfeita traz o Baralho Maldito de volta à mão."
+behavior = SubResource("behavior")

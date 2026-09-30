@@ -1,0 +1,91 @@
+[gd_scene load_steps=10 format=3]
+
+[ext_resource type="Script" path="res://scripts/levels/fog_gate.gd" id="script"]
+[ext_resource type="Shader" path="res://shaders/fog_gate.gdshader" id="fog_shader"]
+
+[sub_resource type="QuadMesh" id="fog_mesh"]
+size = Vector2(6.5, 4.8)
+
+[sub_resource type="ShaderMaterial" id="fog_back"]
+shader = ExtResource("fog_shader")
+shader_parameter/fog_color = Color(0.2, 0.65, 0.82, 1)
+shader_parameter/opacity = 0.6
+shader_parameter/phase_offset = 1.8
+
+[sub_resource type="ShaderMaterial" id="fog_middle"]
+shader = ExtResource("fog_shader")
+shader_parameter/fog_color = Color(0.42, 0.48, 0.86, 1)
+shader_parameter/opacity = 0.82
+shader_parameter/phase_offset = 3.1
+
+[sub_resource type="ShaderMaterial" id="fog_front"]
+shader = ExtResource("fog_shader")
+shader_parameter/fog_color = Color(0.78, 0.24, 0.58, 1)
+shader_parameter/opacity = 0.42
+shader_parameter/phase_offset = 5.2
+
+[sub_resource type="BoxShape3D" id="crossing"]
+size = Vector3(6.2, 4.4, 12.0)
+
+[sub_resource type="BoxMesh" id="threshold_box"]
+size = Vector3(6.4, 0.1, 0.85)
+
+[sub_resource type="StandardMaterial3D" id="threshold"]
+albedo_color = Color(0.49, 0.63, 0.75, 1)
+metallic = 0.37
+roughness = 0.37
+emission_enabled = true
+emission = Color(0.24, 0.48, 0.69, 1)
+
+[node name="FogGate" type="Node3D"]
+script = ExtResource("script")
+
+[node name="BackFog" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, -0.25)
+mesh = SubResource("fog_mesh")
+material_override = SubResource("fog_back")
+
+[node name="MiddleFog" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, 0)
+mesh = SubResource("fog_mesh")
+material_override = SubResource("fog_middle")
+
+[node name="FrontFog" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, 0.25)
+mesh = SubResource("fog_mesh")
+material_override = SubResource("fog_front")
+
+[node name="CorridorFogA" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, 2.0)
+mesh = SubResource("fog_mesh")
+material_override = SubResource("fog_middle")
+
+[node name="CorridorFogB" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, 4.4)
+mesh = SubResource("fog_mesh")
+material_override = SubResource("fog_back")
+
+[node name="CorridorFogC" type="MeshInstance3D" parent="."]
+position = Vector3(0, 2.45, 6.9)
+mesh = SubResource("fog_mesh")
+material_override = SubResource("fog_middle")
+
+[node name="ThresholdStone" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.055, 0)
+mesh = SubResource("threshold_box")
+material_override = SubResource("threshold")
+
+[node name="Threshold" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+monitoring = true
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Threshold"]
+position = Vector3(0, 2.2, 4.0)
+shape = SubResource("crossing")
+
+[node name="Glow" type="OmniLight3D" parent="."]
+position = Vector3(0, 2.35, -0.2)
+light_color = Color(0.48, 0.55, 0.95, 1)
+light_energy = 2.0
+omni_range = 7.0

@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
+[resource]
+script = ExtResource("weapon")
+weapon_id = &"cane_blade"
+display_name = "Bengala-Lâmina"
+identity = "A lâmina se revela dentro da cadeia. A transição é um golpe, não uma troca interrompida."

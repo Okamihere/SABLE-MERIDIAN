@@ -1,32 +1,35 @@
 extends Node3D
 
-## Tutorial opcional: registra ações reais em qualquer ordem e exibe a próxima dica.
-## Enter abre a cidade sem exigir a conclusão das lições; progresso é só desta sessão.
+## Pátio inicial: registra treino opcional, diálogo e acesso à cidade.
+##
+## A névoa sob o arco leva à cidade; progresso do treino é só desta sessão.
+## O tutorial monitora ações do jogador (mover, pular, esquivar, lock-on, atacar)
+## sem ocupar a tela com dicas permanentes.
+##
+## Lições disponíveis:
+## - move: andar 4 metros
+## - jump: pular
+## - dodge: esquivar
+## - lock: adquirir alvo de lock-on
+## - light: acertar um golpe leve
+## - heavy: acertar um golpe pesado
 
-@export_file("*.tscn") var main_scene_path: String = "res://scenes/levels/main.tscn"
-var _compact_layout: bool = false
-var _entering_city: bool = false
+## Dicionário de lições concluídas.
 var completed: Dictionary = {}
+## Distância total caminhada pelo jogador.
 var _walked: float = 0.0
+## Posição anterior do jogador.
 var _previous_position: Vector3
+## Referência ao jogador.
 @onready var player: PlayerController = $Player
-@onready var help: Label = $Instructions/Panel/Margin/Help
 
-const LESSONS = [
-	["move", "WASD — explore o pátio"],
-	["jump", "ESPAÇO — experimente um salto nos blocos à esquerda"],
-	["dodge", "SHIFT + direção — experimente uma esquiva"],
-	["lock", "Q — fixe um dos bonecos à frente"],
-	["light", "Mouse esquerdo — acerte um boneco"],
-	["heavy", "Mouse direito — acerte um golpe pesado"]
-]
-
+## Inicializa o registro opcional do treino.
 func _ready() -> void:
 	_previous_position = player.position
 	for dummy in get_tree().get_nodes_in_group("training_dummies"):
 		dummy.struck.connect(_on_dummy_struck)
-	_update_help()
 
+## Processa o progresso do tutorial.
 func _process(_delta: float) -> void:
 	var displacement := player.position - _previous_position
 	displacement.y = 0.0
@@ -42,6 +45,7 @@ func _process(_delta: float) -> void:
 	if player.get_lock_target() != null:
 		_complete("lock")
 
+## Chamado quando um boneco de treino é atingido.
 ## As lições de combate exigem acerto; apertar o botão no vazio não basta.
 func _on_dummy_struck(attack_id: StringName) -> void:
 	if attack_id in [&"heavy", &"air_heavy", &"launcher"]:
@@ -49,38 +53,10 @@ func _on_dummy_struck(attack_id: StringName) -> void:
 	else:
 		_complete("light")
 
+## Marca uma lição como concluída.
 ## Registro idempotente: ações repetidas não aumentam o total concluído.
+## @param key Chave da lição.
 func _complete(key: String) -> void:
 	if completed.has(key):
 		return
 	completed[key] = true
-	_update_help()
-
-func set_compact_layout(value: bool) -> void:
-	_compact_layout = value
-	_update_help()
-
-func _update_help() -> void:
-	var next_step: String = "Treino concluído. Explore ou entre na cidade."
-	for lesson in LESSONS:
-		if not completed.has(lesson[0]):
-			next_step = lesson[1]
-			break
-	if _compact_layout:
-		help.text = "TREINO %d / %d • ENTER: cidade\n%s" % [completed.size(), LESSONS.size(), next_step]
-		return
-	help.text = "PÁTIO DE TREINO   %d / %d\n%s\nMouse: câmera • Esc: liberar mouse\nENTER: cidade a qualquer momento" % [completed.size(), LESSONS.size(), next_step]
-
-
-func _unhandled_input(event: InputEvent) -> void:
-	if event.is_action_pressed("ui_accept") and not event.is_echo() and not _entering_city:
-		_entering_city = true
-		_enter_city.call_deferred()
-
-## A transição é adiada pelo chamador para não remover a cena durante o input.
-func _enter_city() -> void:
-	GameManager.reset_style()
-	var result := get_tree().change_scene_to_file(main_scene_path)
-	if result != OK:
-		_entering_city = false
-		push_error("Não foi possível abrir a cidade: %s" % error_string(result))

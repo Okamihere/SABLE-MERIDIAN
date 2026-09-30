@@ -1,0 +1,16 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="attack"]
+[resource]
+script = ExtResource("attack")
+attack_id = &"dagger_light_1"
+damage = 6.0
+knockback = 1.7
+hit_stun = 0.13
+hit_stop_duration = 0.018
+startup = 0.04
+active = 0.075
+recovery = 0.095
+combo_window_start = 0.09
+attack_cancel_window = 0.08
+style_points = 80
+forward_impulse = 1.6

@@ -1,0 +1,111 @@
+[gd_scene load_steps=5 format=3]
+
+[ext_resource type="Script" path="res://scripts/ui/dialogue_box.gd" id="script"]
+[ext_resource type="Theme" path="res://resources/ui/game_theme.tres" id="theme"]
+[ext_resource type="FontFile" path="res://assets/ui/fonts/NotoSerifDisplay-Medium.ttf" id="display"]
+
+[sub_resource type="StyleBoxFlat" id="glass"]
+bg_color = Color(0.018, 0.024, 0.041, 0.96)
+border_width_left = 3
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.82, 0.68, 0.45, 0.72)
+corner_radius_top_left = 9
+corner_radius_top_right = 9
+corner_radius_bottom_left = 9
+corner_radius_bottom_right = 9
+shadow_color = Color(0, 0, 0, 0.44)
+shadow_size = 20
+
+[node name="DialogueBox" type="CanvasLayer"]
+layer = 50
+script = ExtResource("script")
+
+[node name="Root" type="Control" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme = ExtResource("theme")
+
+[node name="Veil" type="ColorRect" parent="Root"]
+visible = false
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0.005, 0.007, 0.018, 0.36)
+
+[node name="DialoguePanel" type="PanelContainer" parent="Root"]
+visible = false
+offset_left = 240.0
+offset_top = 480.0
+offset_right = 1040.0
+offset_bottom = 690.0
+mouse_filter = 2
+theme_override_styles/panel = SubResource("glass")
+
+[node name="Content" type="MarginContainer" parent="Root/DialoguePanel"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/margin_left = 28
+theme_override_constants/margin_top = 18
+theme_override_constants/margin_right = 28
+theme_override_constants/margin_bottom = 18
+
+[node name="VBox" type="VBoxContainer" parent="Root/DialoguePanel/Content"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 8
+
+[node name="Header" type="HBoxContainer" parent="Root/DialoguePanel/Content/VBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_constants/separation = 12
+
+[node name="Sigil" type="Label" parent="Root/DialoguePanel/Content/VBox/Header"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("display")
+theme_override_font_sizes/font_size = 28
+theme_override_colors/font_color = Color(0.9, 0.71, 0.44, 1)
+text = "◇"
+
+[node name="SpeakerName" type="Label" parent="Root/DialoguePanel/Content/VBox/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+mouse_filter = 2
+theme_override_fonts/font = ExtResource("display")
+theme_override_font_sizes/font_size = 23
+theme_override_colors/font_color = Color(0.98, 0.92, 0.81, 1)
+text = "???"
+vertical_alignment = 1
+
+[node name="Rule" type="ColorRect" parent="Root/DialoguePanel/Content/VBox"]
+custom_minimum_size = Vector2(0, 1)
+layout_mode = 2
+mouse_filter = 2
+color = Color(0.74, 0.62, 0.46, 0.35)
+
+[node name="DialogueText" type="Label" parent="Root/DialoguePanel/Content/VBox"]
+custom_minimum_size = Vector2(0, 72)
+layout_mode = 2
+size_flags_vertical = 3
+mouse_filter = 2
+theme_override_font_sizes/font_size = 18
+theme_override_colors/font_color = Color(0.9, 0.93, 0.97, 1)
+text = "..."
+autowrap_mode = 3
+
+[node name="Hint" type="Label" parent="Root/DialoguePanel/Content/VBox"]
+layout_mode = 2
+mouse_filter = 2
+theme_override_font_sizes/font_size = 12
+theme_override_colors/font_color = Color(0.66, 0.72, 0.79, 1)
+text = "F  CONTINUAR     ·     ESC  ENCERRAR"
+horizontal_alignment = 2

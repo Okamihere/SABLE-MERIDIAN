@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3]
+[gd_scene load_steps=9 format=3]
 
 [ext_resource type="Script" path="res://scripts/effects/hit_spark.gd" id="1_script"]
 
@@ -26,6 +26,26 @@ outer_radius = 0.38
 rings = 12
 ring_segments = 20
 
+[sub_resource type="StandardMaterial3D" id="Material_shard"]
+shading_mode = 0
+albedo_color = Color(1, 0.64, 0.38, 1)
+emission_enabled = true
+emission = Color(1, 0.29, 0.12, 1)
+emission_energy_multiplier = 1.8
+
+[sub_resource type="BoxMesh" id="Shard_mesh"]
+size = Vector3(0.045, 0.17, 0.045)
+material = SubResource("Material_shard")
+
+[sub_resource type="ParticleProcessMaterial" id="Shard_process"]
+direction = Vector3(0, 1, 0)
+spread = 180.0
+gravity = Vector3(0, -2, 0)
+initial_velocity_min = 3.0
+initial_velocity_max = 6.0
+angular_velocity_min = -240.0
+angular_velocity_max = 240.0
+
 [node name="HitSpark" type="Node3D"]
 script = ExtResource("1_script")
 
@@ -43,3 +63,13 @@ omni_range = 3.0
 light_color = Color(1, 0.25, 0.12, 1)
 light_energy = 2.0
 shadow_enabled = false
+
+[node name="Shards" type="GPUParticles3D" parent="."]
+emitting = false
+amount = 11
+lifetime = 0.22
+one_shot = true
+explosiveness = 1.0
+visibility_aabb = AABB(-2, -2, -2, 4, 4, 4)
+process_material = SubResource("Shard_process")
+draw_pass_1 = SubResource("Shard_mesh")

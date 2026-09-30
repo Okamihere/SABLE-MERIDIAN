@@ -16,18 +16,23 @@ compatibility/default_parent_skeleton_in_mesh_instance_3d=true
 
 config/name="SABLE MERIDIAN"
 config/version="0.1-prototype"
-run/main_scene="res://scenes/levels/start_room.tscn"
+run/main_scene="res://scenes/ui/title_screen.tscn"
 config/features=PackedStringArray("4.7", "GL Compatibility")
 
 [autoload]
 
 GameManager="*res://scripts/systems/game_manager.gd"
+CelShading="*res://scripts/systems/cel_shading.gd"
 Progression="*res://scripts/systems/progression.gd"
+PauseMenu="*res://scenes/ui/pause_menu.tscn"
+NpcInteraction="*res://scenes/ui/npc_interaction.tscn"
+AreaTransition="*res://scenes/ui/area_transition.tscn"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/mode=4
 window/size/window_width_override=1280
 window/size/window_height_override=720
 

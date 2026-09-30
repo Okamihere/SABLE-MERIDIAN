@@ -1,50 +1,47 @@
 # SABLE MERIDIAN
 
-A stylish third-person action prototype built with **Godot 4.x** — combos, dodges, wall-running and a gothic city to explore.
+Protótipo de ação em terceira pessoa feito em Godot 4.7. O pátio de treino leva a uma cidade gótica em construção; o foco atual é movimento, combate e apresentação visual.
 
-![Engine](https://img.shields.io/badge/Godot-4.x-blue)
-![Version](https://img.shields.io/badge/Version-0.1--prototype-orange)
-![Status](https://img.shields.io/badge/Status-Prototype-green)
-![License](https://img.shields.io/badge/License-MIT-yellow)
+![Tela inicial na televisão 3D](docs/title-screen-preview.png)
 
-## Play
+## O que já funciona
 
-1. Open this folder in **Godot 4.x**
-2. Press `F5` to run
-3. Click the window to capture the mouse
+- Combos de quatro golpes com launcher, ataques aéreos, esquiva com invulnerabilidade e esquiva perfeita com câmera lenta.
+- Movimento e saltos em paredes, com limite ampliado por orbes coletadas; foco em alvos e ranking de estilo D–S.
+- Cajado coletável no pátio, Adagas de Cartas, Máscara do Riso e relíquia Bilhete do Bis. A troca de arma durante um golpe entra na próxima janela de combo. O Baralho Maldito consome mana e dispara uma carta ou três após o segundo golpe.
+- HUD de vida e mana com avisos contextuais, interação e diálogo com NPC, tela inicial em televisão 3D, pausa e opções persistentes de vídeo, áudio e câmera.
+- Passagem física com névoa entre o pátio e a cidade, iluminação toon e personagem em `AnimatedSprite3D` com oito imagens direcionais de repouso. O modelo 3D do personagem permanece na cena, mas está oculto na apresentação atual.
 
-## Controls
+O progresso salvo inclui as orbes de salto em parede. **Continuar** retorna ao pátio quando há orbes salvas; posição, combate e progresso de campanha não são salvos. **Novo jogo** limpa as orbes.
 
-| Key | Action |
-|-----|--------|
-| `WASD` | Move |
-| `Space` | Jump / Wall jump |
-| `Shift` | Dodge |
-| `LMB` | Light attack |
-| `RMB` | Heavy attack |
-| `Q` | Lock-on |
-| `Esc` | Release mouse |
+## Controles
 
-## Features
+| Entrada | Ação |
+| --- | --- |
+| `WASD` | Mover |
+| `Espaço` | Pular ou saltar da parede |
+| `Shift` | Esquivar |
+| Mouse esquerdo / direito | Ataque leve / pesado, após obter o cajado |
+| Mouse do meio | Focar ou liberar alvo |
+| `Q` | Baralho Maldito |
+| `1` / `2` | Cajado / Adagas de Cartas, após obter o cajado |
+| `Tab` | Equipar ou retirar a Máscara do Riso |
+| `F` | Interagir; revelar ou avançar diálogo |
+| Roda do mouse | Aproximar ou afastar câmera |
+| `Esc` | Pausa, voltar das opções ou encerrar diálogo |
+| `F3` | Informações de depuração |
 
-- **Four-hit combo** with launcher and aerial juggle
-- **Perfect dodge** with slow-motion
-- **Wall grip & wall jumps** — chain between walls, collect orbs to upgrade
-- **Style system** — D/C/B/A/S ranks
-- **Responsive HUD** — adapts to any screen size
-- **Gothic city blockout** with multiple districts
+Na tela inicial, use mouse ou setas e `Enter` para selecionar. A lista de atalhos também aparece na tela inicial e na pausa.
 
-## Screenshots
+## Executar
 
-> Add screenshots or GIFs here to showcase the game!
+1. Abra esta pasta no **Godot 4.7.x** com o renderizador **GL Compatibility**.
+2. Execute o projeto com `F5`. A cena inicial é `scenes/ui/title_screen.tscn`.
+3. Inicie o jogo, colete o cajado no centro do pátio e atravesse a névoa sob o arco para chegar à cidade. Clique na janela para capturar o mouse durante o jogo.
 
-## Documentation
+## Documentação
 
-- [Contributing](docs/contributing.md) — how to help
-- [Architecture](docs/architecture.md) — code structure & conventions
-- [Roadmap](docs/roadmap.md) — development phases
-- [Validation](docs/validation.md) — test results
+- [Arquitetura](docs/architecture.md) · [Equipamento](docs/equipment.md) · [Habilidades](docs/combat_abilities.md)
+- [Contribuição](docs/contributing.md) · [Validação](docs/validation.md) · [Roadmap](docs/roadmap.md)
 
-## License
-
-MIT — free to use, modify and learn from.
+Licença: [MIT](LICENSE).

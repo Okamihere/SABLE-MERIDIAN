@@ -41,8 +41,8 @@ A Godot 4.x vertical slice focused on responsive third-person stylish action com
 
 - [ ] Target switching while locked on
 - [ ] Double jump as unlockable
-- [ ] Weapons and data-driven combo trees
+- [ ] Expand the playable weapon roster and combo trees beyond Staff and Card Daggers
 - [ ] Navigation/pathfinding for complex levels
 - [ ] Boss archetypes and encounter director
 - [ ] Pooled VFX, trails, decals, dynamic audio
-- [ ] Save system, settings and remappable input UI
+- [ ] Full campaign save and remappable input UI (orb progress and settings already persist)

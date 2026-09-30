@@ -8,13 +8,15 @@
 | `CombatController` | Attack timing via `AttackData` |
 | `LockOnController` | Target selection & switching |
 | `PlayerStateMachine` | Centralized state management |
-| `PlayerAnimationController` | Procedural Skeleton3D poses (no AnimationTree) |
+| `PlayerAnimationController` | Procedural poses for the retained, currently hidden 3D rig |
+| `DirectionalSprite` | Camera-relative selection of eight idle images in `AnimatedSprite3D` |
 | `GameManager` | Input, style score, global time effects |
 | `Progression` | Orb IDs, wall jump limit, local save |
+| `NpcInteraction` | Escolhe o NPC disponível mais próximo, mostra F e abre o diálogo |
 
 ## Animation
 
-Hips is the root; Spine is child of Hips; Head is child of Spine; arms and legs are children of Hips. Rigid meshes follow `BoneAttachment3D`. Damage windows are controlled by combat, not animations.
+The visible player uses `AnimatedSprite3D` with eight camera-relative idle directions. Other visual states currently fall back to those idle frames. The retained 3D rig is hidden; its procedural `PlayerAnimationController` still runs, and its meshes follow `BoneAttachment3D`. Damage windows are controlled by combat, not animations.
 
 ## Wall Movement
 
@@ -34,12 +36,22 @@ To place upgrades, instance `scenes/collectibles/wall_orb.tscn` and set a unique
 
 ## Flow & Limits
 
-The starting room opens the city via **Enter**. Training is optional and not saved. The city is a finite blockout; enemies do not use navigation yet. `player.tscn` is legacy; maps use `player_rig.tscn`.
+The starting room opens the city only when the player crosses `FogGate` under the north arch. `AreaTransition` covers the viewport with animated fog, changes scenes while fully covered, then reveals the city. The central `StaffPickup` equips the low poly staff; melee attacks stay disabled until it is collected. `GameManager.has_staff` carries the equipment state into the city. Training is optional and not saved. The city is a finite blockout; enemies do not use navigation yet. `player.tscn` is legacy; maps use `player_rig.tscn`.
 
-## HUD & Mana
+The camera keeps its SpringArm collision and interpolates a wheel controlled target distance between 3.2 and 9.2 units. `SpellManager` shares the player's `ManaComponent` and activates the `effect_scene` in each `SpellResource`. The equipped Baralho Maldito effect launches one card or a three card fan after the second combo hit; the cards use the same hitbox, hurtbox and style pipeline as melee attacks. See `docs/combat_abilities.md` for the other planned abilities.
 
-`scenes/ui/hud.tscn` is shared between tutorial and city. Mana starts at 100, regenerates at 8/s after 1.5s without spending. No current ability consumes mana — the system is ready for future powers.
+## Title, HUD & Mana
+
+`scenes/ui/title_screen.tscn` é a cena inicial. `TitleScreen` monta a televisão low poly e o palco em 3D; `title_tv_ui.tscn` é desenhada numa `SubViewport` aplicada à tela da TV. O script converte raios do mouse em coordenadas dessa `SubViewport`, mantendo clique e destaque corretos durante a leve animação do aparelho. `Continuar` só fica disponível com orbes persistidas e retorna ao pátio; `Novo jogo` chama `Progression.clear_progress()`. O título e a pausa reutilizam o mesmo menu de configurações em `PauseMenu`.
+
+`PauseMenu` preserva `user://video_settings.cfg` para compatibilidade com as opções de vídeo já salvas. O arquivo agora também armazena VSync, limite de FPS, volumes dos buses Master/Music/SFX e sensibilidade da câmera. Os buses são criados uma vez na inicialização; o áudio da transição usa SFX. A câmera lê a sensibilidade do menu ao entrar em cada cena. O botão de retorno ao título libera pausa e mouse antes de mudar de cena.
+
+`scenes/ui/hud.tscn` is shared between tutorial and city. Its permanent display contains life and mana; the lock-on marker, wall hint and event notices appear only when relevant. `Progression.upgraded` triggers the orb pickup notice, and other systems may use `HUD.show_notice(title, detail, duration)`. Mana starts at 100 and regenerates at 8/s after 1.5s without spending. Shared UI typography is configured in `resources/ui/game_theme.tres`, using Noto Sans and Noto Serif Display; their Apache 2.0 license is included with the font files.
+
+`NpcInteraction` is a global scene with the reusable conversation prompt and `DialogueBox`. A new NPC should join the `npcs` group, implement `can_interact()`, `get_character_name()`, `start_dialogue()`, `advance_dialogue()` and `end_dialogue()`, and emit `dialogue_line_changed(line_text, speaker_name)`. The optional `get_interaction_anchor()` places the prompt above its head; otherwise the system uses 2.25 units above the root. Place the NPC in any level; the prompt and F interaction require no level-specific wiring.
+
+O Contrarregra ocupa um banco de pedra no canto noroeste do pátio. Seu modelo importado não contém animação de sentar; o script aplica uma pose estática simples às partes do visual. Ele emite somente a fala aprovada em toda interação, mantendo a UI e o contrato de diálogo genéricos para NPCs futuros.
 
 ## Responsive Layout
 
-Global stretch is disabled. The HUD applies its own scale from **0.85 to 2.5**. Below **900 width** or **600 height**, it uses compact mode. The `size_changed` signal recalculates layout.
+Global stretch is disabled. The HUD scales between **0.75 and 1.25** and repositions its controls on `size_changed`. NPC prompts use camera projection and stay inside the viewport.

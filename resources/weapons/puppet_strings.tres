@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
+[resource]
+script = ExtResource("weapon")
+weapon_id = &"puppet_strings"
+display_name = "Fios de Marionete"
+identity = "Puxar, suspender, agarrar e usar inimigos uns contra os outros. Requer regras de alvo e física próprias."

@@ -1,0 +1,25 @@
+[gd_resource type="Resource" script_class="WeaponData" load_steps=10 format=3]
+[ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
+[ext_resource type="Script" path="res://scripts/resources/card_daggers_behavior.gd" id="behavior_script"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_light_1.tres" id="l1"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_light_2.tres" id="l2"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_light_3.tres" id="l3"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_blink.tres" id="heavy"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_air_light.tres" id="air_light"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_air_heavy.tres" id="air_heavy"]
+[sub_resource type="Resource" id="behavior"]
+script = ExtResource("behavior_script")
+[resource]
+script = ExtResource("weapon")
+weapon_id = &"card_daggers"
+display_name = "Adagas de Cartas"
+identity = "Cadeia curta, ataques aéreos rápidos e corte pesado com dobra de distância."
+light_chain = Array[Resource]([ExtResource("l1"), ExtResource("l2"), ExtResource("l3")])
+heavy = ExtResource("heavy")
+air_light = ExtResource("air_light")
+air_heavy = ExtResource("air_heavy")
+light_hitbox_size = Vector3(1.1, 1.0, 1.0)
+heavy_hitbox_size = Vector3(1.25, 1.2, 1.2)
+light_hitbox_offset = Vector3(0, 1.1, 0.72)
+heavy_hitbox_offset = Vector3(0, 1.1, 0.8)
+behavior = SubResource("behavior")

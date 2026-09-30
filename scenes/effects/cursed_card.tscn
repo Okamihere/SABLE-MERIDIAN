@@ -1,0 +1,67 @@
+[gd_scene load_steps=9 format=3]
+
+[ext_resource type="Script" path="res://scripts/effects/cursed_card.gd" id="1_card"]
+[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="2_hitbox"]
+
+[sub_resource type="BoxShape3D" id="CardShape"]
+size = Vector3(0.52, 0.7, 0.3)
+
+[sub_resource type="BoxMesh" id="CardMesh"]
+size = Vector3(0.42, 0.62, 0.045)
+
+[sub_resource type="StandardMaterial3D" id="Ivory"]
+albedo_color = Color(0.93, 0.86, 0.7, 1)
+emission_enabled = true
+emission = Color(0.32, 0.18, 0.12, 1)
+emission_energy_multiplier = 1.4
+shading_mode = 0
+
+[sub_resource type="BoxMesh" id="SigilMesh"]
+size = Vector3(0.22, 0.22, 0.055)
+
+[sub_resource type="StandardMaterial3D" id="Sigil"]
+albedo_color = Color(0.88, 0.04, 0.34, 1)
+emission_enabled = true
+emission = Color(1, 0.03, 0.42, 1)
+emission_energy_multiplier = 3.0
+shading_mode = 0
+
+[sub_resource type="SphereShape3D" id="WorldShape"]
+radius = 0.24
+
+[node name="CursedCard" type="Area3D"]
+collision_layer = 0
+collision_mask = 1
+monitoring = true
+script = ExtResource("1_card")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+shape = SubResource("WorldShape")
+
+[node name="Visual" type="Node3D" parent="."]
+
+[node name="Card" type="MeshInstance3D" parent="Visual"]
+mesh = SubResource("CardMesh")
+material_override = SubResource("Ivory")
+cast_shadow = 0
+
+[node name="Sigil" type="MeshInstance3D" parent="Visual"]
+position = Vector3(0, 0, 0.045)
+rotation_degrees = Vector3(0, 0, 45)
+mesh = SubResource("SigilMesh")
+material_override = SubResource("Sigil")
+cast_shadow = 0
+
+[node name="Glow" type="OmniLight3D" parent="Visual"]
+light_color = Color(1, 0.17, 0.48, 1)
+light_energy = 1.2
+omni_range = 2.0
+shadow_enabled = false
+
+[node name="Hitbox" type="Area3D" parent="."]
+collision_layer = 8
+collision_mask = 32
+script = ExtResource("2_hitbox")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+shape = SubResource("CardShape")

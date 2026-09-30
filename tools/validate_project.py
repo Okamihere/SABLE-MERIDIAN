@@ -71,6 +71,7 @@ for rel in required:
 node_re = re.compile(r'^\[node name="([^"]+)"(?: type="[^"]+")?(?: parent="([^"]+)")?.*\]$')
 for scene_path in (p for p in files if p.suffix == ".tscn"):
     known = {"."}
+    instanced = set()
     for lineno, raw in enumerate(scene_path.read_text(encoding="utf-8").splitlines(), 1):
         m = node_re.match(raw)
         if not m:
@@ -81,12 +82,14 @@ for scene_path in (p for p in files if p.suffix == ".tscn"):
             known.add(name)
             continue
         if parent != ".":
-            if parent not in known:
+            if parent not in known and not any(parent.startswith(f"{root}/") for root in instanced):
                 errors.append(f"BROKEN NODE PARENT: {scene_path.relative_to(root)}:{lineno} parent={parent}")
             path_key = f"{parent}/{name}"
         else:
             path_key = name
         known.add(path_key)
+        if "instance=" in raw:
+            instanced.add(path_key)
 
 # Basic bracket sanity for GDScript while ignoring strings/comments roughly.
 pairs = {')': '(', ']': '[', '}': '{'}
@@ -132,6 +135,11 @@ for expected_node in [
     "StateMachine", "CombatController", "LockOnController", "HealthComponent", "Hurtbox",
     "Hitboxes/LightHitbox", "Hitboxes/HeavyHitbox", "Skeleton3D", "PlayerAnimationController"
 ]:
+    if expected_node == "Skeleton3D" and (
+        'res://assets/characters/jester_rig.glb' in player_scene
+        and 'NodePath("../ModelRoot/Jester/world/Skeleton3D")' in player_scene
+    ):
+        continue  # The imported GLB owns the Skeleton3D, not the wrapper scene.
     leaf = expected_node.split("/")[-1]
     if f'name="{leaf}"' not in player_scene:
         errors.append(f"Player scene likely missing node: {expected_node}")

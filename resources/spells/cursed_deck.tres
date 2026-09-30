@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SpellResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spell_resource.gd" id="1_spell"]
+[ext_resource type="PackedScene" path="res://scenes/effects/card_volley.tscn" id="2_effect"]
+
+[resource]
+script = ExtResource("1_spell")
+spell_name = "Baralho Maldito"
+ability_id = &"cursed_deck"
+mana_cost = 14.0
+cooldown = 0.42
+damage = 18.0
+effect_scene = ExtResource("2_effect")
+weave_during_attack = true

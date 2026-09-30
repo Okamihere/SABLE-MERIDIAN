@@ -20,10 +20,37 @@ func frames(count: int) -> void:
 func _run() -> void:
 	change_scene_to_file("res://scenes/levels/start_room.tscn")
 	await frames(90)
+	var middle_mouse_focus := false
+	for event in InputMap.action_get_events("lock_on"):
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_MIDDLE:
+			middle_mouse_focus = true
+		assert(not (event is InputEventKey and (event.physical_keycode == KEY_F or event.keycode == KEY_F)), "F must not focus enemies")
+	assert(middle_mouse_focus, "Middle mouse button must focus enemies")
+	var f_interaction := false
+	for event in InputMap.action_get_events("interact"):
+		if event is InputEventKey and event.physical_keycode == KEY_F:
+			f_interaction = true
+		assert(not (event is InputEventKey and (event.physical_keycode == KEY_G or event.keycode == KEY_G)), "G must not interact")
+	assert(f_interaction, "F must interact with nearby NPCs")
 	var player = current_scene.get_node("Player")
 	assert(player.is_on_floor(), "Training floor must hold the player")
+	assert(not get_root().get_node("GameManager").has_staff, "Training must begin without the staff")
+	player.combat._start_attack(player.combat.LIGHT_1, 1)
+	assert(not player.combat.is_attacking(), "The jester must not punch before taking the staff")
+	player.global_position = Vector3(0, 0.05, -5.5)
+	await frames(12)
+	assert(get_root().get_node("GameManager").has_staff and player.staff_attachment.visible, "Central staff must equip on contact")
 	assert(get_root().get_camera_3d() != null, "Training camera is missing")
 	var animation = player.get_node("PlayerAnimationController")
+	var jester_skeleton := player.get_node("ModelRoot/Jester/world/Skeleton3D") as Skeleton3D
+	var jester_mesh := jester_skeleton.get_node("JesterMesh") as MeshInstance3D
+	assert(animation._skeleton == jester_skeleton, "Jester animation must target its imported rig")
+	assert(jester_skeleton.get_bone_count() == 7 and jester_mesh.skin != null, "Jester mesh must be skinned")
+	var left_arm := jester_skeleton.find_bone(&"LeftArm")
+	var right_arm := jester_skeleton.find_bone(&"RightArm")
+	assert(jester_skeleton.get_bone_pose_rotation(left_arm).get_euler().z > 0.7, "Idle left arm must leave T-pose")
+	assert(jester_skeleton.get_bone_pose_rotation(right_arm).get_euler().z < -0.7, "Idle right arm must leave T-pose")
+	assert((jester_mesh.material_override as StandardMaterial3D).vertex_color_use_as_albedo, "Jester costume must show its vertex colors")
 	animation.notify_dodge_started(0.34)
 	await frames(5)
 	assert(animation._dodge_time > 0.0, "Animation timers must progress")
@@ -52,14 +79,25 @@ func _run() -> void:
 	assert(training_room.completed.has("heavy"), "Heavy lesson must require a landed hit")
 	assert(dummies[0].is_alive() and dummies[1].is_alive(), "Training targets must survive")
 	assert(player.health.current_health == health_before, "Training targets must not attack")
-	var input_event = InputEventAction.new()
-	input_event.action = "ui_accept"
-	input_event.pressed = true
-	current_scene._unhandled_input(input_event)
-	await frames(90)
-	assert(current_scene.scene_file_path == "res://scenes/levels/main.tscn", "Enter must open city")
+	Input.action_press("jump")
+	Input.action_press("ui_accept")
+	await frames(3)
+	Input.action_release("jump")
+	Input.action_release("ui_accept")
+	assert(current_scene == training_room, "Jump/confirm must never leave the training area")
+	assert(training_room.has_node("FogGate"), "The route to the city must be visible in the training area")
+	player.combat.cancel_attack()
+	player.global_position = Vector3(0, 0.05, 18.35)
+	player.velocity = Vector3.ZERO
+	await frames(5)
+	assert(get_root().get_node("AreaTransition").is_travelling, "Crossing the fog gate must start the transition")
+	await create_timer(2.0).timeout
+	await frames(15)
+	assert(current_scene.scene_file_path == "res://scenes/levels/main.tscn", "Crossing the fog gate must open the city")
 	player = current_scene.get_node("Player")
 	assert(player.is_on_floor(), "City floor must hold the player")
+	assert(player.staff_attachment.visible and get_root().get_node("GameManager").has_staff, "The staff must remain equipped after crossing")
+	assert(not get_root().get_node("AreaTransition").is_travelling, "The fog must clear after arrival")
 	# Cidade: valida dano, estado de morte e reinício automático.
 	var enemies = get_nodes_in_group("enemies")
 	assert(not enemies.is_empty(), "City must contain enemies")
@@ -87,5 +125,5 @@ func _run() -> void:
 	await create_timer(2.5).timeout
 	await frames(10)
 	assert(current_scene.get_node("Player").is_alive(), "Player must respawn after death")
-	print("PASS: floor, camera, animation timers, self-hit protection, city transition, lock range, lethal hits, respawn")
+	print("PASS: floor, camera, animation timers, self-hit protection, fog-gate transition, lock range, lethal hits, respawn")
 	quit()

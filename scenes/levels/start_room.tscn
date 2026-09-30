@@ -1,4 +1,4 @@
-[gd_scene load_steps=71 format=3]
+[gd_scene load_steps=83 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/start_room.gd" id="1_script"]
 [ext_resource type="Material" path="res://materials/stone.tres" id="2_stone"]
@@ -13,6 +13,10 @@
 [ext_resource type="PackedScene" path="res://scenes/collectibles/wall_orb.tscn" id="wall_orb"]
 
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="shared_hud"]
+[ext_resource type="PackedScene" path="res://scenes/npc/contrarregra.tscn" id="mentor_npc"]
+[ext_resource type="PackedScene" path="res://scenes/levels/fog_gate.tscn" id="fog_gate"]
+[ext_resource type="PackedScene" path="res://scenes/collectibles/staff_pickup.tscn" id="staff_pickup"]
+[ext_resource type="Script" path="res://scripts/levels/visual_atmosphere.gd" id="visual_atmosphere"]
 
 [sub_resource type="Environment" id="Environment_start"]
 background_mode = 1
@@ -20,13 +24,34 @@ background_color = Color(0.01, 0.015, 0.03, 1)
 background_energy_multiplier = 0.5
 ambient_light_source = 2
 ambient_light_color = Color(0.12, 0.14, 0.28, 1)
-ambient_light_energy = 0.6
+ambient_light_energy = 0.57
 fog_enabled = true
-fog_light_color = Color(0.08, 0.07, 0.15, 1)
-fog_density = 0.004
+fog_light_color = Color(0.14, 0.11, 0.24, 1)
+fog_density = 0.011
+fog_depth_begin = 6.0
+fog_depth_end = 74.0
+glow_enabled = true
+glow_intensity = 0.84
+glow_bloom = 0.065
+glow_hdr_threshold = 0.65
+adjustment_enabled = true
+adjustment_contrast = 1.16
+adjustment_saturation = 1.06
 
 [sub_resource type="BoxMesh" id="BoxMesh_floor"]
 size = Vector3(28, 1, 32)
+
+[sub_resource type="BoxMesh" id="MentorSeat_mesh"]
+size = Vector3(1.8, 0.44, 0.82)
+
+[sub_resource type="BoxMesh" id="MentorBack_mesh"]
+size = Vector3(1.8, 1.05, 0.18)
+
+[sub_resource type="BoxShape3D" id="MentorSeat_shape"]
+size = Vector3(1.8, 0.44, 0.82)
+
+[sub_resource type="BoxShape3D" id="MentorBack_shape"]
+size = Vector3(1.8, 1.05, 0.18)
 
 [sub_resource type="BoxMesh" id="BoxMesh_pillar"]
 size = Vector3(1.5, 8, 1.5)
@@ -56,10 +81,28 @@ size = Vector3(28, 2.5, 0.5)
 size = Vector3(28, 2.5, 0.5)
 
 [sub_resource type="BoxMesh" id="NorthWall_mesh"]
-size = Vector3(28, 2.5, 0.5)
+size = Vector3(10.6, 2.5, 0.5)
 
 [sub_resource type="BoxShape3D" id="NorthWall_shape"]
-size = Vector3(28, 2.5, 0.5)
+size = Vector3(10.6, 2.5, 0.5)
+
+[sub_resource type="BoxMesh" id="PassageFloor_mesh"]
+size = Vector3(6.8, 1, 11)
+
+[sub_resource type="BoxShape3D" id="PassageFloor_shape"]
+size = Vector3(6.8, 1, 11)
+
+[sub_resource type="BoxMesh" id="PassageWall_mesh"]
+size = Vector3(0.55, 4.8, 11)
+
+[sub_resource type="BoxShape3D" id="PassageWall_shape"]
+size = Vector3(0.55, 4.8, 11)
+
+[sub_resource type="BoxMesh" id="PassageRoof_mesh"]
+size = Vector3(7.4, 0.6, 11)
+
+[sub_resource type="BoxShape3D" id="PassageRoof_shape"]
+size = Vector3(7.4, 0.6, 11)
 
 [sub_resource type="BoxMesh" id="ButtressLeft_0_mesh"]
 size = Vector3(1, 4, 1.4)
@@ -202,28 +245,20 @@ size = Vector3(0.15, 5, 0.15)
 [sub_resource type="BoxShape3D" id="BannerPole1_shape"]
 size = Vector3(0.15, 5, 0.15)
 
-[sub_resource type="StyleBoxFlat" id="tutorial_panel"]
-bg_color = Color(0.025, 0.031, 0.045, 0.94)
-border_width_left = 1
-border_width_top = 1
-border_width_right = 1
-border_width_bottom = 1
-border_color = Color(0.46, 0.39, 0.27, 0.75)
-corner_radius_top_left = 3
-corner_radius_top_right = 3
-corner_radius_bottom_left = 3
-corner_radius_bottom_right = 3
-
 [node name="StartRoom" type="Node3D"]
 script = ExtResource("1_script")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
 environment = SubResource("Environment_start")
 
+[node name="VisualAtmosphere" type="Node3D" parent="."]
+script = ExtResource("visual_atmosphere")
+training_room = true
+
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-45, 30, 0)
 light_color = Color(0.5, 0.6, 1, 1)
-light_energy = 1.2
+light_energy = 1.8
 shadow_enabled = true
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
@@ -231,6 +266,13 @@ position = Vector3(0, 5, 0)
 light_color = Color(0.85, 0.1, 0.4, 1)
 light_energy = 2.0
 omni_range = 20.0
+
+[node name="PlayerRim" type="OmniLight3D" parent="."]
+position = Vector3(1, 4, -8)
+light_color = Color(0.54, 0.61, 0.96, 1)
+light_energy = 1.0
+omni_range = 10.0
+shadow_enabled = false
 
 [node name="Floor" type="MeshInstance3D" parent="."]
 position = Vector3(0, -0.5, 0)
@@ -252,10 +294,42 @@ position = Vector3(0, 8, 12)
 mesh = SubResource("BoxMesh_arch")
 material_override = ExtResource("3_accent")
 
+[node name="FogGate" parent="." instance=ExtResource("fog_gate")]
+position = Vector3(0, 0, 12)
+
 [node name="CameraRig" parent="." instance=ExtResource("5_camera")]
 
 [node name="Player" parent="." instance=ExtResource("4_player")]
 position = Vector3(0, 0.05, -10)
+
+[node name="Mentor" parent="." instance=ExtResource("mentor_npc")]
+position = Vector3(-10.5, 0, 13.4)
+rotation_degrees = Vector3(0, 130, 0)
+
+[node name="MentorSeat" type="MeshInstance3D" parent="."]
+position = Vector3(-10.78, 0.22, 13.71)
+rotation_degrees = Vector3(0, 130, 0)
+mesh = SubResource("MentorSeat_mesh")
+material_override = ExtResource("2_stone")
+
+[node name="Body" type="StaticBody3D" parent="MentorSeat"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MentorSeat/Body"]
+shape = SubResource("MentorSeat_shape")
+
+[node name="MentorBack" type="MeshInstance3D" parent="."]
+position = Vector3(-11.1, 0.63, 14.04)
+rotation_degrees = Vector3(0, 130, 0)
+mesh = SubResource("MentorBack_mesh")
+material_override = ExtResource("2_stone")
+
+[node name="Body" type="StaticBody3D" parent="MentorBack"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="MentorBack/Body"]
+shape = SubResource("MentorBack_shape")
+
+[node name="StaffPickup" parent="." instance=ExtResource("staff_pickup")]
+position = Vector3(0, 0, -5.5)
 
 [node name="FloorBody" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.5, 0)
@@ -293,15 +367,65 @@ material_override = ExtResource("7_light")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="SouthWall/Body"]
 shape = SubResource("SouthWall_shape")
 
-[node name="NorthWall" type="MeshInstance3D" parent="."]
-position = Vector3(0, 1.25, 16)
+[node name="NorthWallLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-8.7, 1.25, 16)
 mesh = SubResource("NorthWall_mesh")
 material_override = ExtResource("7_light")
 
-[node name="Body" type="StaticBody3D" parent="NorthWall"]
+[node name="Body" type="StaticBody3D" parent="NorthWallLeft"]
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWall/Body"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallLeft/Body"]
 shape = SubResource("NorthWall_shape")
+
+[node name="NorthWallRight" type="MeshInstance3D" parent="."]
+position = Vector3(8.7, 1.25, 16)
+mesh = SubResource("NorthWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="NorthWallRight"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="NorthWallRight/Body"]
+shape = SubResource("NorthWall_shape")
+
+[node name="PassageFloor" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.5, 20.5)
+mesh = SubResource("PassageFloor_mesh")
+material_override = ExtResource("2_stone")
+
+[node name="Body" type="StaticBody3D" parent="PassageFloor"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassageFloor/Body"]
+shape = SubResource("PassageFloor_shape")
+
+[node name="PassageWest" type="MeshInstance3D" parent="."]
+position = Vector3(-3.4, 2.4, 20.5)
+mesh = SubResource("PassageWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="PassageWest"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassageWest/Body"]
+shape = SubResource("PassageWall_shape")
+
+[node name="PassageEast" type="MeshInstance3D" parent="."]
+position = Vector3(3.4, 2.4, 20.5)
+mesh = SubResource("PassageWall_mesh")
+material_override = ExtResource("7_light")
+
+[node name="Body" type="StaticBody3D" parent="PassageEast"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassageEast/Body"]
+shape = SubResource("PassageWall_shape")
+
+[node name="PassageRoof" type="MeshInstance3D" parent="."]
+position = Vector3(0, 5.1, 20.5)
+mesh = SubResource("PassageRoof_mesh")
+material_override = ExtResource("2_stone")
+
+[node name="Body" type="StaticBody3D" parent="PassageRoof"]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PassageRoof/Body"]
+shape = SubResource("PassageRoof_shape")
 
 [node name="ButtressLeft_0" type="MeshInstance3D" parent="."]
 position = Vector3(-13, 2, -12)
@@ -544,66 +668,6 @@ position = Vector3(-3, 0, 6)
 [node name="Dummy1" parent="." instance=ExtResource("6_dummy")]
 position = Vector3(3, 0, 6)
 
-[node name="JumpSign" type="Label3D" parent="."]
-position = Vector3(-8, 2.8, 2.6)
-rotation_degrees = Vector3(0, 180, 0)
-font_size = 42
-outline_size = 8
-pixel_size = 0.008
-text = "01 / SALTO\nESPAÇO • atravesse os blocos"
-modulate = Color(0.8, 0.86, 1, 1)
-
-[node name="DodgeSign" type="Label3D" parent="."]
-position = Vector3(8, 2.4, 4)
-rotation_degrees = Vector3(0, 180, 0)
-font_size = 42
-outline_size = 8
-pixel_size = 0.008
-text = "02 / ESQUIVA\nSHIFT + direção"
-modulate = Color(0.8, 0.86, 1, 1)
-
-[node name="CombatSign" type="Label3D" parent="."]
-position = Vector3(0, 3.5, 8)
-rotation_degrees = Vector3(0, 180, 0)
-font_size = 42
-outline_size = 8
-pixel_size = 0.008
-text = "03 / COMBATE\nQ • fixar alvo\nMouse esquerdo / direito • atacar"
-modulate = Color(0.8, 0.86, 1, 1)
-
-[node name="ExitSign" type="Label3D" parent="."]
-position = Vector3(0, 5.5, 12)
-rotation_degrees = Vector3(0, 180, 0)
-font_size = 56
-outline_size = 8
-pixel_size = 0.008
-text = "SABLE MERIDIAN\nENTER • entrar na cidade"
-modulate = Color(0.8, 0.86, 1, 1)
-
-[node name="Instructions" type="CanvasLayer" parent="."]
-[node name="Panel" type="PanelContainer" parent="Instructions"]
-theme_override_styles/panel = SubResource("tutorial_panel")
-anchor_left = 0.5
-anchor_right = 0.5
-anchor_top = 1.0
-anchor_bottom = 1.0
-offset_left = -440.0
-offset_right = 440.0
-offset_top = -220.0
-offset_bottom = -76.0
-mouse_filter = 2
-[node name="Margin" type="MarginContainer" parent="Instructions/Panel"]
-mouse_filter = 2
-theme_override_constants/margin_left = 18
-theme_override_constants/margin_right = 18
-theme_override_constants/margin_top = 12
-theme_override_constants/margin_bottom = 12
-[node name="Help" type="Label" parent="Instructions/Panel/Margin"]
-mouse_filter = 2
-theme_override_font_sizes/font_size = 20
-horizontal_alignment = 1
-text = "PÁTIO DE TREINO"
-
 [node name="Orb_training_alcove" parent="." instance=ExtResource("wall_orb")]
 position = Vector3(-11, 1, 11)
 orb_id = "training_alcove"
@@ -619,12 +683,5 @@ position = Vector3(9.5, 3, -10)
 size = Vector3(0.5, 6, 5)
 use_collision = true
 material = ExtResource("7_light")
-
-[node name="WallSign" type="Label3D" parent="."]
-position = Vector3(8, 3, -7)
-rotation_degrees = Vector3(0, 180, 0)
-font_size = 34
-pixel_size = 0.008
-text = "PAREDES\nPule e segure a direção contra a parede\nESPAÇO: saltar para o outro lado\nO chão recarrega os saltos"
 
 [node name="HUD" parent="." instance=ExtResource("shared_hud")]

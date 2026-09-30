@@ -1,0 +1,124 @@
+[gd_scene load_steps=12 format=3]
+
+[sub_resource type="StandardMaterial3D" id="shaft"]
+albedo_color = Color(0.14, 0.12, 0.24, 1)
+metallic = 0.25
+roughness = 0.47
+
+[sub_resource type="StandardMaterial3D" id="gold"]
+albedo_color = Color(0.82, 0.62, 0.35, 1)
+metallic = 0.8
+roughness = 0.27
+
+[sub_resource type="StandardMaterial3D" id="crystal"]
+albedo_color = Color(0.57, 0.2, 0.72, 1)
+metallic = 0.1
+roughness = 0.22
+emission_enabled = true
+emission = Color(0.67, 0.22, 0.88, 1)
+emission_energy_multiplier = 2.0
+
+[sub_resource type="CylinderMesh" id="shaft_mesh"]
+top_radius = 0.047
+bottom_radius = 0.065
+height = 1.52
+radial_segments = 8
+
+[sub_resource type="CylinderMesh" id="ring_mesh"]
+top_radius = 0.082
+bottom_radius = 0.082
+height = 0.075
+radial_segments = 8
+
+[sub_resource type="SphereMesh" id="gem_mesh"]
+radius = 0.17
+height = 0.33
+radial_segments = 4
+rings = 2
+
+[sub_resource type="BoxMesh" id="fin_mesh"]
+size = Vector3(0.065, 0.25, 0.13)
+
+[sub_resource type="SphereMesh" id="tip_mesh"]
+radius = 0.065
+height = 0.12
+radial_segments = 4
+rings = 2
+
+[sub_resource type="StandardMaterial3D" id="trail_material"]
+shading_mode = 0
+albedo_color = Color(0.87, 0.43, 1, 0.72)
+transparency = 1
+emission_enabled = true
+emission = Color(0.58, 0.19, 0.94, 1)
+emission_energy_multiplier = 1.4
+
+[sub_resource type="SphereMesh" id="trail_mesh"]
+radius = 0.055
+height = 0.11
+radial_segments = 4
+rings = 2
+material = SubResource("trail_material")
+
+[sub_resource type="ParticleProcessMaterial" id="trail_process"]
+direction = Vector3(0, 0, 0)
+spread = 0.0
+gravity = Vector3(0, 0, 0)
+initial_velocity_min = 0.0
+initial_velocity_max = 0.0
+scale_min = 0.35
+scale_max = 1.0
+
+[node name="MageStaff" type="Node3D"]
+
+[node name="Shaft" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.16, 0)
+mesh = SubResource("shaft_mesh")
+material_override = SubResource("shaft")
+
+[node name="LowerRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.42, 0)
+mesh = SubResource("ring_mesh")
+material_override = SubResource("gold")
+
+[node name="UpperRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.71, 0)
+mesh = SubResource("ring_mesh")
+material_override = SubResource("gold")
+
+[node name="HeadRing" type="MeshInstance3D" parent="."]
+position = Vector3(0, 0.88, 0)
+mesh = SubResource("ring_mesh")
+material_override = SubResource("gold")
+
+[node name="Crystal" type="MeshInstance3D" parent="."]
+position = Vector3(0, 1.08, 0)
+rotation_degrees = Vector3(0, 45, 0)
+mesh = SubResource("gem_mesh")
+material_override = SubResource("crystal")
+
+[node name="AttackTrail" type="GPUParticles3D" parent="Crystal"]
+emitting = false
+amount = 24
+lifetime = 0.18
+local_coords = false
+visibility_aabb = AABB(-3, -3, -3, 6, 6, 6)
+process_material = SubResource("trail_process")
+draw_pass_1 = SubResource("trail_mesh")
+
+[node name="FinLeft" type="MeshInstance3D" parent="."]
+position = Vector3(-0.17, 0.89, 0)
+rotation_degrees = Vector3(0, 0, -30)
+mesh = SubResource("fin_mesh")
+material_override = SubResource("gold")
+
+[node name="FinRight" type="MeshInstance3D" parent="."]
+position = Vector3(0.17, 0.89, 0)
+rotation_degrees = Vector3(0, 0, 30)
+mesh = SubResource("fin_mesh")
+material_override = SubResource("gold")
+
+[node name="EndCap" type="MeshInstance3D" parent="."]
+position = Vector3(0, -0.6, 0)
+mesh = SubResource("tip_mesh")
+material_override = SubResource("gold")

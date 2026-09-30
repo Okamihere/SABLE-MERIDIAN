@@ -1,0 +1,7 @@
+[gd_resource type="Resource" script_class="MaskData" load_steps=2 format=3]
+[ext_resource type="Script" path="res://scripts/resources/mask_data.gd" id="mask"]
+[resource]
+script = ExtResource("mask")
+mask_id = &"empty"
+display_name = "Máscara Vazia"
+identity = "Esquiva, parry, teleporte e contra-ataque. Aguarda a defesa contextual."
