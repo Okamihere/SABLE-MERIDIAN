@@ -8,9 +8,11 @@ Protótipo de ação em terceira pessoa feito em Godot 4.7. O pátio de treino l
 
 - Combos de quatro golpes com launcher, ataques aéreos, esquiva com invulnerabilidade e esquiva perfeita com câmera lenta.
 - Movimento e saltos em paredes, com limite ampliado por orbes coletadas; foco em alvos e ranking de estilo D–S.
-- Cajado coletável no pátio, Adagas de Cartas, Máscara do Riso e relíquia Bilhete do Bis. A troca de arma durante um golpe entra na próxima janela de combo. O Baralho Maldito consome mana e dispara uma carta ou três após o segundo golpe.
+- No pátio, encostar no cajado flutuante sobre o pedestal libera os ataques corpo a corpo. `1`/`2` trocam as regras de combate entre Cajado e Adagas de Cartas; `Tab` ativa a regra da Máscara do Riso. O Bilhete do Bis é uma relíquia passiva que recarrega o Baralho Maldito após uma esquiva perfeita.
 - HUD de vida e mana com avisos contextuais, interação e diálogo com NPC, tela inicial em televisão 3D, pausa e opções persistentes de vídeo, áudio e câmera.
 - Passagem física com névoa entre o pátio e a cidade, iluminação toon e personagem em `AnimatedSprite3D` com oito imagens direcionais de repouso. O modelo 3D do personagem permanece na cena, mas está oculto na apresentação atual.
+
+O sprite atual não mostra o cajado equipado, as adagas nem a máscara; também não há indicador da relíquia no HUD. A troca de arma durante um golpe é aplicada na próxima janela do combo. `Q` lança o Baralho Maldito, que consome mana e dispara uma carta ou, após o segundo golpe encadeado, três cartas.
 
 O progresso salvo inclui as orbes de salto em parede. **Continuar** retorna ao pátio quando há orbes salvas; posição, combate e progresso de campanha não são salvos. **Novo jogo** limpa as orbes.
 
