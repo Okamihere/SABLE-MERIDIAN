@@ -21,25 +21,30 @@ void vertex() {
 }
 
 void fragment() {
-	vec4 sharp = textureLod(screen_texture, SCREEN_UV, 0.0);
-	vec4 soft = textureLod(screen_texture, SCREEN_UV, 1.7);
-	float player_edge = smoothstep(0.82, 1.35, length((SCREEN_UV - player_uv) / player_radius));
-	float target_edge = smoothstep(0.82, 1.35, length((SCREEN_UV - target_uv) / target_radius));
-	float previous_target_edge = smoothstep(0.82, 1.35, length((SCREEN_UV - previous_target_uv) / previous_target_radius));
-	target_edge = min(target_edge, mix(previous_target_edge, 1.0, target_blend));
-	float focus_mask = min(player_edge, target_edge);
-	float raw_depth = textureLod(depth_texture, SCREEN_UV, 0.0).r;
-	#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
-	vec3 ndc = vec3(SCREEN_UV, raw_depth) * 2.0 - 1.0;
-	#else
-	vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, raw_depth);
-	#endif
-	vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
-	float distance_from_camera = -view.z / view.w;
-	float far_amount = smoothstep(desaturation_near, desaturation_far, distance_from_camera);
-	vec3 color = mix(sharp.rgb, soft.rgb, blur_strength);
-	float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
-	color = mix(color, vec3(luminance), desaturation_strength * far_amount);
-	ALBEDO = color;
-	ALPHA = focus_progress * focus_mask;
+	if (focus_progress <= 0.001) {
+		ALBEDO = textureLod(screen_texture, SCREEN_UV, 0.0).rgb;
+		ALPHA = 0.0;
+	} else {
+		vec4 sharp = textureLod(screen_texture, SCREEN_UV, 0.0);
+		vec4 soft = textureLod(screen_texture, SCREEN_UV, 1.7);
+		float player_edge = smoothstep(0.82, 1.35, length((SCREEN_UV - player_uv) / player_radius));
+		float target_edge = smoothstep(0.82, 1.35, length((SCREEN_UV - target_uv) / target_radius));
+		float previous_target_edge = smoothstep(0.82, 1.35, length((SCREEN_UV - previous_target_uv) / previous_target_radius));
+		target_edge = min(target_edge, mix(previous_target_edge, 1.0, target_blend));
+		float focus_mask = min(player_edge, target_edge);
+		float raw_depth = textureLod(depth_texture, SCREEN_UV, 0.0).r;
+		#if CURRENT_RENDERER == RENDERER_COMPATIBILITY
+		vec3 ndc = vec3(SCREEN_UV, raw_depth) * 2.0 - 1.0;
+		#else
+		vec3 ndc = vec3(SCREEN_UV * 2.0 - 1.0, raw_depth);
+		#endif
+		vec4 view = INV_PROJECTION_MATRIX * vec4(ndc, 1.0);
+		float distance_from_camera = -view.z / view.w;
+		float far_amount = smoothstep(desaturation_near, desaturation_far, distance_from_camera);
+		vec3 color = mix(sharp.rgb, soft.rgb, blur_strength);
+		float luminance = dot(color, vec3(0.2126, 0.7152, 0.0722));
+		color = mix(color, vec3(luminance), desaturation_strength * far_amount);
+		ALBEDO = color;
+		ALPHA = focus_progress * focus_mask;
+	}
 }
