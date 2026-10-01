@@ -79,8 +79,13 @@ var _focus_target: Node3D
 
 ## Inicializa a câmera: configura SpringArm, captura mouse e posiciona.
 func _ready() -> void:
-	mouse_sensitivity = PauseMenu.camera_sensitivity
+	mouse_sensitivity = GameManager.camera_sensitivity
+	GameManager.camera_sensitivity_changed.connect(_on_camera_sensitivity_changed)
 	_player = get_node_or_null(player_path) as Node3D
+
+## Callback quando a sensibilidade da câmera muda (via GameManager).
+func _on_camera_sensitivity_changed(value: float) -> void:
+	mouse_sensitivity = value
 	_zoom_distance = clampf(base_distance, min_distance, max_distance)
 	spring_arm.spring_length = _zoom_distance
 	camera.fov = base_fov
@@ -222,6 +227,8 @@ func _update_lock_focus(target: Node3D) -> void:
 	lock_focus.visible = _focus_transition_locked or _lock_focus_amount > 0.0
 	if not lock_focus.visible:
 		_focus_target = null
+		return
+	if _focus_material == null:
 		return
 	_focus_material.set_shader_parameter("focus_progress", _lock_focus_amount)
 	_focus_material.set_shader_parameter("blur_strength", lock_blur_strength)

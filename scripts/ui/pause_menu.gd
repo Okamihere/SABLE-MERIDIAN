@@ -20,7 +20,6 @@ var _previous_mouse_mode: Input.MouseMode = Input.MOUSE_MODE_CAPTURED
 var _resolutions: Array[Vector2i] = []
 var _from_title := false
 var _vsync_enabled := true
-var camera_sensitivity := 0.0028
 var _tab_buttons: Array[Button] = []
 var _tab_pages: Array[VBoxContainer] = []
 var _volume_sliders: Dictionary = {}
@@ -384,11 +383,8 @@ func _on_volume_changed(value: float, bus_name: String) -> void:
 	_save_settings()
 
 func _on_sensitivity_changed(value: float) -> void:
-	camera_sensitivity = 0.0028 * value / 100.0
-	for camera_node in get_tree().get_nodes_in_group("game_camera"):
-		var controller := camera_node.get_parent().get_parent()
-		if controller is ThirdPersonCameraController:
-			controller.mouse_sensitivity = camera_sensitivity
+	var new_sensitivity := 0.0028 * value / 100.0
+	GameManager.set_camera_sensitivity(new_sensitivity)
 	_save_settings()
 
 func _on_vsync_selected(index: int) -> void:
@@ -542,7 +538,7 @@ func _sync_controls() -> void:
 			var volume := 0.0 if AudioServer.is_bus_mute(bus) else db_to_linear(AudioServer.get_bus_volume_db(bus)) * 100.0
 			(_volume_sliders[bus_name] as HSlider).set_value_no_signal(volume)
 			(_volume_sliders[bus_name] as HSlider).get_meta("value_label").text = "%d%%" % roundi(volume)
-	_sensitivity_slider.set_value_no_signal(camera_sensitivity / 0.0028 * 100.0)
+	_sensitivity_slider.set_value_no_signal(GameManager.camera_sensitivity / 0.0028 * 100.0)
 	_sensitivity_slider.get_meta("value_label").text = "%d%%" % roundi(_sensitivity_slider.value)
 
 
@@ -567,7 +563,9 @@ func _load_settings() -> void:
 	for bus_name in _volume_sliders:
 		var volume := clampf(float(config.get_value("audio", bus_name.to_lower(), 100.0)), 0.0, 100.0)
 		_on_volume_changed_without_save(volume, bus_name)
-	camera_sensitivity = 0.0028 * clampf(float(config.get_value("gameplay", "camera_sensitivity_percent", 100.0)), 20.0, 200.0) / 100.0
+	var sens_percent := float(config.get_value("gameplay", "camera_sensitivity_percent", 100.0))
+	sens_percent = clampf(sens_percent, 20.0, 200.0)
+	GameManager.set_camera_sensitivity(0.0028 * sens_percent / 100.0)
 	_sync_controls()
 
 func _on_volume_changed_without_save(value: float, bus_name: String) -> void:
@@ -586,7 +584,7 @@ func _save_settings() -> void:
 	config.set_value("video", "fps_limit", Engine.max_fps)
 	for bus_name in _volume_sliders:
 		config.set_value("audio", bus_name.to_lower(), (_volume_sliders[bus_name] as HSlider).value)
-	config.set_value("gameplay", "camera_sensitivity_percent", camera_sensitivity / 0.0028 * 100.0)
+	config.set_value("gameplay", "camera_sensitivity_percent", GameManager.camera_sensitivity / 0.0028 * 100.0)
 	var result := config.save(settings_path)
 	if result != OK:
 		push_warning("Não foi possível salvar as configurações: %s" % error_string(result))

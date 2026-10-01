@@ -107,6 +107,7 @@ var _idle_elapsed := 0.0
 var _special_idle := false
 var _idle_fade: Tween
 var _lock_facing_active := false
+var _last_camera_back := Vector3.ZERO
 @onready var _fill_light: OmniLight3D = get_node_or_null("../SpriteFillLight") as OmniLight3D
 @onready var _state_machine: PlayerStateMachine = get_node_or_null("../StateMachine") as PlayerStateMachine
 @onready var _lock_on: LockOnController = get_node_or_null("../LockOnController") as LockOnController
@@ -225,22 +226,29 @@ func _update_direction() -> void:
 	if _fill_light != null:
 		var facing := Vector3(camera.global_position.x - player.global_position.x, 0.0, camera.global_position.z - player.global_position.z).normalized()
 		_fill_light.global_position = player.global_position + Vector3(0.0, 1.35, 0.0) + facing * 1.35
-	if _visual_state == &"idle" and not _lock_facing_active and _direction_index >= 0:
-		return
 	var camera_right := camera.global_basis.x
 	var camera_back := camera.global_basis.z
 	camera_right.y = 0.0
 	camera_back.y = 0.0
 	camera_right = camera_right.normalized()
 	camera_back = camera_back.normalized()
+	var camera_turned := _last_camera_back.length_squared() > 0.001 and camera_back.dot(_last_camera_back) < cos(deg_to_rad(0.5))
+	_last_camera_back = camera_back
+	var left_special_idle := camera_turned and _visual_state == &"idle" and not _lock_facing_active and _special_idle
+	if camera_turned and _visual_state == &"idle" and not _lock_facing_active:
+		_clear_special_idle()
 	var angle := atan2(direction.dot(camera_right), direction.dot(camera_back))
 	var candidate := posmod(roundi(angle / (PI / 4.0)), DIRECTIONS.size())
 	if candidate == _direction_index:
+		if left_special_idle:
+			_show_direction()
 		return
 	if _direction_index >= 0:
 		var center := _direction_index * PI / 4.0
 		var distance := absf(wrapf(angle - center, -PI, PI))
 		if distance < PI / 8.0 + deg_to_rad(direction_hysteresis_degrees):
+			if left_special_idle:
+				_show_direction()
 			return
 	_direction_index = candidate
 	_show_direction()

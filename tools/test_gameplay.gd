@@ -62,8 +62,23 @@ func _run() -> void:
 	hitbox.end_attack()
 	# Tutorial: progresso depende de alvo adquirido e golpes que acertaram.
 	var training_room = current_scene
+	# Aguardar dummies entrarem no grupo (headless pode precisar de frames extras para _ready)
+	await frames(12)
 	var dummies = get_nodes_in_group("training_dummies")
-	assert(dummies.size() == 2, "Tutorial needs two passive targets")
+	# Filtrar apenas dummies da cena atual (evita lixo de runs anteriores)
+	var current_dummies = []
+	for dummy in dummies:
+		if dummy.get_parent() == training_room:
+			current_dummies.append(dummy)
+	if current_dummies.size() < 2:
+		# Fallback: buscar por nome dos nodes
+		current_dummies = []
+		for i in 2:
+			var dummy = training_room.get_node_or_null("Dummy%d" % i)
+			if dummy != null:
+				current_dummies.append(dummy)
+	dummies = current_dummies
+	assert(dummies.size() >= 2, "Tutorial needs two passive targets")
 	assert(training_room.completed.is_empty(), "Tutorial must wait for player actions")
 	player.position = Vector3(-3, 0.05, 4.5)
 	player.rotation.y = 0.0

@@ -1,8 +1,11 @@
-[gd_resource type="Resource" script_class="RelicData" load_steps=4 format=3]
-[ext_resource type="Script" path="res://scripts/resources/relic_data.gd" id="relic"]
-[ext_resource type="Script" path="res://scripts/resources/encore_ticket_behavior.gd" id="behavior_script"]
+[gd_resource type="Resource" script_class="RelicData" format=3 uid="uid://cfuflijkaei6k"]
+
+[ext_resource type="Script" uid="uid://cs3gcapxva7a3" path="res://scripts/resources/encore_ticket_behavior.gd" id="behavior_script"]
+[ext_resource type="Script" uid="uid://ddd0gqv4dek11" path="res://scripts/resources/relic_data.gd" id="relic"]
+
 [sub_resource type="Resource" id="behavior"]
 script = ExtResource("behavior_script")
+
 [resource]
 script = ExtResource("relic")
 relic_id = &"encore_ticket"

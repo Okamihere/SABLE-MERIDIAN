@@ -85,9 +85,13 @@ var _skill_guard_until := 0.0
 @onready var dagger_left: BoneAttachment3D = get_node_or_null("ModelRoot/Jester/world/Skeleton3D/DaggerLeft") as BoneAttachment3D
 @onready var weapon_display: Node3D = get_node_or_null("WeaponDisplay") as Node3D
 @onready var laugh_mask_visual: BoneAttachment3D = get_node_or_null("ModelRoot/Jester/world/Skeleton3D/LaughMask") as BoneAttachment3D
+## Caminho para o controlador de câmera (evita dependência de hierarquia frágil).
+@export var camera_controller_path: NodePath
 
 ## Tempo decorrido da esquiva atual (em segundos).
 var _dodge_elapsed: float = 0.0
+## Referência ao controlador de câmera (via NodePath exportado).
+var _camera_controller: ThirdPersonCameraController
 ## Tempo restante de recarga da esquiva (em segundos).
 var _dodge_cooldown_left: float = 0.0
 var _dodge_buffer_until: float = 0.0
@@ -124,6 +128,13 @@ func _ready() -> void:
 	add_child(equipment)
 	equipment.weapon_changed.connect(_on_weapon_changed)
 	equipment.mask_changed.connect(_on_mask_changed)
+	# Resolve referência ao controlador de câmera via NodePath (fallback para busca na cena).
+	if camera_controller_path:
+		_camera_controller = get_node_or_null(camera_controller_path) as ThirdPersonCameraController
+	if not is_instance_valid(_camera_controller):
+		var cam := get_viewport().get_camera_3d()
+		if cam != null and cam.get_parent() != null:
+			_camera_controller = cam.get_parent().get_parent() as ThirdPersonCameraController
 	_last_safe_position = global_position
 	GameManager.register_player(self)
 	if starts_with_staff or GameManager.has_staff:
@@ -266,9 +277,8 @@ func _respawn_from_fall() -> void:
 		respawn_position = Vector3(0, 0.05, -10)
 	global_position = respawn_position + Vector3.UP * respawn_height_offset
 	state_machine.set_state(PlayerStateMachine.State.IDLE)
-	var camera := get_viewport().get_camera_3d()
-	if camera != null and camera.get_parent() != null and camera.get_parent().get_parent() is ThirdPersonCameraController:
-		(camera.get_parent().get_parent() as ThirdPersonCameraController).snap_to_player()
+	if is_instance_valid(_camera_controller):
+		_camera_controller.snap_to_player()
 
 ## Atualiza locomoção: movimento, salto, rotação e transições de estado.
 func _update_locomotion(delta: float) -> void:
@@ -385,9 +395,8 @@ func receive_hitbox(hitbox: HitboxComponent) -> bool:
 	state_machine.set_state(PlayerStateMachine.State.HIT)
 	if animation_controller != null:
 		animation_controller.notify_hit_started(hitbox.hit_stun)
-	var camera := get_viewport().get_camera_3d()
-	if camera != null and camera.get_parent() != null and camera.get_parent().get_parent() is ThirdPersonCameraController:
-		(camera.get_parent().get_parent() as ThirdPersonCameraController).hit_impulse(0.11, true)
+	if is_instance_valid(_camera_controller):
+		_camera_controller.hit_impulse(0.11, true)
 	return true
 
 ## Retorna o alvo atual de lock-on.
@@ -421,9 +430,8 @@ func _trigger_perfect_dodge() -> void:
 	if equipment != null:
 		equipment.on_perfect_dodge()
 	GameManager.perfect_dodge_slow_motion()
-	var camera := get_viewport().get_camera_3d()
-	if camera != null and camera.get_parent() != null and camera.get_parent().get_parent() is ThirdPersonCameraController:
-		(camera.get_parent().get_parent() as ThirdPersonCameraController).kick_fov(-4.0, 0.20)
+	if is_instance_valid(_camera_controller):
+		_camera_controller.kick_fov(-4.0, 0.20)
 
 ## Atualiza estado aéreo (JUMP/FALL) baseado na velocidade vertical.
 func _update_air_state() -> void:

@@ -21,6 +21,10 @@ signal player_registered(player: Node)
 
 ## Indica se o debug de combate está ativo.
 var DEBUG_COMBAT: bool = false
+## Sensibilidade da câmera (centralizada para evitar dependência de ordem de init).
+var camera_sensitivity: float = 0.0028
+## Emitido quando a sensibilidade da câmera muda.
+signal camera_sensitivity_changed(sensitivity: float)
 ## Referência global ao jogador.
 var player: Node
 ## Cajado adquirido nesta sessão; acompanha a troca de cenas.
@@ -76,6 +80,14 @@ func register_player(value: Node) -> void:
 	player = value
 	player_registered.emit(player)
 
+## Define a sensibilidade da câmera e emite sinal de mudança.
+## @param value Nova sensibilidade.
+func set_camera_sensitivity(value: float) -> void:
+	if camera_sensitivity == value:
+		return
+	camera_sensitivity = value
+	camera_sensitivity_changed.emit(value)
+
 ## Registra um golpe que acertou.
 ## @param attack_id Identificador do ataque.
 ## @param base_points Pontos base do ataque.
@@ -129,7 +141,6 @@ func _ensure_inputs() -> void:
 	_bind_key("move_right", KEY_D)
 	_bind_key("jump", KEY_SPACE)
 	_bind_key("dodge", KEY_SHIFT)
-	_unbind_key("lock_on", KEY_F)
 	_bind_mouse("lock_on", MOUSE_BUTTON_MIDDLE)
 	_bind_key("pause_menu", KEY_ESCAPE)
 	_bind_key("debug_toggle", KEY_F3)

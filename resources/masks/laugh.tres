@@ -1,8 +1,11 @@
-[gd_resource type="Resource" script_class="MaskData" load_steps=4 format=3]
-[ext_resource type="Script" path="res://scripts/resources/mask_data.gd" id="mask"]
-[ext_resource type="Script" path="res://scripts/resources/laugh_mask_behavior.gd" id="behavior_script"]
+[gd_resource type="Resource" script_class="MaskData" format=3 uid="uid://6mihws85kyt4"]
+
+[ext_resource type="Script" uid="uid://bd6mic7twuxcd" path="res://scripts/resources/laugh_mask_behavior.gd" id="behavior_script"]
+[ext_resource type="Script" uid="uid://bq40d7v0qubhf" path="res://scripts/resources/mask_data.gd" id="mask"]
+
 [sub_resource type="Resource" id="behavior"]
 script = ExtResource("behavior_script")
+
 [resource]
 script = ExtResource("mask")
 mask_id = &"laugh"
