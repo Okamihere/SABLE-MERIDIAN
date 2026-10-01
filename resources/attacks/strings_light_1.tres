@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+attack_id = &"strings_thread"
+animation_style = "light"
+damage = 8
+knockback = 0.8
+hit_stun = 0.27
+launch_force = 0
+startup = 0.05
+active = 0.14
+recovery = 0.13
+combo_window_start = 0.13
+forward_impulse = 0.2

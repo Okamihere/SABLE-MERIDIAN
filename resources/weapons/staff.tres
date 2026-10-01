@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=10 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=13 format=3]
 [ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
 [ext_resource type="Resource" path="res://resources/attacks/light_1.tres" id="l1"]
 [ext_resource type="Resource" path="res://resources/attacks/light_2.tres" id="l2"]
@@ -8,6 +8,9 @@
 [ext_resource type="Resource" path="res://resources/attacks/launcher.tres" id="launcher"]
 [ext_resource type="Resource" path="res://resources/attacks/air_light.tres" id="air_light"]
 [ext_resource type="Resource" path="res://resources/attacks/air_heavy.tres" id="air_heavy"]
+[ext_resource type="Resource" path="res://resources/spells/cursed_deck.tres" id="skill_0"]
+[ext_resource type="Resource" path="res://resources/spells/staff_e.tres" id="skill_1"]
+[ext_resource type="Resource" path="res://resources/spells/staff_r.tres" id="skill_2"]
 [resource]
 script = ExtResource("weapon")
 weapon_id = &"staff"
@@ -18,3 +21,10 @@ heavy = ExtResource("heavy")
 launcher = ExtResource("launcher")
 air_light = ExtResource("air_light")
 air_heavy = ExtResource("air_heavy")
+light_delivery = "projectile"
+heavy_delivery = "projectile"
+light_range = 10.5
+heavy_range = 13.0
+light_projectile_speed = 27.0
+heavy_projectile_speed = 17.0
+skills = Array[Resource]([ExtResource("skill_0"), ExtResource("skill_1"), ExtResource("skill_2")])

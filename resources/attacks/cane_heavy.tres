@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+attack_id = &"cane_lunge"
+animation_style = "heavy"
+damage = 17
+knockback = 6
+hit_stun = 0.32
+launch_force = 0
+startup = 0.12
+active = 0.13
+recovery = 0.22
+combo_window_start = 0.2
+forward_impulse = 4.5

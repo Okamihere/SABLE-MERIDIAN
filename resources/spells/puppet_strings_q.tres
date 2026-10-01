@@ -1,0 +1,14 @@
+[gd_resource type="Resource" script_class="SpellResource" load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/resources/spell_resource.gd" id="1"]
+[ext_resource type="PackedScene" path="res://scenes/effects/weapon_skill_effect.tscn" id="2"]
+
+[resource]
+script = ExtResource("1")
+spell_name = "Fio de Tração"
+ability_id = &"strings_q"
+mana_cost = 12.0
+cooldown = 1.1
+damage = 7.0
+effect_scene = ExtResource("2")
+weave_during_attack = true

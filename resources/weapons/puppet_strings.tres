@@ -1,7 +1,31 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=12 format=3]
 [ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
+[ext_resource type="Resource" path="res://resources/spells/puppet_strings_q.tres" id="skill_0"]
+[ext_resource type="Resource" path="res://resources/spells/puppet_strings_e.tres" id="skill_1"]
+[ext_resource type="Resource" path="res://resources/spells/puppet_strings_r.tres" id="skill_2"]
+[ext_resource type="Resource" path="res://resources/attacks/strings_light_1.tres" id="atk_0"]
+[ext_resource type="Resource" path="res://resources/attacks/light_2.tres" id="atk_1"]
+[ext_resource type="Resource" path="res://resources/attacks/light_3.tres" id="atk_2"]
+[ext_resource type="Resource" path="res://resources/attacks/strings_heavy.tres" id="atk_3"]
+[ext_resource type="Resource" path="res://resources/attacks/launcher.tres" id="atk_4"]
+[ext_resource type="Resource" path="res://resources/attacks/air_light.tres" id="atk_5"]
+[ext_resource type="Resource" path="res://resources/attacks/air_heavy.tres" id="atk_6"]
 [resource]
 script = ExtResource("weapon")
 weapon_id = &"puppet_strings"
 display_name = "Fios de Marionete"
 identity = "Puxar, suspender, agarrar e usar inimigos uns contra os outros. Requer regras de alvo e física próprias."
+skills = Array[Resource]([ExtResource("skill_0"), ExtResource("skill_1"), ExtResource("skill_2")])
+light_chain = Array[Resource]([ExtResource("atk_0"), ExtResource("atk_1"), ExtResource("atk_2")])
+heavy = ExtResource("atk_3")
+launcher = ExtResource("atk_4")
+air_light = ExtResource("atk_5")
+air_heavy = ExtResource("atk_6")
+light_hitbox_size = Vector3(1.1, 1.2, 2.5)
+heavy_hitbox_size = Vector3(1.4, 1.6, 3.0)
+light_delivery = "tether"
+heavy_delivery = "tether"
+light_range = 7.0
+heavy_range = 10.0
+light_projectile_speed = 29.0
+heavy_projectile_speed = 34.0

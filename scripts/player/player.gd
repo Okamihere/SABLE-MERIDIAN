@@ -75,6 +75,7 @@ var wall_movement: WallMovement
 var spell_manager: SpellManager
 ## Armas, máscaras e relíquias equipadas.
 var equipment: EquipmentComponent
+var _skill_guard_until := 0.0
 ## Magias disponíveis para conjuração.
 @export var spells: Array[SpellResource] = []
 ## Para cenas que começam depois da obtenção do cajado, como a cidade.
@@ -82,6 +83,7 @@ var equipment: EquipmentComponent
 @onready var staff_attachment: BoneAttachment3D = get_node_or_null("ModelRoot/Jester/world/Skeleton3D/StaffAttachment") as BoneAttachment3D
 @onready var dagger_right: BoneAttachment3D = get_node_or_null("ModelRoot/Jester/world/Skeleton3D/DaggerRight") as BoneAttachment3D
 @onready var dagger_left: BoneAttachment3D = get_node_or_null("ModelRoot/Jester/world/Skeleton3D/DaggerLeft") as BoneAttachment3D
+@onready var weapon_display: Node3D = get_node_or_null("WeaponDisplay") as Node3D
 @onready var laugh_mask_visual: BoneAttachment3D = get_node_or_null("ModelRoot/Jester/world/Skeleton3D/LaughMask") as BoneAttachment3D
 
 ## Tempo decorrido da esquiva atual (em segundos).
@@ -133,6 +135,8 @@ func equip_staff() -> void:
 	equipment.restore_from_manager()
 
 func _on_weapon_changed(weapon: WeaponData) -> void:
+	if is_instance_valid(weapon_display):
+		weapon_display.show_weapon(weapon.weapon_id)
 	if is_instance_valid(staff_attachment):
 		staff_attachment.visible = weapon.weapon_id == &"staff"
 	if is_instance_valid(dagger_right):
@@ -215,8 +219,13 @@ func _apply_gravity(delta: float) -> void:
 func _handle_spell_input() -> void:
 	if state_machine.state in [PlayerStateMachine.State.DODGE, PlayerStateMachine.State.HIT, PlayerStateMachine.State.DEAD]:
 		return
-	if InputMap.has_action("spell_q") and Input.is_action_just_pressed("spell_q") and spells.size() > 0:
-		_cast_spell(spells[0])
+	if equipment.weapon == null:
+		return
+	for index in 3:
+		var action: StringName = [&"spell_q", &"spell_e", &"spell_r"][index]
+		if Input.is_action_just_pressed(action) and equipment.weapon.skills.size() > index:
+			_cast_spell(equipment.weapon.skills[index])
+			return
 
 ## Conjura uma magia selecionada.
 ## @param spell A magia a ser conjurada.
@@ -399,7 +408,7 @@ func is_alive() -> bool:
 ## Verifica se o jogador está invulnerável (janela de esquiva).
 ## @return true se está invulnerável, false caso contrário.
 func _is_invulnerable() -> bool:
-	return state_machine.state == PlayerStateMachine.State.DODGE and _dodge_elapsed >= invulnerability_start and _dodge_elapsed <= invulnerability_end
+	return Time.get_ticks_msec() / 1000.0 < _skill_guard_until or (state_machine.state == PlayerStateMachine.State.DODGE and _dodge_elapsed >= invulnerability_start and _dodge_elapsed <= invulnerability_end)
 
 ## Verifica se está na janela de perfect dodge.
 ## @return true se está na janela de perfect dodge, false caso contrário.

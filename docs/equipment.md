@@ -4,16 +4,16 @@ O equipamento muda regras de combate. `EquipmentComponent` guarda uma arma, uma 
 
 | Tipo | Estado atual | Regra principal |
 |---|---|---|
-| Cajado | Jogável | Alcance médio, quatro golpes e launcher após o segundo |
-| Adagas de Cartas | Jogável | Alcance curto, cadeia rápida, ataques aéreos e corte pesado com deslocamento seguro |
-| Fios de Marionete | Definido, bloqueado | Precisa de agarrar, suspender e lançar alvos |
-| Bengala-Lâmina | Definida, bloqueada | Precisa da revelação da lâmina dentro de um combo |
-| Grimório Vivo | Definido, bloqueado | Precisa de conjurações de área e animações próprias |
+| Cajado | Jogável | Projéteis de médio alcance, impacto e launcher de combo |
+| Adagas de Cartas | Jogável | Sequência de cartas à distância e corte pesado com deslocamento seguro |
+| Fios de Marionete | Jogável | Fios de médio alcance, tração e suspensão de alvos |
+| Bengala-Lâmina | Jogável | Estocadas corpo a corpo, defesa e avanço cortante |
+| Grimório Vivo | Jogável | Página pesada de longo alcance e selos de área |
 | Máscara do Riso | Jogável | Esquiva assim que o ataque entra na janela ativa; reinicia a cadeia após o último golpe |
 | Máscara do Luto | Definida, bloqueada | Precisa de magia pesada e controle de multidão |
 | Máscara Vazia | Definida, bloqueada | Precisa de parry, teleporte defensivo e contra-ataque |
 | Bilhete do Bis | Jogável | Esquiva perfeita recarrega imediatamente o Baralho Maldito |
 
-O jogador recebe o Cajado e pode conjurar as Adagas de Cartas ao pegar o cajado no pátio. `1` escolhe o Cajado, `2` as Adagas e `Tab` alterna a Máscara do Riso. O Bilhete do Bis começa equipado como demonstração do sistema. Durante um golpe, a troca de arma fica pendente até a próxima janela de combo; o próximo ataque usa a cadeia da nova arma. O personagem visível usa apenas sprites direcionais de repouso: cajado, adagas e máscara estão ligados ao rig 3D oculto e não aparecem no sprite atual. O Bilhete do Bis é passivo e não tem indicador no HUD. Estado de arma, máscara e relíquias sobrevive à travessia entre cenas da sessão.
+O cajado e quatro expositores no pátio permitem experimentar todas as armas. `1` escolhe o Cajado, `2` as Adagas; aproximar-se de um expositor equipa a arma apresentada. `Tab` alterna a Máscara do Riso. O Bilhete do Bis começa equipado como demonstração do sistema. Durante um golpe, a troca de arma fica pendente até a próxima janela de combo; o próximo ataque usa a cadeia da nova arma. Um adereço 3D acompanha o sprite e mostra apenas a arma equipada. A máscara permanece no rig 3D oculto; o Bilhete do Bis não tem indicador no HUD. Estado de arma, máscara e relíquias sobrevive à travessia entre cenas da sessão.
 
-Para expandir, crie os `AttackData` e a animação/visual da arma, preencha seu `WeaponData` e implemente um `WeaponBehavior` quando ela tiver uma regra exclusiva. Máscaras implementam `MaskBehavior`; relíquias implementam `RelicBehavior`. Os controladores de combate continuam responsáveis pelas hitboxes, estados e cancelamentos. Os recursos definidos como bloqueados só devem receber golpes/comportamentos quando esses sistemas forem reais.
+Para expandir, crie os `AttackData` e a animação/visual da arma, preencha seu `WeaponData` e implemente um `WeaponBehavior` quando ela tiver uma regra exclusiva. Máscaras implementam `MaskBehavior`; relíquias implementam `RelicBehavior`. Os controladores de combate continuam responsáveis pelas hitboxes, estados e cancelamentos.

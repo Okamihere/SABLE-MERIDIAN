@@ -1,4 +1,4 @@
-[gd_scene load_steps=13 format=3]
+[gd_scene load_steps=15 format=3]
 
 [ext_resource type="PackedScene" path="res://scenes/player/player_rig.tscn" id="1_player"]
 [ext_resource type="PackedScene" path="res://scenes/player/camera_rig.tscn" id="2_camera"]
@@ -12,24 +12,29 @@
 [ext_resource type="PackedScene" path="res://scenes/collectibles/wall_orb.tscn" id="wall_orb"]
 [ext_resource type="Script" path="res://scripts/levels/procedural_arrival_chamber.gd" id="arrival_chamber"]
 [ext_resource type="Script" path="res://scripts/levels/visual_atmosphere.gd" id="visual_atmosphere"]
+[ext_resource type="Sky" path="res://materials/night_sky.tres" id="night_sky"]
+[ext_resource type="Material" path="res://materials/dais_core.tres" id="dais_core"]
 
 [sub_resource type="Environment" id="Environment_main"]
-background_mode = 1
+background_mode = 2
+sky = ExtResource("night_sky")
 background_color = Color(0.014, 0.018, 0.04, 1)
 background_energy_multiplier = 0.72
 ambient_light_source = 2
-ambient_light_color = Color(0.16, 0.18, 0.34, 1)
-ambient_light_energy = 0.7
+ambient_light_color = Color(0.19, 0.2, 0.35, 1)
+ambient_light_energy = 0.85
 ambient_light_sky_contribution = 0.0
 fog_enabled = true
-fog_light_color = Color(0.15, 0.12, 0.25, 1)
-fog_density = 0.008
+fog_light_color = Color(0.17, 0.12, 0.27, 1)
+fog_density = 0.01
 fog_depth_begin = 10.0
 fog_depth_end = 145.0
+fog_sky_affect = 0.2
+fog_sun_scatter = 0.16
 glow_enabled = true
-glow_intensity = 0.84
-glow_bloom = 0.065
-glow_hdr_threshold = 0.65
+glow_intensity = 1.05
+glow_bloom = 0.09
+glow_hdr_threshold = 0.75
 adjustment_enabled = true
 adjustment_contrast = 1.16
 adjustment_saturation = 1.06
@@ -48,7 +53,7 @@ script = ExtResource("visual_atmosphere")
 [node name="MoonKey" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-52, -32, 0)
 light_color = Color(0.53, 0.64, 1, 1)
-light_energy = 1.9
+light_energy = 1.75
 shadow_enabled = true
 directional_shadow_max_distance = 180.0
 
@@ -78,6 +83,20 @@ position = Vector3(0, 13, -78)
 light_color = Color(0.68, 0.10, 0.52, 1)
 light_energy = 2.2
 omni_range = 32.0
+shadow_enabled = false
+
+[node name="NorthGateRimLeft" type="OmniLight3D" parent="."]
+position = Vector3(-8.5, 10.0, -3.0)
+light_color = Color(0.48, 0.32, 0.86, 1)
+light_energy = 0.8
+omni_range = 12.0
+shadow_enabled = false
+
+[node name="NorthGateRimRight" type="OmniLight3D" parent="."]
+position = Vector3(8.5, 10.0, -3.0)
+light_color = Color(0.48, 0.32, 0.86, 1)
+light_energy = 0.8
+omni_range = 12.0
 shadow_enabled = false
 
 [node name="WorldBlockout" type="Node3D" parent="."]
@@ -156,7 +175,7 @@ position = Vector3(0, 0.39, 20)
 radius = 3.1
 height = 0.18
 sides = 24
-material = ExtResource("7_magenta")
+material = ExtResource("dais_core")
 
 [node name="WestArcadeLow" type="CSGBox3D" parent="WorldBlockout/GrandPlaza"]
 position = Vector3(-32.5, 2.0, 22)

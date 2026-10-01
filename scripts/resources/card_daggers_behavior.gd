@@ -22,11 +22,12 @@ func on_attack_started(player: PlayerController, attack: AttackData) -> void:
 		return
 	var origin := player.global_position + Vector3.UP
 	var destination := origin + direction * distance
-	var wall_query := PhysicsRayQueryParameters3D.create(origin, destination, 1)
+	var wall_query := PhysicsRayQueryParameters3D.create(origin, destination, 1 | 4)
 	wall_query.exclude = [player.get_rid()]
 	var wall := space.intersect_ray(wall_query)
 	if not wall.is_empty():
-		distance = maxf(0.0, origin.distance_to(wall.position) - 0.6)
+		var clearance := 0.8 if wall.collider is Node and wall.collider.is_in_group("enemies") else 0.6
+		distance = maxf(0.0, origin.distance_to(wall.position) - clearance)
 	var sweep := PhysicsShapeQueryParameters3D.new()
 	sweep.shape = body_shape.shape
 	var sweep_xform := body_shape.global_transform

@@ -7,5 +7,5 @@ void fragment() {
 	float vertical = smoothstep(0.0, 0.18, UV.y) * (1.0 - smoothstep(0.72, 1.0, UV.y));
 	float facing = abs(dot(normalize(NORMAL), normalize(VIEW)));
 	ALBEDO = shaft_color;
-	ALPHA = 0.23 * vertical * (0.35 + 0.65 * facing);
+	ALPHA = 0.22 * vertical * pow(facing, 1.5);
 }

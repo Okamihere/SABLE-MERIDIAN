@@ -1,4 +1,4 @@
-[gd_scene load_steps=83 format=3]
+[gd_scene load_steps=84 format=3]
 
 [ext_resource type="Script" path="res://scripts/levels/start_room.gd" id="1_script"]
 [ext_resource type="Material" path="res://materials/stone.tres" id="2_stone"]
@@ -16,24 +16,29 @@
 [ext_resource type="PackedScene" path="res://scenes/npc/contrarregra.tscn" id="mentor_npc"]
 [ext_resource type="PackedScene" path="res://scenes/levels/fog_gate.tscn" id="fog_gate"]
 [ext_resource type="PackedScene" path="res://scenes/collectibles/staff_pickup.tscn" id="staff_pickup"]
+[ext_resource type="PackedScene" path="res://scenes/collectibles/weapon_exhibit.tscn" id="weapon_exhibit"]
 [ext_resource type="Script" path="res://scripts/levels/visual_atmosphere.gd" id="visual_atmosphere"]
+[ext_resource type="Sky" path="res://materials/night_sky.tres" id="night_sky"]
 
 [sub_resource type="Environment" id="Environment_start"]
-background_mode = 1
+background_mode = 2
+sky = ExtResource("night_sky")
 background_color = Color(0.01, 0.015, 0.03, 1)
 background_energy_multiplier = 0.5
 ambient_light_source = 2
-ambient_light_color = Color(0.12, 0.14, 0.28, 1)
-ambient_light_energy = 0.57
+ambient_light_color = Color(0.16, 0.17, 0.3, 1)
+ambient_light_energy = 0.7
 fog_enabled = true
-fog_light_color = Color(0.14, 0.11, 0.24, 1)
-fog_density = 0.011
+fog_light_color = Color(0.18, 0.12, 0.29, 1)
+fog_density = 0.013
 fog_depth_begin = 6.0
 fog_depth_end = 74.0
+fog_sky_affect = 0.18
+fog_sun_scatter = 0.12
 glow_enabled = true
-glow_intensity = 0.84
-glow_bloom = 0.065
-glow_hdr_threshold = 0.65
+glow_intensity = 1.05
+glow_bloom = 0.09
+glow_hdr_threshold = 0.75
 adjustment_enabled = true
 adjustment_contrast = 1.16
 adjustment_saturation = 1.06
@@ -258,14 +263,27 @@ training_room = true
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 rotation_degrees = Vector3(-45, 30, 0)
 light_color = Color(0.5, 0.6, 1, 1)
-light_energy = 1.8
+light_energy = 1.7
 shadow_enabled = true
 
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
 position = Vector3(0, 5, 0)
 light_color = Color(0.85, 0.1, 0.4, 1)
-light_energy = 2.0
+light_energy = 1.8
 omni_range = 20.0
+
+[node name="GateRimLeft" type="OmniLight3D" parent="."]
+position = Vector3(-4, 5.1, 11.5)
+light_color = Color(0.48, 0.32, 0.86, 1)
+light_energy = 0.7
+omni_range = 8.0
+shadow_enabled = false
+
+[node name="GateRimRight" type="OmniLight3D" parent="."]
+position = Vector3(4, 5.1, 11.5)
+light_color = Color(0.48, 0.32, 0.86, 1)
+light_energy = 0.7
+omni_range = 8.0
 
 [node name="PlayerRim" type="OmniLight3D" parent="."]
 position = Vector3(1, 4, -8)
@@ -330,6 +348,49 @@ shape = SubResource("MentorBack_shape")
 
 [node name="StaffPickup" parent="." instance=ExtResource("staff_pickup")]
 position = Vector3(0, 0, -5.5)
+
+[node name="DaggersExhibit" parent="." instance=ExtResource("weapon_exhibit")]
+position = Vector3(-10.5, 0, -7.7)
+weapon_id = &"card_daggers"
+title = "Adagas de Cartas"
+description = "Q leque cortante\nE dobra veloz  •  R armadilha"
+accent = Color(0.82, 0.28, 0.93, 1)
+
+[node name="StringsExhibit" parent="." instance=ExtResource("weapon_exhibit")]
+position = Vector3(-10.5, 0, 4.4)
+weapon_id = &"puppet_strings"
+title = "Fios de Marionete"
+description = "Q puxa  •  E suspende\nR prende em área"
+accent = Color(0.35, 0.82, 0.94, 1)
+
+[node name="CaneExhibit" parent="." instance=ExtResource("weapon_exhibit")]
+position = Vector3(10.5, 0, -4.7)
+weapon_id = &"cane_blade"
+title = "Bengala-Lâmina"
+description = "Q estocada  •  E defesa\nR avanço cortante"
+accent = Color(0.95, 0.74, 0.36, 1)
+
+[node name="GrimoireExhibit" parent="." instance=ExtResource("weapon_exhibit")]
+position = Vector3(10.5, 0, 4.4)
+weapon_id = &"living_grimoire"
+title = "Grimório Vivo"
+description = "Q página arcana  •  E selo\nR explosão em área"
+accent = Color(0.57, 0.39, 0.98, 1)
+
+[node name="StaffPractice" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(2.8, 0, -2.2)
+
+[node name="DaggersPractice" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(-7, 0, -7.7)
+
+[node name="StringsPractice" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(-7, 0, 4.4)
+
+[node name="CanePractice" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(7, 0, -4.7)
+
+[node name="GrimoirePractice" parent="." instance=ExtResource("6_dummy")]
+position = Vector3(7, 0, 4.4)
 
 [node name="FloorBody" type="StaticBody3D" parent="."]
 position = Vector3(0, -0.5, 0)

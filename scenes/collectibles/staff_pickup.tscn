@@ -69,3 +69,14 @@ text = "CAJADO DO PALCO"
 font_size = 42
 outline_size = 7
 horizontal_alignment = 1
+
+[node name="Skills" type="Label3D" parent="."]
+position = Vector3(0, 2.25, 0)
+pixel_size = 0.003
+billboard = 1
+modulate = Color(0.91, 0.81, 1, 1)
+outline_modulate = Color(0.04, 0.02, 0.08, 1)
+text = "Q CARTAS  •  E RECUO  •  R LANÇAMENTO"
+font_size = 22
+outline_size = 7
+horizontal_alignment = 1

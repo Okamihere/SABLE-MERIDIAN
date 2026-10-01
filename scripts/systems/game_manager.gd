@@ -136,6 +136,8 @@ func _ensure_inputs() -> void:
 	_bind_mouse("light_attack", MOUSE_BUTTON_LEFT)
 	_bind_mouse("heavy_attack", MOUSE_BUTTON_RIGHT)
 	_bind_key("spell_q", KEY_Q)
+	_bind_key("spell_e", KEY_E)
+	_bind_key("spell_r", KEY_R)
 	_unbind_key("interact", KEY_G)
 	_bind_key("interact", KEY_F)
 	_bind_key("weapon_staff", KEY_1)

@@ -41,7 +41,8 @@ A Godot 4.x vertical slice focused on responsive third-person stylish action com
 
 - [ ] Target switching while locked on
 - [ ] Double jump as unlockable
-- [ ] Expand the playable weapon roster and combo trees beyond Staff and Card Daggers
+- [x] Expand the playable weapon roster to five weapons with Q/E/R skills
+- [ ] Expand combo trees and add further weapon variants
 - [ ] Navigation/pathfinding for complex levels
 - [ ] Boss archetypes and encounter director
 - [ ] Pooled VFX, trails, decals, dynamic audio

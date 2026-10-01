@@ -17,9 +17,23 @@ extends Node3D
 ## Referência à luz do efeito.
 @onready var light: OmniLight3D = $OmniLight3D
 @onready var shards: GPUParticles3D = $Shards
+var tint: Color = Color.TRANSPARENT
 
 ## Inicializa e anima o efeito de impacto.
 func _ready() -> void:
+	if tint.a > 0.0:
+		for visual in [core, ring]:
+			var material := visual.material_override.duplicate() as StandardMaterial3D
+			material.albedo_color = tint
+			material.emission = tint
+			visual.material_override = material
+		var shard_material := StandardMaterial3D.new()
+		shard_material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
+		shard_material.albedo_color = tint
+		shard_material.emission_enabled = true
+		shard_material.emission = tint
+		shards.material_override = shard_material
+		light.light_color = tint
 	rotation = Vector3(randf_range(-0.8, 0.8), randf_range(0.0, TAU), randf_range(-0.8, 0.8))
 	core.scale = Vector3(0.15, 0.15, 0.15)
 	ring.scale = Vector3(0.1, 0.1, 0.1)

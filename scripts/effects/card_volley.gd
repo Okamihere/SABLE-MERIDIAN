@@ -39,13 +39,23 @@ func _show_flourish(origin: Vector3, forward: Vector3) -> void:
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED
 	material.transparency = BaseMaterial3D.TRANSPARENCY_ALPHA
-	material.albedo_color = Color(1.0, 0.16, 0.56, 0.85)
+	material.albedo_color = Color(0.67, 0.3, 1.0, 0.85)
 	material.emission_enabled = true
-	material.emission = Color(0.9, 0.04, 0.38)
+	material.emission = Color(0.47, 0.1, 0.96)
 	material.emission_energy_multiplier = 2.4
 	ring.material_override = material
 	ring.scale = Vector3.ONE * 0.4
 	add_child(ring)
+	for index in 8:
+		var rune := MeshInstance3D.new()
+		var bar := BoxMesh.new()
+		bar.size = Vector3(0.035, 0.13, 0.035)
+		rune.mesh = bar
+		rune.position = Vector3(cos(index * TAU / 8.0) * 0.39, sin(index * TAU / 8.0) * 0.39, 0)
+		rune.rotation.z = index * TAU / 8.0
+		rune.material_override = material
+		add_child(rune)
+		create_tween().tween_property(rune, "position", rune.position * 1.7, 0.28)
 	var tween := create_tween().set_parallel(true)
 	tween.tween_property(ring, "scale", Vector3.ONE * 1.8, 0.28).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_OUT)
 	tween.tween_property(material, "albedo_color:a", 0.0, 0.28)

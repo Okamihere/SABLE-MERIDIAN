@@ -1,0 +1,17 @@
+[gd_resource type="Resource" script_class="AttackData" load_steps=2 format=3]
+
+[ext_resource type="Script" path="res://scripts/combat/attack_data.gd" id="1"]
+
+[resource]
+script = ExtResource("1")
+attack_id = &"grimoire_seal"
+animation_style = "heavy"
+damage = 15
+knockback = 1.5
+hit_stun = 0.42
+launch_force = 7.5
+startup = 0.16
+active = 0.18
+recovery = 0.26
+combo_window_start = 0.23
+forward_impulse = 0

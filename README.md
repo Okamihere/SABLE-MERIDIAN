@@ -8,11 +8,11 @@ Protótipo de ação em terceira pessoa feito em Godot 4.7. O pátio de treino l
 
 - Combos de quatro golpes com launcher, ataques aéreos, esquiva com invulnerabilidade e esquiva perfeita com câmera lenta.
 - Movimento e saltos em paredes, com limite ampliado por orbes coletadas; foco em alvos e ranking de estilo D–S.
-- No pátio, encostar no cajado flutuante sobre o pedestal libera os ataques corpo a corpo. `1`/`2` trocam as regras de combate entre Cajado e Adagas de Cartas; `Tab` ativa a regra da Máscara do Riso. O Bilhete do Bis é uma relíquia passiva que recarrega o Baralho Maldito após uma esquiva perfeita.
+- No pátio, o cajado e os expositores apresentam cinco armas jogáveis, cada uma com ataques básicos sem mana e skills Q/E/R. `1`/`2` selecionam Cajado e Adagas de Cartas; aproximar-se dos outros expositores equipa as demais armas. `Tab` ativa a regra da Máscara do Riso. O Bilhete do Bis recarrega o Baralho Maldito após uma esquiva perfeita.
 - HUD de vida e mana com avisos contextuais, interação e diálogo com NPC, tela inicial em televisão 3D, pausa e opções persistentes de vídeo, áudio e câmera.
-- Passagem física com névoa entre o pátio e a cidade, iluminação toon e personagem em `AnimatedSprite3D` com oito imagens direcionais de repouso. O modelo 3D do personagem permanece na cena, mas está oculto na apresentação atual.
+- Passagem física com névoa entre o pátio e a cidade, iluminação toon e personagem em `AnimatedSprite3D` com oito direções de repouso e caminhada. O modelo 3D permanece oculto na apresentação atual.
 
-O sprite atual não mostra o cajado equipado, as adagas nem a máscara; também não há indicador da relíquia no HUD. A troca de arma durante um golpe é aplicada na próxima janela do combo. `Q` lança o Baralho Maldito, que consome mana e dispara uma carta ou, após o segundo golpe encadeado, três cartas.
+Um adereço 3D junto ao sprite identifica a arma equipada; a máscara e a relíquia ainda não têm indicação no sprite/HUD. A troca de arma durante um golpe é aplicada na próxima janela do combo. Q/E/R consomem mana conforme a skill; Mouse1/Mouse2 não consomem.
 
 O progresso salvo inclui as orbes de salto em parede. **Continuar** retorna ao pátio quando há orbes salvas; posição, combate e progresso de campanha não são salvos. **Novo jogo** limpa as orbes.
 
@@ -23,10 +23,10 @@ O progresso salvo inclui as orbes de salto em parede. **Continuar** retorna ao p
 | `WASD` | Mover |
 | `Espaço` | Pular ou saltar da parede |
 | `Shift` | Esquivar |
-| Mouse esquerdo / direito | Ataque leve / pesado, após obter o cajado |
+| Mouse esquerdo / direito | Ataques básicos da arma equipada, sem custo de mana |
 | Mouse do meio | Focar ou liberar alvo |
-| `Q` | Baralho Maldito |
-| `1` / `2` | Cajado / Adagas de Cartas, após obter o cajado |
+| `Q` / `E` / `R` | Skills da arma equipada |
+| `1` / `2` | Cajado / Adagas de Cartas; outras armas nos expositores |
 | `Tab` | Equipar ou retirar a Máscara do Riso |
 | `F` | Interagir; revelar ou avançar diálogo |
 | Roda do mouse | Aproximar ou afastar câmera |

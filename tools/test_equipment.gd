@@ -22,7 +22,8 @@ func _run() -> void:
 	var equipment = player.equipment
 	assert(equipment.WEAPONS.size() == 5 and equipment.MASKS.size() == 3, "All requested identities must be present in the catalog")
 	assert(equipment.weapon.weapon_id == &"staff" and equipment.has_weapon(&"card_daggers"), "Staff pickup must unlock two playable styles")
-	assert(not equipment.request_weapon(&"puppet_strings"), "An unfinished weapon must never equip as a fake style")
+	assert(equipment.request_weapon(&"puppet_strings"), "Completed puppet strings must equip")
+	assert(equipment.request_weapon(&"staff"), "Staff must remain available after switching")
 	assert(not equipment.equip_mask(&"mourning"), "An unfinished mask must never equip as a fake style")
 	assert(equipment.relics.size() == 1 and equipment.relic_slots == 2, "Encore ticket must occupy one of two relic slots")
 	assert(not equipment.equip_relic(&"encore_ticket"), "The same relic cannot fill both slots")

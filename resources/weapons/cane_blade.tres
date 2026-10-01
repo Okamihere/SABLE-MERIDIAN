@@ -1,7 +1,25 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=2 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=12 format=3]
 [ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
+[ext_resource type="Resource" path="res://resources/spells/cane_blade_q.tres" id="skill_0"]
+[ext_resource type="Resource" path="res://resources/spells/cane_blade_e.tres" id="skill_1"]
+[ext_resource type="Resource" path="res://resources/spells/cane_blade_r.tres" id="skill_2"]
+[ext_resource type="Resource" path="res://resources/attacks/cane_light_1.tres" id="atk_0"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_light_2.tres" id="atk_1"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_light_3.tres" id="atk_2"]
+[ext_resource type="Resource" path="res://resources/attacks/cane_heavy.tres" id="atk_3"]
+[ext_resource type="Resource" path="res://resources/attacks/launcher.tres" id="atk_4"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_air_light.tres" id="atk_5"]
+[ext_resource type="Resource" path="res://resources/attacks/dagger_air_heavy.tres" id="atk_6"]
 [resource]
 script = ExtResource("weapon")
 weapon_id = &"cane_blade"
 display_name = "Bengala-Lâmina"
 identity = "A lâmina se revela dentro da cadeia. A transição é um golpe, não uma troca interrompida."
+skills = Array[Resource]([ExtResource("skill_0"), ExtResource("skill_1"), ExtResource("skill_2")])
+light_chain = Array[Resource]([ExtResource("atk_0"), ExtResource("atk_1"), ExtResource("atk_2")])
+heavy = ExtResource("atk_3")
+launcher = ExtResource("atk_4")
+air_light = ExtResource("atk_5")
+air_heavy = ExtResource("atk_6")
+light_hitbox_size = Vector3(0.95, 1.1, 1.9)
+heavy_hitbox_size = Vector3(1.25, 1.3, 2.25)

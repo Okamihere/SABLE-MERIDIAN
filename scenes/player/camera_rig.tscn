@@ -1,6 +1,14 @@
-[gd_scene load_steps=2 format=3]
+[gd_scene load_steps=5 format=3]
 
 [ext_resource type="Script" path="res://scripts/camera/camera_controller.gd" id="1_cam"]
+[ext_resource type="Shader" path="res://shaders/camera_lock_focus.gdshader" id="2_focus"]
+
+[sub_resource type="ShaderMaterial" id="LockFocusMaterial"]
+render_priority = -128
+shader = ExtResource("2_focus")
+
+[sub_resource type="QuadMesh" id="LockFocusQuad"]
+size = Vector2(2, 2)
 
 [node name="CameraRig" type="Node3D"]
 script = ExtResource("1_cam")
@@ -15,3 +23,11 @@ current = true
 fov = 72.0
 near = 0.08
 far = 400.0
+
+[node name="LockFocus" type="MeshInstance3D" parent="SpringArm3D/Camera3D"]
+visible = false
+position = Vector3(0, 0, -1)
+extra_cull_margin = 10000.0
+cast_shadow = 0
+mesh = SubResource("LockFocusQuad")
+material_override = SubResource("LockFocusMaterial")

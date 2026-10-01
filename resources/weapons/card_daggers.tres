@@ -1,4 +1,4 @@
-[gd_resource type="Resource" script_class="WeaponData" load_steps=10 format=3]
+[gd_resource type="Resource" script_class="WeaponData" load_steps=13 format=3]
 [ext_resource type="Script" path="res://scripts/resources/weapon_data.gd" id="weapon"]
 [ext_resource type="Script" path="res://scripts/resources/card_daggers_behavior.gd" id="behavior_script"]
 [ext_resource type="Resource" path="res://resources/attacks/dagger_light_1.tres" id="l1"]
@@ -7,6 +7,9 @@
 [ext_resource type="Resource" path="res://resources/attacks/dagger_blink.tres" id="heavy"]
 [ext_resource type="Resource" path="res://resources/attacks/dagger_air_light.tres" id="air_light"]
 [ext_resource type="Resource" path="res://resources/attacks/dagger_air_heavy.tres" id="air_heavy"]
+[ext_resource type="Resource" path="res://resources/spells/card_daggers_q.tres" id="skill_0"]
+[ext_resource type="Resource" path="res://resources/spells/card_daggers_e.tres" id="skill_1"]
+[ext_resource type="Resource" path="res://resources/spells/card_daggers_r.tres" id="skill_2"]
 [sub_resource type="Resource" id="behavior"]
 script = ExtResource("behavior_script")
 [resource]
@@ -22,4 +25,8 @@ light_hitbox_size = Vector3(1.1, 1.0, 1.0)
 heavy_hitbox_size = Vector3(1.25, 1.2, 1.2)
 light_hitbox_offset = Vector3(0, 1.1, 0.72)
 heavy_hitbox_offset = Vector3(0, 1.1, 0.8)
+light_delivery = "cards"
+light_range = 13.0
+light_projectile_speed = 28.0
 behavior = SubResource("behavior")
+skills = Array[Resource]([ExtResource("skill_0"), ExtResource("skill_1"), ExtResource("skill_2")])

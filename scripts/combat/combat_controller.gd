@@ -41,6 +41,9 @@ const LAUNCHER: AttackData = preload("res://resources/attacks/launcher.tres")
 const AIR_LIGHT: AttackData = preload("res://resources/attacks/air_light.tres")
 const AIR_HEAVY: AttackData = preload("res://resources/attacks/air_heavy.tres")
 const HIT_SPARK: PackedScene = preload("res://scenes/effects/hit_spark.tscn")
+const BASIC_VFX: PackedScene = preload("res://scenes/effects/weapon_basic_effect.tscn")
+const BASIC_PROJECTILE: PackedScene = preload("res://scenes/effects/weapon_basic_projectile.tscn")
+const CARD_PROJECTILE: PackedScene = preload("res://scenes/effects/cursed_card.tscn")
 
 ## Referência ao corpo do jogador.
 var _owner_body: CharacterBody3D
@@ -69,6 +72,7 @@ var _buffer_expire_at: float = 0.0
 var _active_hitbox: HitboxComponent
 ## Indica se a hitbox está ativa (janela de acerto aberta).
 var _hitbox_live: bool = false
+var _current_delivery: String = "melee"
 var _last_unarmed_notice_ms: int = -5000
 
 ## Inicializa referências e conecta sinais.
@@ -98,7 +102,10 @@ func _physics_process(delta: float) -> void:
 	var active_start := _current_attack.startup
 	var active_end := active_start + _current_attack.active
 	if not _hitbox_live and _attack_elapsed >= active_start and _attack_elapsed < active_end:
-		_active_hitbox.begin_attack()
+		if _current_delivery == "melee":
+			_active_hitbox.begin_attack()
+		else:
+			_fire_basic_attack()
 		_hitbox_live = true
 	elif _hitbox_live and _attack_elapsed >= active_end:
 		_active_hitbox.end_attack()
@@ -141,6 +148,7 @@ func cancel_attack() -> void:
 	_current_attack = null
 	_active_hitbox = null
 	_hitbox_live = false
+	_current_delivery = "melee"
 	_chain_index = 0
 	_buffered_action = &""
 
@@ -230,6 +238,7 @@ func _start_attack(data: AttackData, chain_index: int) -> void:
 	_chain_index = chain_index
 	_hitbox_live = false
 	var weapon := _equipped_weapon()
+	_current_delivery = _delivery_for(weapon, data)
 	_active_hitbox = _heavy_hitbox if (weapon != null and weapon.is_heavy_attack(data)) or data in [HEAVY, LAUNCHER, AIR_HEAVY] else _light_hitbox
 	if weapon != null:
 		_configure_hitbox_geometry(weapon)
@@ -240,6 +249,10 @@ func _start_attack(data: AttackData, chain_index: int) -> void:
 	_face_attack_target()
 	var forward := _owner_body.global_transform.basis.z.normalized()
 	_owner_body.velocity += forward * data.forward_impulse
+	if weapon != null:
+		var effect := BASIC_VFX.instantiate()
+		get_tree().current_scene.add_child(effect)
+		effect.activate(_owner_body, weapon.weapon_id, weapon.is_heavy_attack(data))
 	if _animation_controller != null:
 		_animation_controller.notify_attack_started(data)
 
@@ -250,6 +263,7 @@ func _finish_attack() -> void:
 	_current_attack = null
 	_active_hitbox = null
 	_hitbox_live = false
+	_current_delivery = "melee"
 	_chain_index = 0
 	var player := _owner_body as PlayerController
 	if player != null and player.equipment != null:
@@ -263,6 +277,45 @@ func _finish_attack() -> void:
 func _equipped_weapon() -> WeaponData:
 	var player := _owner_body as PlayerController
 	return player.equipment.weapon if player != null and player.equipment != null else null
+
+func _delivery_for(weapon: WeaponData, attack: AttackData) -> String:
+	if weapon == null or not _owner_body.is_on_floor() or attack == weapon.launcher:
+		return "melee"
+	if attack == weapon.heavy:
+		return weapon.heavy_delivery
+	if weapon.light_chain.has(attack):
+		return weapon.light_delivery
+	return "melee"
+
+func _fire_basic_attack() -> void:
+	var weapon := _equipped_weapon()
+	if weapon == null:
+		return
+	var heavy := _current_attack == weapon.heavy
+	var attack_range := weapon.heavy_range if heavy else weapon.light_range
+	var projectile_speed := weapon.heavy_projectile_speed if heavy else weapon.light_projectile_speed
+	var forward := _owner_body.global_basis.z.normalized()
+	var target := _lock_on.get_target()
+	if is_instance_valid(target):
+		forward = (target.global_position + Vector3.UP - _owner_body.global_position - Vector3.UP * 1.2).normalized()
+	if _current_delivery == "cards":
+		var attack := _current_attack
+		for side in [-1.0, 1.0]:
+			if not is_instance_valid(_owner_body):
+				return
+			var card := CARD_PROJECTILE.instantiate() as CursedCard
+			get_tree().current_scene.add_child(card)
+			card.global_position = _owner_body.global_position + Vector3.UP * 1.25 + _owner_body.global_basis.z * 0.65 + _owner_body.global_basis.x * side * 0.22
+			card.speed = projectile_speed
+			card.lifetime = attack_range / projectile_speed + 0.15
+			card.launch(_owner_body, forward.rotated(Vector3.UP, side * 0.055), attack.damage * 0.5, attack)
+			card.hitbox.damage *= 0.5
+			if side < 0.0:
+				await get_tree().create_timer(0.075).timeout
+		return
+	var projectile := BASIC_PROJECTILE.instantiate()
+	get_tree().current_scene.add_child(projectile)
+	projectile.activate(_owner_body, weapon.weapon_id, _current_attack, _current_delivery, attack_range, projectile_speed, forward)
 
 func _configure_hitbox_geometry(weapon: WeaponData) -> void:
 	var light_shape := _light_hitbox.get_node("CollisionShape3D") as CollisionShape3D
@@ -293,11 +346,20 @@ func _on_hit_landed(hurtbox: HurtboxComponent, hitbox: HitboxComponent) -> void:
 	if camera != null and camera.get_parent() != null and camera.get_parent().get_parent() is ThirdPersonCameraController:
 		var rig := camera.get_parent().get_parent() as ThirdPersonCameraController
 		rig.hit_impulse(0.07 if hitbox.launch_force <= 0.0 else 0.12, hitbox.damage >= 20.0)
-	_spawn_hit_spark(hurtbox.global_position)
+	var tint := Color.TRANSPARENT
+	var attack_name := String(hitbox.attack_id)
+	if attack_name == "cursed_card" or attack_name.begins_with("dagger_"):
+		tint = Color(0.64, 0.24, 1.0)
+	elif attack_name.begins_with("strings_"):
+		tint = Color(0.3, 0.87, 0.95)
+	elif attack_name.begins_with("grimoire_"):
+		tint = Color(0.55, 0.41, 1.0)
+	_spawn_hit_spark(hurtbox.global_position, tint)
 
 ## Spawna um efeito de impacto na posição especificada.
 ## @param world_position Posição 3D onde o efeito será criado.
-func _spawn_hit_spark(world_position: Vector3) -> void:
+func _spawn_hit_spark(world_position: Vector3, tint: Color = Color.TRANSPARENT) -> void:
 	var spark := HIT_SPARK.instantiate() as Node3D
+	spark.tint = tint
 	get_tree().current_scene.add_child(spark)
 	spark.global_position = world_position

@@ -9,14 +9,14 @@
 | `LockOnController` | Target selection & switching |
 | `PlayerStateMachine` | Centralized state management |
 | `PlayerAnimationController` | Procedural poses for the retained, currently hidden 3D rig |
-| `DirectionalSprite` | Camera-relative selection of eight idle images in `AnimatedSprite3D` |
+| `DirectionalSprite` | Camera-relative selection of eight idle/walk directions in `AnimatedSprite3D` |
 | `GameManager` | Input, style score, global time effects |
 | `Progression` | Orb IDs, wall jump limit, local save |
 | `NpcInteraction` | Escolhe o NPC disponível mais próximo, mostra F e abre o diálogo |
 
 ## Animation
 
-The visible player uses `AnimatedSprite3D` with eight camera-relative idle directions. Other visual states currently fall back to those idle frames. The retained 3D rig is hidden; its procedural `PlayerAnimationController` still runs, and its meshes follow `BoneAttachment3D`. Damage windows are controlled by combat, not animations.
+The visible player uses `AnimatedSprite3D` with eight camera-relative idle directions and walk cycles where frames are available. Other visual states fall back to idle. `WeaponDisplay` shows the equipped weapon beside the sprite. The retained 3D rig is hidden; its procedural `PlayerAnimationController` still runs, and its meshes follow `BoneAttachment3D`. Damage windows are controlled by combat, not animations.
 
 ## Wall Movement
 
@@ -36,9 +36,9 @@ To place upgrades, instance `scenes/collectibles/wall_orb.tscn` and set a unique
 
 ## Flow & Limits
 
-The starting room opens the city only when the player crosses `FogGate` under the north arch. `AreaTransition` covers the viewport with animated fog, changes scenes while fully covered, then reveals the city. The central `StaffPickup` equips the low poly staff; melee attacks stay disabled until it is collected. `GameManager.has_staff` carries the equipment state into the city. Training is optional and not saved. The city is a finite blockout; enemies do not use navigation yet. `player.tscn` is legacy; maps use `player_rig.tscn`.
+The starting room opens the city only when the player crosses `FogGate` under the north arch. `AreaTransition` covers the viewport with animated fog, changes scenes while fully covered, then reveals the city. The central `StaffPickup` and four weapon exhibits equip playable weapons and provide nearby training targets. Basic attacks remain disabled until a weapon is acquired. `GameManager.has_staff` carries the equipment state into the city. Training is optional and not saved. The city is a finite blockout; enemies do not use navigation yet. `player.tscn` is legacy; maps use `player_rig.tscn`.
 
-The camera keeps its SpringArm collision and interpolates a wheel controlled target distance between 3.2 and 9.2 units. `SpellManager` shares the player's `ManaComponent` and activates the `effect_scene` in each `SpellResource`. The equipped Baralho Maldito effect launches one card or a three card fan after the second combo hit; the cards use the same hitbox, hurtbox and style pipeline as melee attacks. See `docs/combat_abilities.md` for the other planned abilities.
+The camera keeps its SpringArm collision and interpolates a wheel controlled target distance between 3.2 and 9.2 units. Lock-on uses one depth-aware post-process pass with a smooth shared fade for blur and distant desaturation. `SpellManager` shares the player's `ManaComponent` and activates the `effect_scene` in each `SpellResource`. The Baralho Maldito launches one card or a three card fan after the second combo hit; the cards use the same hitbox, hurtbox and style pipeline as melee attacks. See `docs/combat_abilities.md` for the playable weapon skills.
 
 ## Title, HUD & Mana
 

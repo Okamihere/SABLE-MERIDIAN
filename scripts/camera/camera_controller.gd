@@ -1,6 +1,8 @@
 class_name ThirdPersonCameraController
 extends Node3D
 
+const TARGET_BLEND_DURATION := 0.22
+
 ## Câmera em terceira pessoa com órbita, suavização e enquadramento do lock-on.
 ##
 ## O SpringArm3D evita atravessar o cenário; impactos aplicam tremor e variação de FOV.
@@ -37,11 +39,20 @@ extends Node3D
 @export var lock_distance_bonus: float = 2.6
 ## FOV base da câmera.
 @export var base_fov: float = 72.0
+## Deslocamento sutil do jogador para a esquerda da composição.
+@export var composition_offset: float = 0.3
+@export var lock_composition_offset: float = 0.23
+@export var composition_smoothing: float = 7.0
+@export var lock_focus_enter_duration: float = 0.26
+@export var lock_focus_exit_duration: float = 0.38
+@export_range(0.0, 1.0, 0.01) var lock_blur_strength: float = 0.46
+@export_range(0.0, 1.0, 0.01) var lock_desaturation_strength: float = 0.84
 
 ## Referência ao SpringArm3D.
 @onready var spring_arm: SpringArm3D = $SpringArm3D
 ## Referência à Camera3D.
 @onready var camera: Camera3D = $SpringArm3D/Camera3D
+@onready var lock_focus: MeshInstance3D = $SpringArm3D/Camera3D/LockFocus
 
 ## Referência ao jogador.
 var _player: Node3D
@@ -56,6 +67,15 @@ var _shake_decay: float = 8.0
 ## Tween de FOV atual.
 var _fov_tween: Tween
 var _zoom_distance: float = 6.4
+var _composition: float = 0.0
+var _lock_focus_amount: float = 0.0
+var _focus_transition_locked: bool = false
+var _focus_transition_from: float = 0.0
+var _focus_transition_elapsed: float = 0.0
+var _focus_transition_duration: float = 0.0
+var _target_blend_elapsed: float = TARGET_BLEND_DURATION
+var _focus_material: ShaderMaterial
+var _focus_target: Node3D
 
 ## Inicializa a câmera: configura SpringArm, captura mouse e posiciona.
 func _ready() -> void:
@@ -64,6 +84,9 @@ func _ready() -> void:
 	_zoom_distance = clampf(base_distance, min_distance, max_distance)
 	spring_arm.spring_length = _zoom_distance
 	camera.fov = base_fov
+	_composition = composition_offset
+	camera.h_offset = _composition
+	_focus_material = lock_focus.material_override as ShaderMaterial
 	camera.add_to_group("game_camera")
 	Input.mouse_mode = Input.MOUSE_MODE_CAPTURED
 	if is_instance_valid(_player):
@@ -101,11 +124,22 @@ func adjust_zoom(steps: int) -> void:
 func _process(delta: float) -> void:
 	if not is_instance_valid(_player):
 		return
-	var follow_target := _player.global_position + Vector3.UP * follow_height
-	global_position = global_position.lerp(follow_target, 1.0 - exp(-camera_lag * delta))
 	var lock_target: Node3D = null
 	if _player.has_method("get_lock_target"):
 		lock_target = _player.call("get_lock_target") as Node3D
+	var locked := is_instance_valid(lock_target)
+	if locked:
+		if is_instance_valid(_focus_target) and _focus_target != lock_target and _lock_focus_amount > 0.0:
+			_focus_material.set_shader_parameter("previous_target_uv", _focus_material.get_shader_parameter("target_uv"))
+			_focus_material.set_shader_parameter("previous_target_radius", _focus_material.get_shader_parameter("target_radius"))
+			_target_blend_elapsed = 0.0
+		_focus_target = lock_target
+	var follow_target := _player.global_position + Vector3.UP * follow_height
+	if locked:
+		var toward_target := lock_target.global_position - _player.global_position
+		toward_target.y = 0.0
+		follow_target += toward_target.limit_length(7.0) * 0.12
+	global_position = global_position.lerp(follow_target, 1.0 - exp(-camera_lag * delta))
 	if is_instance_valid(lock_target):
 		var direction := lock_target.global_position - _player.global_position
 		direction.y = 0.0
@@ -118,14 +152,19 @@ func _process(delta: float) -> void:
 		spring_arm.spring_length = lerpf(spring_arm.spring_length, _zoom_distance, 1.0 - exp(-zoom_smoothing * delta))
 	rotation.y = _yaw
 	spring_arm.rotation.x = _pitch
+	_composition = lerpf(_composition, lock_composition_offset if locked else composition_offset, 1.0 - exp(-composition_smoothing * delta))
+	_advance_lock_focus(locked, delta)
+	_target_blend_elapsed = minf(_target_blend_elapsed + delta, TARGET_BLEND_DURATION)
 	_update_shake(delta)
+	_update_lock_focus(_focus_target)
 
 ## Reposiciona a câmera imediatamente para a posição do jogador.
 func snap_to_player() -> void:
 	if not is_instance_valid(_player):
 		return
 	global_position = _player.global_position + Vector3.UP * follow_height
-	camera.h_offset = 0.0
+	_composition = composition_offset
+	camera.h_offset = _composition
 	camera.v_offset = 0.0
 
 ## Define o yaw da câmera baseado na rotação do jogador.
@@ -161,9 +200,45 @@ func kick_fov(amount: float, duration: float) -> void:
 ## Atualiza o tremor de câmera.
 func _update_shake(delta: float) -> void:
 	if _shake_strength <= 0.001:
-		camera.h_offset = lerpf(camera.h_offset, 0.0, clampf(delta * 18.0, 0.0, 1.0))
+		camera.h_offset = lerpf(camera.h_offset, _composition, clampf(delta * 18.0, 0.0, 1.0))
 		camera.v_offset = lerpf(camera.v_offset, 0.0, clampf(delta * 18.0, 0.0, 1.0))
 		return
-	camera.h_offset = randf_range(-_shake_strength, _shake_strength)
+	camera.h_offset = _composition + randf_range(-_shake_strength, _shake_strength)
 	camera.v_offset = randf_range(-_shake_strength, _shake_strength)
 	_shake_strength = maxf(0.0, _shake_strength - _shake_decay * delta)
+
+func _advance_lock_focus(locked: bool, delta: float) -> void:
+	if locked != _focus_transition_locked:
+		_focus_transition_locked = locked
+		_focus_transition_from = _lock_focus_amount
+		_focus_transition_elapsed = 0.0
+		var full_duration := lock_focus_enter_duration if locked else lock_focus_exit_duration
+		_focus_transition_duration = maxf(0.001, full_duration * absf((1.0 if locked else 0.0) - _lock_focus_amount))
+	_focus_transition_elapsed = minf(_focus_transition_elapsed + delta, _focus_transition_duration)
+	var progress := smoothstep(0.0, 1.0, _focus_transition_elapsed / maxf(_focus_transition_duration, 0.001))
+	_lock_focus_amount = lerpf(_focus_transition_from, 1.0 if locked else 0.0, progress)
+
+func _update_lock_focus(target: Node3D) -> void:
+	lock_focus.visible = _focus_transition_locked or _lock_focus_amount > 0.0
+	if not lock_focus.visible:
+		_focus_target = null
+		return
+	_focus_material.set_shader_parameter("focus_progress", _lock_focus_amount)
+	_focus_material.set_shader_parameter("blur_strength", lock_blur_strength)
+	_focus_material.set_shader_parameter("desaturation_strength", lock_desaturation_strength)
+	_focus_material.set_shader_parameter("target_blend", smoothstep(0.0, TARGET_BLEND_DURATION, _target_blend_elapsed))
+	var viewport_size := get_viewport().get_visible_rect().size
+	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
+		return
+	_set_focus_subject("player", _player.global_position, 2.25, viewport_size)
+	if is_instance_valid(target):
+		_set_focus_subject("target", target.global_position, 2.1, viewport_size)
+
+func _set_focus_subject(prefix: String, world_position: Vector3, height: float, viewport_size: Vector2) -> void:
+	var feet := camera.unproject_position(world_position)
+	var head := camera.unproject_position(world_position + Vector3.UP * height)
+	var center := (feet + head) * 0.5
+	var radius_y := maxf(24.0, absf(feet.y - head.y) * 0.58 + 10.0)
+	var radius_x := radius_y * 0.65
+	_focus_material.set_shader_parameter(prefix + "_uv", center / viewport_size)
+	_focus_material.set_shader_parameter(prefix + "_radius", Vector2(radius_x / viewport_size.x, radius_y / viewport_size.y))

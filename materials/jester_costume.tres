@@ -2,6 +2,7 @@
 
 [resource]
 vertex_color_use_as_albedo = true
+diffuse_mode = 3
 metallic = 0.16
 roughness = 0.58
 cull_mode = 2
