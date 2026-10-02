@@ -160,6 +160,8 @@ func _on_mask_changed(mask: MaskData) -> void:
 		laugh_mask_visual.visible = mask != null and mask.mask_id == &"laugh"
 
 func _handle_equipment_input() -> void:
+	if NpcInteraction.is_dialogue_active():
+		return
 	if equipment.weapon == null:
 		return
 	var requested: StringName = &""
@@ -195,7 +197,7 @@ func _physics_process(delta: float) -> void:
 		_apply_gravity(delta)
 	else:
 		_air_dodge_used = false
-	if _hit_stun_left <= 0.0 and not _dead and Input.is_action_just_pressed("lock_on"):
+	if _hit_stun_left <= 0.0 and not _dead and not NpcInteraction.is_dialogue_active() and Input.is_action_just_pressed("lock_on"):
 		lock_on.toggle_lock()
 	if _hit_stun_left > 0.0:
 		_hit_stun_left -= delta
@@ -229,6 +231,8 @@ func _apply_gravity(delta: float) -> void:
 ## O primeiro espaço do repertório está ativo; outros efeitos entram sem alterar o input base.
 func _handle_spell_input() -> void:
 	if state_machine.state in [PlayerStateMachine.State.DODGE, PlayerStateMachine.State.HIT, PlayerStateMachine.State.DEAD]:
+		return
+	if NpcInteraction.is_dialogue_active():
 		return
 	if equipment.weapon == null:
 		return
@@ -340,6 +344,8 @@ func _can_start_dodge() -> bool:
 func _start_dodge() -> void:
 	if combat.is_attacking():
 		combat.cancel_attack()
+	# Clear attack buffer on dodge
+	combat.clear_buffer()
 	var input_vec := Input.get_vector("move_left", "move_right", "move_forward", "move_back")
 	_dodge_direction = _camera_relative_direction(input_vec)
 	if _dodge_direction.length_squared() <= 0.001:
@@ -380,6 +386,8 @@ func receive_hitbox(hitbox: HitboxComponent) -> bool:
 	if _dead:
 		return true
 	combat.cancel_attack()
+	# Clear attack buffer on hit stun
+	combat.clear_buffer()
 	var source_position := global_position - global_transform.basis.z
 	if is_instance_valid(hitbox.source) and hitbox.source is Node3D:
 		source_position = (hitbox.source as Node3D).global_position
@@ -446,6 +454,8 @@ func _on_died() -> void:
 	_dead = true
 	mana.regeneration_enabled = false
 	combat.cancel_attack()
+	# Clear attack buffer on death
+	combat.clear_buffer()
 	state_machine.set_state(PlayerStateMachine.State.DEAD)
 	velocity = Vector3.ZERO
 	lock_on.clear_target()

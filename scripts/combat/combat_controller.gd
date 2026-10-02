@@ -152,8 +152,15 @@ func cancel_attack() -> void:
 	_chain_index = 0
 	_buffered_action = &""
 
+## Limpa o buffer de ataque (chamado externamente ao entrar em hit stun, dodge, morte, diálogo).
+func clear_buffer() -> void:
+	_buffered_action = &""
+	_buffer_expire_at = 0.0
+
 ## Captura input de ataque e armazena no buffer.
 func _capture_attack_input() -> void:
+	if NpcInteraction.is_dialogue_active():
+		return
 	if not GameManager.has_staff:
 		if Input.is_action_just_pressed("light_attack") or Input.is_action_just_pressed("heavy_attack"):
 			var now := Time.get_ticks_msec()
@@ -183,6 +190,9 @@ func _try_start_buffered() -> void:
 		return
 	if _state_machine.state in [PlayerStateMachine.State.DODGE, PlayerStateMachine.State.HIT, PlayerStateMachine.State.DEAD]:
 		return
+	if NpcInteraction.is_dialogue_active():
+		_buffered_action = &""
+		return
 	var action := _buffered_action
 	_buffered_action = &""
 	var weapon := _equipped_weapon()
@@ -200,6 +210,9 @@ func _continue_from_buffer() -> void:
 		_buffered_action = &""
 		return
 	if _state_machine.state in [PlayerStateMachine.State.DODGE, PlayerStateMachine.State.HIT, PlayerStateMachine.State.DEAD]:
+		_buffered_action = &""
+		return
+	if NpcInteraction.is_dialogue_active():
 		_buffered_action = &""
 		return
 	var action := _buffered_action

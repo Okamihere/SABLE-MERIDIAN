@@ -132,6 +132,9 @@ func _on_dialogue_started() -> void:
 	_dialogue_player = GameManager.player as PlayerController
 	if is_instance_valid(_dialogue_player):
 		_dialogue_player.set_physics_process(false)
+		# Clear attack buffer when dialogue starts
+		if _dialogue_player.combat != null:
+			_dialogue_player.combat.clear_buffer()
 
 func _on_dialogue_ended() -> void:
 	if is_instance_valid(_dialogue_player):
