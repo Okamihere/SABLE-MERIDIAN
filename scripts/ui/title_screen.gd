@@ -39,6 +39,8 @@ func _ready() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	get_tree().paused = false
 	camera.look_at(Vector3(0, 1.75, 0))
+	if get_viewport().is_connected("size_changed", _update_camera_distance):
+		get_viewport().size_changed.disconnect(_update_camera_distance)
 	get_viewport().size_changed.connect(_update_camera_distance)
 	_update_camera_distance()
 	_build_stage()
@@ -198,6 +200,7 @@ func _set_hovered_prop(prop: Node3D) -> void:
 			previous.kill()
 		var old_tween := create_tween()
 		old_tween.tween_property(_hovered_prop, "scale", Vector3.ONE, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		old_tween.finished.connect(func(): _hover_tweens.erase(_hovered_prop))
 		_hover_tweens[_hovered_prop] = old_tween
 	_hovered_prop = prop
 	if is_instance_valid(prop):
@@ -206,6 +209,7 @@ func _set_hovered_prop(prop: Node3D) -> void:
 			previous.kill()
 		var hover_tween := create_tween()
 		hover_tween.tween_property(prop, "scale", Vector3.ONE * 1.018, 0.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+		hover_tween.finished.connect(func(): _hover_tweens.erase(prop))
 		_hover_tweens[prop] = hover_tween
 
 func _react_prop(prop: Node3D) -> void:
@@ -225,6 +229,7 @@ func _react_prop(prop: Node3D) -> void:
 		var case_reaction := create_tween()
 		case_reaction.tween_property(prop, "rotation:z", direction * 0.012, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		case_reaction.tween_property(prop, "rotation:z", 0.0, 0.58).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
+		case_reaction.finished.connect(func(): _prop_tweens.erase(prop))
 		_prop_tweens[prop] = case_reaction
 		return
 	var tilt := Vector3.ZERO
@@ -248,6 +253,7 @@ func _react_prop(prop: Node3D) -> void:
 	reaction.chain().set_parallel(true)
 	reaction.tween_property(prop, "rotation", rest_rotation, 0.58).set_trans(Tween.TRANS_ELASTIC).set_ease(Tween.EASE_OUT)
 	reaction.tween_property(prop, "position", rest_position, 0.58).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	reaction.finished.connect(func(): _prop_tweens.erase(prop))
 	_prop_tweens[prop] = reaction
 
 func _flicker_screen() -> void:

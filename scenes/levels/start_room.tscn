@@ -11,7 +11,7 @@
 [ext_resource type="PackedScene" path="res://scenes/npc/contrarregra.tscn" id="mentor_npc"]
 [ext_resource type="Sky" uid="uid://cttkl06osuqh7" path="res://materials/night_sky.tres" id="night_sky"]
 [ext_resource type="PackedScene" path="res://scenes/ui/hud.tscn" id="shared_hud"]
-[ext_resource type="PackedScene" path="res://scenes/collectibles/staff_pickup.tscn" id="staff_pickup"]
+[ext_resource type="PackedScene" uid="uid://xil2lunxiiu3" path="res://scenes/collectibles/staff_pickup.tscn" id="staff_pickup"]
 [ext_resource type="Script" uid="uid://56intx54chci" path="res://scripts/levels/visual_atmosphere.gd" id="visual_atmosphere"]
 [ext_resource type="PackedScene" path="res://scenes/collectibles/wall_orb.tscn" id="wall_orb"]
 [ext_resource type="PackedScene" path="res://scenes/collectibles/weapon_exhibit.tscn" id="weapon_exhibit"]
@@ -286,7 +286,7 @@ mesh = SubResource("MentorBack_mesh")
 shape = SubResource("MentorBack_shape")
 
 [node name="StaffPickup" parent="." unique_id=1155609842 instance=ExtResource("staff_pickup")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.05802512)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -1.4965234)
 
 [node name="DaggersExhibit" parent="." unique_id=1133327833 instance=ExtResource("weapon_exhibit")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -10.5, 0, -7.7)

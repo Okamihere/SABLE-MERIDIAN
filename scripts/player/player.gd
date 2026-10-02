@@ -195,7 +195,7 @@ func _physics_process(delta: float) -> void:
 		_apply_gravity(delta)
 	else:
 		_air_dodge_used = false
-	if Input.is_action_just_pressed("lock_on"):
+	if _hit_stun_left <= 0.0 and not _dead and Input.is_action_just_pressed("lock_on"):
 		lock_on.toggle_lock()
 	if _hit_stun_left > 0.0:
 		_hit_stun_left -= delta

@@ -30,6 +30,8 @@ var _cursor: ColorRect
 var _cursor_tween: Tween
 var _description_tween: Tween
 var _boot_tween: Tween
+var _style_selected: StyleBoxFlat
+var _style_normal: StyleBoxFlat
 
 func _ready() -> void:
 	mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -43,6 +45,24 @@ func _ready() -> void:
 	_cursor.position = Vector2(0, 8)
 	_cursor.size = Vector2(5, 38)
 	menu.add_child(_cursor)
+	
+	# Cache styles to avoid allocation on every _update_styles call
+	_style_selected = StyleBoxFlat.new()
+	_style_selected.bg_color = Color(0.15, 0.28, 0.29, 0.75)
+	_style_selected.border_color = Color(0.84, 0.66, 0.43, 0.82)
+	_style_selected.set_border_width_all(1)
+	_style_selected.set_corner_radius_all(5)
+	_style_selected.content_margin_left = 28
+	_style_selected.content_margin_right = 16
+	
+	_style_normal = StyleBoxFlat.new()
+	_style_normal.bg_color = Color(0.04, 0.09, 0.115, 0.44)
+	_style_normal.border_color = Color(0.39, 0.57, 0.56, 0.25)
+	_style_normal.set_border_width_all(1)
+	_style_normal.set_corner_radius_all(5)
+	_style_normal.content_margin_left = 28
+	_style_normal.content_margin_right = 16
+	
 	boot_curtain.pivot_offset = size * 0.5
 	set_continue_available(false)
 	select_index(0, false)
@@ -182,13 +202,7 @@ func _update_styles() -> void:
 		var button := buttons[index]
 		var selected := index == selected_index
 		var disabled := index == 1 and not continue_available
-		var style := StyleBoxFlat.new()
-		style.bg_color = Color(0.15, 0.28, 0.29, 0.75) if selected else Color(0.04, 0.09, 0.115, 0.44)
-		style.border_color = Color(0.84, 0.66, 0.43, 0.82) if selected else Color(0.39, 0.57, 0.56, 0.25)
-		style.set_border_width_all(1)
-		style.set_corner_radius_all(5)
-		style.content_margin_left = 28
-		style.content_margin_right = 16
+		var style := _style_selected if selected else _style_normal
 		button.add_theme_stylebox_override("normal", style)
 		button.add_theme_stylebox_override("hover", style)
 		button.add_theme_stylebox_override("pressed", style)

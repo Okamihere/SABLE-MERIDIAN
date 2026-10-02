@@ -82,4 +82,6 @@ func _reset_transition() -> void:
 	curtain.visible = false
 	_playback = null
 	_audio_player.stop()
+	_audio_player.queue_free()
+	_audio_player = null
 	is_travelling = false
