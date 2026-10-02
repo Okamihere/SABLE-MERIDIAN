@@ -47,6 +47,8 @@ const TARGET_BLEND_DURATION := 0.22
 @export var lock_focus_exit_duration: float = 0.38
 @export_range(0.0, 1.0, 0.01) var lock_blur_strength: float = 0.46
 @export_range(0.0, 1.0, 0.01) var lock_desaturation_strength: float = 0.84
+@export_range(0.0, 200.0, 0.1) var desaturation_near: float = 8.0
+@export_range(0.0, 500.0, 0.1) var desaturation_far: float = 32.0
 
 ## Referência ao SpringArm3D.
 @onready var spring_arm: SpringArm3D = $SpringArm3D
@@ -82,6 +84,13 @@ func _ready() -> void:
 	mouse_sensitivity = GameManager.camera_sensitivity
 	GameManager.camera_sensitivity_changed.connect(_on_camera_sensitivity_changed)
 	_player = get_node_or_null(player_path) as Node3D
+	
+	# Initialize shader parameters with current values
+	_focus_material = lock_focus.material_override as ShaderMaterial
+	if _focus_material:
+		_focus_material.set_shader_parameter("desaturation_near", desaturation_near)
+		_focus_material.set_shader_parameter("desaturation_far", desaturation_far)
+		_focus_material.set_shader_parameter("target_blend", 1.0)
 
 ## Callback quando a sensibilidade da câmera muda (via GameManager).
 func _on_camera_sensitivity_changed(value: float) -> void:
@@ -132,13 +141,53 @@ func _process(delta: float) -> void:
 	var lock_target: Node3D = null
 	if _player.has_method("get_lock_target"):
 		lock_target = _player.call("get_lock_target") as Node3D
+	
+	# Validate lock_target: must be alive and in range
+	if is_instance_valid(lock_target):
+		if lock_target.has_method("is_alive") and not lock_target.call("is_alive"):
+			lock_target = null
+	
 	var locked := is_instance_valid(lock_target)
+	
+	# First, advance the lock focus transition (starts/stops transition)
+	# This must run BEFORE _update_lock_focus so the transition state is updated
+	_advance_lock_focus(locked, delta)
+	
+	# Then update lock focus with the validated target (sets shader params)
+	# This must run BEFORE handling acquisition logic so shader params are set
+	_update_lock_focus(lock_target)
+	
+	# Handle target acquisition
 	if locked:
-		if is_instance_valid(_focus_target) and _focus_target != lock_target and _lock_focus_amount > 0.0:
+		var first_acquisition := not is_instance_valid(_focus_target)
+		var target_switched := is_instance_valid(_focus_target) and _focus_target != lock_target and _lock_focus_amount > 0.0
+		
+		if first_acquisition:
+			# Initialize previous_target from current target on FIRST acquisition
+			print("DEBUG: First acquisition - initializing previous_target")
+			var prev_uv = _focus_material.get_shader_parameter("target_uv")
+			var prev_radius = _focus_material.get_shader_parameter("target_radius")
+			print("DEBUG: target_uv = ", prev_uv, " target_radius = ", prev_radius)
+			_focus_material.set_shader_parameter("previous_target_uv", prev_uv)
+			_focus_material.set_shader_parameter("previous_target_radius", prev_radius)
+			_target_blend_elapsed = 0.0
+		elif target_switched:
+			# Switching targets: copy current to previous, reset blend
 			_focus_material.set_shader_parameter("previous_target_uv", _focus_material.get_shader_parameter("target_uv"))
 			_focus_material.set_shader_parameter("previous_target_radius", _focus_material.get_shader_parameter("target_radius"))
 			_target_blend_elapsed = 0.0
+		
 		_focus_target = lock_target
+	
+	# Handle target loss
+	if not locked and is_instance_valid(_focus_target):
+		# Lock lost: clear focus_target immediately to prevent dead target leakage
+		_focus_target = null
+		# Clear previous_target in shader to avoid stale data on next acquisition
+		_focus_material.set_shader_parameter("previous_target_uv", Vector2(0.5, 0.5))
+		_focus_material.set_shader_parameter("previous_target_radius", Vector2(0.08, 0.16))
+		_target_blend_elapsed = 0.0
+	
 	var follow_target := _player.global_position + Vector3.UP * follow_height
 	if locked:
 		var toward_target := lock_target.global_position - _player.global_position
@@ -158,10 +207,8 @@ func _process(delta: float) -> void:
 	rotation.y = _yaw
 	spring_arm.rotation.x = _pitch
 	_composition = lerpf(_composition, lock_composition_offset if locked else composition_offset, 1.0 - exp(-composition_smoothing * delta))
-	_advance_lock_focus(locked, delta)
 	_target_blend_elapsed = minf(_target_blend_elapsed + delta, TARGET_BLEND_DURATION)
 	_update_shake(delta)
-	_update_lock_focus(_focus_target)
 
 ## Reposiciona a câmera imediatamente para a posição do jogador.
 func snap_to_player() -> void:
@@ -233,6 +280,8 @@ func _update_lock_focus(target: Node3D) -> void:
 	_focus_material.set_shader_parameter("focus_progress", _lock_focus_amount)
 	_focus_material.set_shader_parameter("blur_strength", lock_blur_strength)
 	_focus_material.set_shader_parameter("desaturation_strength", lock_desaturation_strength)
+	_focus_material.set_shader_parameter("desaturation_near", desaturation_near)
+	_focus_material.set_shader_parameter("desaturation_far", desaturation_far)
 	_focus_material.set_shader_parameter("target_blend", smoothstep(0.0, TARGET_BLEND_DURATION, _target_blend_elapsed))
 	var viewport_size := get_viewport().get_visible_rect().size
 	if viewport_size.x <= 0.0 or viewport_size.y <= 0.0:
@@ -240,6 +289,11 @@ func _update_lock_focus(target: Node3D) -> void:
 	_set_focus_subject("player", _player.global_position, 2.25, viewport_size)
 	if is_instance_valid(target):
 		_set_focus_subject("target", target.global_position, 2.1, viewport_size)
+	else:
+		# Target lost/dead: ensure target_uv/radius are set to defaults
+		# so the shader doesn't use stale data
+		_focus_material.set_shader_parameter("target_uv", Vector2(0.5, 0.5))
+		_focus_material.set_shader_parameter("target_radius", Vector2(0.08, 0.16))
 
 func _set_focus_subject(prefix: String, world_position: Vector3, height: float, viewport_size: Vector2) -> void:
 	var feet := camera.unproject_position(world_position)
