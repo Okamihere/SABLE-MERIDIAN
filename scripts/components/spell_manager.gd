@@ -26,6 +26,8 @@ var _cooldowns: Dictionary = {}
 ## Inicializa o SpellManager: obtém referência ao ManaComponent.
 func _ready() -> void:
 	_mana = get_node_or_null(mana_component_path) as ManaComponent
+	if _mana == null:
+		push_warning("SpellManager: ManaComponent não encontrado no caminho '%s'" % mana_component_path)
 
 ## Processa cooldowns das magias.
 func _process(delta: float) -> void:
@@ -39,12 +41,17 @@ func _process(delta: float) -> void:
 ## @return true se a magia foi conjurada, false caso contrário.
 func cast_spell(spell: SpellResource, caster: Node3D = null) -> bool:
 	if spell == null:
+		push_warning("SpellManager: tentativa de conjurar magia nula")
 		return false
-	if caster != null and (spell.effect_scene == null or not spell.effect_scene.can_instantiate()):
+	if spell.effect_scene == null or not spell.effect_scene.can_instantiate():
+		push_warning("SpellManager: magia '%s' tem effect_scene inválida ou não instanciável" % spell.spell_name)
 		return false
 	if not _can_cast(spell):
 		return false
-	if _mana != null and not _mana.try_spend(spell.mana_cost):
+	if _mana == null:
+		push_warning("SpellManager: ManaComponent não disponível, impossível gastar mana")
+		return false
+	if not _mana.try_spend(spell.mana_cost):
 		return false
 	_start_cooldown(spell)
 	if caster != null:

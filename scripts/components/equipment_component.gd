@@ -113,8 +113,11 @@ func unequip_relic(id: StringName) -> bool:
 func restore_from_manager() -> void:
 	unlock_weapon(&"staff")
 	unlock_weapon(&"card_daggers")
+	# Only unlock weapons that are actually playable
 	for id in [&"puppet_strings", &"cane_blade", &"living_grimoire"]:
-		unlock_weapon(id)
+		var data := WEAPONS.get(id) as WeaponData
+		if data != null and data.is_playable():
+			unlock_weapon(id)
 	var selected: StringName = GameManager.equipped_weapon_id
 	_equip_weapon(selected if has_weapon(selected) else &"staff")
 	equip_mask(GameManager.equipped_mask_id)

@@ -21,7 +21,7 @@ func _process(delta: float) -> void:
 func _physics_process(_delta: float) -> void:
 	if _activated or not is_instance_valid(_player_inside):
 		return
-	if _player_inside.global_position.z >= global_position.z + 6.0 and absf(_player_inside.global_position.x - global_position.x) < 3.0:
+	if _player_inside.is_alive() and _player_inside.global_position.z >= global_position.z + 6.0 and absf(_player_inside.global_position.x - global_position.x) < 3.0:
 		_activated = true
 		GameManager.reset_style()
 		AreaTransition.travel_to(destination_scene)

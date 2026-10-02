@@ -43,7 +43,8 @@ func prepare_scene(scene_path: String) -> void:
 
 func travel_to(scene_path: String) -> void:
 	if is_travelling:
-		return
+		# Clean up previous transition if travel_to is called again
+		_reset_transition()
 	is_travelling = true
 	curtain.visible = true
 	prepare_scene(scene_path)
