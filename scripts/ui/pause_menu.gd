@@ -295,7 +295,10 @@ func _setup_options_pages() -> void:
 	_vsync_selector.item_selected.connect(_on_vsync_selected)
 	_fps_selector = _add_selector(_tab_pages[0], "Limite de FPS", ["30", "60", "120", "Ilimitado"])
 	_fps_selector.item_selected.connect(func(index: int) -> void:
-		Engine.max_fps = [30, 60, 120, 0][index]
+		var new_fps := [30, 60, 120, 0][index]
+		Engine.max_fps = new_fps
+		if GameManager.has_method("_set_user_max_fps"):
+			GameManager._set_user_max_fps(new_fps)
 		_save_settings()
 	)
 	for bus_name in ["Master", "Music", "SFX"]:
@@ -560,6 +563,8 @@ func _load_settings() -> void:
 	var fps := int(config.get_value("video", "fps_limit", Engine.max_fps))
 	if fps in [0, 30, 60, 120]:
 		Engine.max_fps = fps
+		if GameManager.has_method("_set_user_max_fps"):
+			GameManager._set_user_max_fps(fps)
 	for bus_name in _volume_sliders:
 		var volume := clampf(float(config.get_value("audio", bus_name.to_lower(), 100.0)), 0.0, 100.0)
 		_on_volume_changed_without_save(volume, bus_name)

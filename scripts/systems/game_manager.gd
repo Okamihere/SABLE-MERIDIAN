@@ -58,6 +58,10 @@ var style_rank: String:
 
 ## Geração atual de time scale (para evitar conflitos de timers).
 var _time_scale_generation: int = 0
+## FPS alvo quando a janela perde foco.
+const BACKGROUND_FPS: int = 30
+## FPS configurado pelo usuário (restaurado ao ganhar foco).
+var _user_max_fps: int = 0
 
 ## Inicializa o GameManager: cria StyleMeter e configura inputs.
 func _ready() -> void:
@@ -67,12 +71,27 @@ func _ready() -> void:
 	add_child(style_meter)
 	style_meter.changed.connect(_on_style_meter_changed)
 	_ensure_inputs()
+	# Garante que o jogo rode em segundo plano e captura FPS do usuário
+	Application.run_in_background = true
+	_user_max_fps = Engine.max_fps
 
 ## Processa input de debug. O menu de pausa cuida do Esc e do cursor.
 func _process(_delta: float) -> void:
 	if Input.is_action_just_pressed("debug_toggle"):
 		DEBUG_COMBAT = not DEBUG_COMBAT
 		debug_changed.emit(DEBUG_COMBAT)
+
+## Detecta ganho/perda de foco da janela para ajustar FPS.
+func _notification(what: int) -> void:
+	match what:
+		NOTIFICATION_WM_FOCUS_OUT:
+			# Janela perdeu foco: limita a 30 FPS para economizar CPU/GPU
+			if Engine.max_fps != BACKGROUND_FPS:
+				Engine.max_fps = BACKGROUND_FPS
+		NOTIFICATION_WM_FOCUS_IN:
+			# Janela recuperou foco: restaura FPS do usuário
+			if _user_max_fps > 0 and Engine.max_fps != _user_max_fps:
+				Engine.max_fps = _user_max_fps
 
 ## Registra o jogador global.
 ## @param value Nó do jogador.
@@ -87,6 +106,14 @@ func set_camera_sensitivity(value: float) -> void:
 		return
 	camera_sensitivity = value
 	camera_sensitivity_changed.emit(value)
+
+## Atualiza o FPS máximo do usuário (chamado ao mudar configurações).
+## @param fps Novo limite de FPS (0 = ilimitado).
+func _set_user_max_fps(fps: int) -> void:
+	_user_max_fps = fps
+	# Se a janela está focada, aplica imediatamente
+	if OS.window_has_focus() and Engine.max_fps != fps:
+		Engine.max_fps = fps
 
 ## Registra um golpe que acertou.
 ## @param attack_id Identificador do ataque.
