@@ -71,8 +71,6 @@ func _ready() -> void:
 	add_child(style_meter)
 	style_meter.changed.connect(_on_style_meter_changed)
 	_ensure_inputs()
-	# Garante que o jogo rode em segundo plano e captura FPS do usuário
-	Application.run_in_background = true
 	_user_max_fps = Engine.max_fps
 
 ## Processa input de debug. O menu de pausa cuida do Esc e do cursor.
@@ -84,11 +82,11 @@ func _process(_delta: float) -> void:
 ## Detecta ganho/perda de foco da janela para ajustar FPS.
 func _notification(what: int) -> void:
 	match what:
-		NOTIFICATION_WM_FOCUS_OUT:
+		NOTIFICATION_APPLICATION_FOCUS_OUT:
 			# Janela perdeu foco: limita a 30 FPS para economizar CPU/GPU
 			if Engine.max_fps != BACKGROUND_FPS:
 				Engine.max_fps = BACKGROUND_FPS
-		NOTIFICATION_WM_FOCUS_IN:
+		NOTIFICATION_APPLICATION_FOCUS_IN:
 			# Janela recuperou foco: restaura FPS do usuário
 			if _user_max_fps > 0 and Engine.max_fps != _user_max_fps:
 				Engine.max_fps = _user_max_fps
@@ -111,9 +109,8 @@ func set_camera_sensitivity(value: float) -> void:
 ## @param fps Novo limite de FPS (0 = ilimitado).
 func _set_user_max_fps(fps: int) -> void:
 	_user_max_fps = fps
-	# Se a janela está focada, aplica imediatamente
-	if OS.window_has_focus() and Engine.max_fps != fps:
-		Engine.max_fps = fps
+	# Aplica imediatamente; o _notification() vai restaurar BACKGROUND_FPS se perder foco
+	Engine.max_fps = fps
 
 ## Registra um golpe que acertou.
 ## @param attack_id Identificador do ataque.

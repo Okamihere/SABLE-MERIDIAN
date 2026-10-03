@@ -161,11 +161,17 @@ func _show_next_notice() -> void:
 	entrance.tween_property(notice, "modulate:a", 1.0, 0.28)
 	entrance.tween_property(notice, "scale", Vector2.ONE, 0.42)
 	await entrance.finished
+	if not is_instance_valid(notice) or not is_inside_tree():
+		return
 	await get_tree().create_timer(float(item["duration"])).timeout
+	if not is_instance_valid(notice) or not is_inside_tree():
+		return
 	var exit_tween := create_tween().set_parallel(true)
 	exit_tween.tween_property(notice, "position:y", final_position.y - 12.0, 0.3).set_trans(Tween.TRANS_CUBIC).set_ease(Tween.EASE_IN)
 	exit_tween.tween_property(notice, "modulate:a", 0.0, 0.3)
 	await exit_tween.finished
+	if not is_instance_valid(notice) or not is_inside_tree():
+		return
 	notice.visible = false
 	_show_next_notice()
 

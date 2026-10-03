@@ -430,7 +430,7 @@ func _is_invulnerable() -> bool:
 ## Verifica se está na janela de perfect dodge.
 ## @return true se está na janela de perfect dodge, false caso contrário.
 func _is_perfect_dodge_window() -> bool:
-	return _is_invulnerable() and _dodge_elapsed <= invulnerability_start + 0.10
+	return state_machine.state == PlayerStateMachine.State.DODGE and _dodge_elapsed >= invulnerability_start and _dodge_elapsed <= invulnerability_start + 0.10
 
 ## Dispara efeitos de perfect dodge: slow motion, câmera e estilo.
 func _trigger_perfect_dodge() -> void:

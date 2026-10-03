@@ -51,14 +51,23 @@ func cast_spell(spell: SpellResource, caster: Node3D = null) -> bool:
 	if _mana == null:
 		push_warning("SpellManager: ManaComponent não disponível, impossível gastar mana")
 		return false
-	if not _mana.try_spend(spell.mana_cost):
-		return false
-	_start_cooldown(spell)
 	if caster != null:
 		var effect := spell.effect_scene.instantiate()
-		get_tree().current_scene.add_child(effect)
-		if effect.has_method("activate"):
-			effect.activate(caster, spell)
+		var scene := get_tree().current_scene
+		if scene == null or not effect.has_method("activate"):
+			effect.queue_free()
+			push_warning("SpellManager: magia '%s' sem cena ativa ou sem método activate" % spell.spell_name)
+			return false
+		if not _mana.try_spend(spell.mana_cost):
+			effect.queue_free()
+			return false
+		_start_cooldown(spell)
+		scene.add_child(effect)
+		effect.activate(caster, spell)
+	else:
+		if not _mana.try_spend(spell.mana_cost):
+			return false
+		_start_cooldown(spell)
 	spell_cast.emit(spell)
 	return true
 
@@ -84,6 +93,8 @@ func _cooldown_key(spell: SpellResource) -> StringName:
 ## @param spell Recurso da habilidade.
 ## @return Tempo restante de cooldown (em segundos).
 func get_cooldown_remaining(spell: SpellResource) -> float:
+	if spell == null:
+		return 0.0
 	return _cooldowns.get(_cooldown_key(spell), 0.0)
 
 ## Regras de relíquias podem devolver uma magia sem alterar seu custo ou dano.

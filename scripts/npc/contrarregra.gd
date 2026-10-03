@@ -64,7 +64,7 @@ func can_interact() -> bool:
 	if _dialogue_active:
 		return false
 	var player := GameManager.player
-	if player == null:
+	if not is_instance_valid(player):
 		return false
 	return global_position.distance_to(player.global_position) <= interaction_distance
 

@@ -87,7 +87,11 @@ func _on_hit_landed(hurtbox: HurtboxComponent, attack_hitbox: HitboxComponent) -
 func _show_impact() -> void:
 	var burst := Node3D.new()
 	burst.name = "CursedCardImpact"
-	get_tree().current_scene.add_child(burst)
+	var scene := get_tree().current_scene
+	if scene == null:
+		burst.queue_free()
+		return
+	scene.add_child(burst)
 	burst.global_position = global_position
 	var material := StandardMaterial3D.new()
 	material.shading_mode = BaseMaterial3D.SHADING_MODE_UNSHADED

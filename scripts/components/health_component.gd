@@ -43,7 +43,7 @@ func damage(amount: float) -> bool:
 ## Cura o personagem.
 ## @param amount Quantidade de vida a recuperar (valores <= 0 são ignorados).
 func heal(amount: float) -> void:
-	if amount <= 0.0 or current_health <= 0.0:
+	if amount <= 0.0 or current_health <= 0.0 or current_health >= max_health:
 		return
 	var previous := current_health
 	current_health = minf(max_health, current_health + amount)

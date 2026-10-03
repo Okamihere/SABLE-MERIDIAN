@@ -20,7 +20,11 @@ func activate(caster: Node3D, spell: SpellResource) -> void:
 		offsets.append(0.0)
 	for index in offsets.size():
 		var card := CARD_SCENE.instantiate() as CursedCard
-		get_tree().current_scene.add_child(card)
+		var scene := get_tree().current_scene
+		if scene == null:
+			card.queue_free()
+			return
+		scene.add_child(card)
 		var angle := offsets[index]
 		var direction := forward.rotated(Vector3.UP, angle).normalized()
 		card.global_position = caster.global_position + Vector3.UP * 1.35 + forward * 0.85 + caster.global_basis.x * (index - (offsets.size() - 1) * 0.5) * 0.22

@@ -82,7 +82,6 @@ func _reset_transition() -> void:
 	_set_coverage(0.0)
 	curtain.visible = false
 	_playback = null
-	_audio_player.stop()
-	_audio_player.queue_free()
-	_audio_player = null
+	if _audio_player != null:
+		_audio_player.stop()
 	is_travelling = false

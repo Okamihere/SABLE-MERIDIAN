@@ -46,7 +46,9 @@ func _process(delta: float) -> void:
 	position = position.lerp(target, clampf(delta * 18.0, 0.0, 1.0))
 	look_at(camera.global_position, Vector3.UP)
 	rotate_y(PI)
-	var prop := _props[_equipped] as Node3D
+	var prop := _props.get(_equipped) as Node3D
+	if prop == null:
+		return
 	var attack_tilt := 0.0
 	var idle_tilt := 0.0
 	match _equipped:

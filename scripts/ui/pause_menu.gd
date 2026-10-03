@@ -117,7 +117,7 @@ func open_pause() -> void:
 	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
 	overlay.visible = true
 	_show_pause_page()
-	get_tree().paused = true
+	get_tree().paused = not _from_title
 	resume_button.grab_focus()
 
 ## Reaproveita as opções de vídeo no menu principal sem exibir a página de pausa.

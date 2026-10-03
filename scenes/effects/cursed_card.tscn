@@ -1,30 +1,28 @@
-[gd_scene load_steps=12 format=3]
+[gd_scene format=3 uid="uid://buh1qaluwchf2"]
 
-[ext_resource type="Script" path="res://scripts/effects/cursed_card.gd" id="1_card"]
-[ext_resource type="Script" path="res://scripts/components/hitbox_component.gd" id="2_hitbox"]
+[ext_resource type="Script" uid="uid://bf8v2of60nqbl" path="res://scripts/effects/cursed_card.gd" id="1_card"]
+[ext_resource type="Script" uid="uid://b3t06xn7ye3xb" path="res://scripts/components/hitbox_component.gd" id="2_hitbox"]
 
-[sub_resource type="BoxShape3D" id="CardShape"]
-size = Vector3(0.52, 0.3, 0.7)
+[sub_resource type="SphereShape3D" id="WorldShape"]
+radius = 0.24
 
-[sub_resource type="BoxMesh" id="CardMesh"]
-size = Vector3(0.42, 0.62, 0.045)
+[sub_resource type="StandardMaterial3D" id="VioletBorder"]
+shading_mode = 0
+albedo_color = Color(0.22, 0.035, 0.44, 1)
 
 [sub_resource type="BoxMesh" id="BorderMesh"]
 size = Vector3(0.53, 0.73, 0.035)
 
-[sub_resource type="StandardMaterial3D" id="VioletBorder"]
-albedo_color = Color(0.22, 0.035, 0.44, 1)
-emission_enabled = true
-emission = Color(0.38, 0.07, 0.82, 1)
-emission_energy_multiplier = 1.7
-shading_mode = 0
-
 [sub_resource type="StandardMaterial3D" id="Ivory"]
-albedo_color = Color(0.79, 0.72, 0.96, 1)
-emission_enabled = true
-emission = Color(0.25, 0.08, 0.55, 1)
-emission_energy_multiplier = 1.4
 shading_mode = 0
+albedo_color = Color(0.79, 0.72, 0.96, 1)
+
+[sub_resource type="BoxMesh" id="CardMesh"]
+size = Vector3(0.42, 0.62, 0.045)
+
+[sub_resource type="StandardMaterial3D" id="Sigil"]
+shading_mode = 0
+albedo_color = Color(0.49, 0.13, 0.94, 1)
 
 [sub_resource type="BoxMesh" id="SigilMesh"]
 size = Vector3(0.22, 0.22, 0.055)
@@ -35,90 +33,75 @@ outer_radius = 0.18
 rings = 8
 ring_segments = 20
 
-[sub_resource type="StandardMaterial3D" id="Sigil"]
-albedo_color = Color(0.49, 0.13, 0.94, 1)
-emission_enabled = true
-emission = Color(0.45, 0.08, 1, 1)
-emission_energy_multiplier = 3.0
-shading_mode = 0
+[sub_resource type="BoxShape3D" id="CardShape"]
+size = Vector3(0.52, 0.15649414, 0.7363281)
 
-[sub_resource type="SphereShape3D" id="WorldShape"]
-radius = 0.24
-
-[node name="CursedCard" type="Area3D"]
+[node name="CursedCard" type="Area3D" unique_id=2127028566]
 collision_layer = 0
-collision_mask = 1
-monitoring = true
 script = ExtResource("1_card")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=680251879]
 shape = SubResource("WorldShape")
 
-[node name="Visual" type="Node3D" parent="."]
+[node name="Visual" type="Node3D" parent="." unique_id=17716247]
 
-[node name="ArcaneBorder" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0, -0.014)
-mesh = SubResource("BorderMesh")
+[node name="ArcaneBorder" type="MeshInstance3D" parent="Visual" unique_id=417437621]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -0.014)
 material_override = SubResource("VioletBorder")
 cast_shadow = 0
+mesh = SubResource("BorderMesh")
 
-[node name="Card" type="MeshInstance3D" parent="Visual"]
-mesh = SubResource("CardMesh")
+[node name="Card" type="MeshInstance3D" parent="Visual" unique_id=61469558]
 material_override = SubResource("Ivory")
 cast_shadow = 0
+mesh = SubResource("CardMesh")
 
-[node name="Sigil" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0, 0.045)
-rotation_degrees = Vector3(0, 0, 45)
-mesh = SubResource("SigilMesh")
+[node name="Sigil" type="MeshInstance3D" parent="Visual" unique_id=1066550388]
+transform = Transform3D(0.7071021, -0.7071021, -0.003623318, 0.70710677, 0.70710677, 0, 0.0025620726, -0.0025620726, 0.99999344, 1.690882e-05, 0, 0.04500003)
 material_override = SubResource("Sigil")
 cast_shadow = 0
+mesh = SubResource("SigilMesh")
 
-[node name="SealFront" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0, 0.066)
-rotation_degrees = Vector3(90, 0, 0)
+[node name="SealFront" type="MeshInstance3D" parent="Visual" unique_id=145806602]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0.066)
+material_override = SubResource("Sigil")
+cast_shadow = 0
 mesh = SubResource("SealRing")
+
+[node name="SealBack" type="MeshInstance3D" parent="Visual" unique_id=1166545718]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, -0.067)
 material_override = SubResource("Sigil")
 cast_shadow = 0
-
-[node name="SealBack" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0, -0.067)
-rotation_degrees = Vector3(90, 0, 0)
 mesh = SubResource("SealRing")
+
+[node name="CounterSigil" type="MeshInstance3D" parent="Visual" unique_id=1078929254]
+transform = Transform3D(0.70710677, 0.70710677, 0, -0.70710677, 0.70710677, 0, 0, 0, 1, 0, 0, -0.045)
 material_override = SubResource("Sigil")
 cast_shadow = 0
-
-[node name="CounterSigil" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0, -0.045)
-rotation_degrees = Vector3(0, 0, -45)
 mesh = SubResource("SigilMesh")
+
+[node name="UpperRune" type="MeshInstance3D" parent="Visual" unique_id=665837081]
+transform = Transform3D(0.3799975, 0, -0.003623318, 0, 0.38, 0, 0.0013768608, 0, 0.99999344, -8.4544035e-06, 0.23, 0.051999986)
 material_override = SubResource("Sigil")
 cast_shadow = 0
-
-[node name="UpperRune" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, 0.23, 0.052)
-scale = Vector3(0.38, 0.38, 1)
 mesh = SubResource("SigilMesh")
+
+[node name="LowerRune" type="MeshInstance3D" parent="Visual" unique_id=854063301]
+transform = Transform3D(0.3799975, 0, -0.003623318, 0, 0.38, 0, 0.0013768608, 0, 0.99999344, -8.4544035e-06, -0.23, 0.051999986)
 material_override = SubResource("Sigil")
 cast_shadow = 0
-
-[node name="LowerRune" type="MeshInstance3D" parent="Visual"]
-position = Vector3(0, -0.23, 0.052)
-scale = Vector3(0.38, 0.38, 1)
 mesh = SubResource("SigilMesh")
-material_override = SubResource("Sigil")
-cast_shadow = 0
 
-[node name="Glow" type="OmniLight3D" parent="Visual"]
+[node name="Glow" type="OmniLight3D" parent="Visual" unique_id=1335169417]
 light_color = Color(0.57, 0.23, 1, 1)
 light_energy = 0.65
 omni_range = 1.4
-shadow_enabled = false
 
-[node name="Hitbox" type="Area3D" parent="."]
+[node name="Hitbox" type="Area3D" parent="." unique_id=128522090]
 collision_layer = 8
 collision_mask = 32
 script = ExtResource("2_hitbox")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox"]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Hitbox" unique_id=1617485362]
+transform = Transform3D(1, 0, 0, 0, -4.371139e-08, -1, 0, 1, -4.371139e-08, 0, 0, 0)
 shape = SubResource("CardShape")

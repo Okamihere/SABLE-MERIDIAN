@@ -162,7 +162,11 @@ func _impact() -> void:
 	_hitbox.end_attack()
 	var burst := Node3D.new()
 	burst.name = "BasicArcaneImpact"
-	get_tree().current_scene.add_child(burst)
+	var scene := get_tree().current_scene
+	if scene == null:
+		burst.queue_free()
+		return
+	scene.add_child(burst)
 	burst.global_position = global_position
 	var mesh := TorusMesh.new()
 	mesh.inner_radius = 0.24

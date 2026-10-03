@@ -6,6 +6,8 @@ func on_perfect_dodge(player: PlayerController) -> void:
 	if player.spells.is_empty() or player.spell_manager == null:
 		return
 	var deck: SpellResource = player.spells[0]
+	if deck == null or player.spell_manager == null:
+		return
 	if player.spell_manager.get_cooldown_remaining(deck) <= 0.0:
 		return
 	player.spell_manager.reset_cooldown(deck)

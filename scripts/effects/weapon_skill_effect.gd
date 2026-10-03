@@ -109,12 +109,17 @@ func _hit(size: Vector3, duration: float, knockback: float, stun: float, launch:
 	_hitbox.style_points = 95
 	_hitbox.hit_landed.connect(func(hurtbox: HurtboxComponent, box_hit: HitboxComponent) -> void: _caster.combat.register_magic_hit(hurtbox, box_hit))
 	_hitbox.begin_attack()
-	get_tree().create_timer(duration).timeout.connect(func() -> void: if is_instance_valid(_hitbox): _hitbox.end_attack())
+	var hb := _hitbox
+	get_tree().create_timer(duration).timeout.connect(func() -> void: if is_instance_valid(hb): hb.end_attack())
 
 func _cards(count: int, spread: float, multiplier: float) -> void:
 	for i in count:
 		var card := CARD.instantiate() as CursedCard
-		get_tree().current_scene.add_child(card)
+		var scene := get_tree().current_scene
+		if scene == null:
+			card.queue_free()
+			return
+		scene.add_child(card)
 		card.global_position = global_position + Vector3.UP * 0.2 + _caster.global_basis.x * (i - (count - 1) * 0.5) * 0.32
 		card.launch(_caster, _direction.rotated(Vector3.UP, (i - (count - 1) * 0.5) * spread), _spell.damage * multiplier)
 

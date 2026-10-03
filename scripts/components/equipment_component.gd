@@ -97,7 +97,8 @@ func equip_relic(id: StringName) -> bool:
 		if equipped.relic_id == id:
 			return false
 	relics.append(data)
-	GameManager.equipped_relic_ids.append(id)
+	if not GameManager.equipped_relic_ids.has(id):
+		GameManager.equipped_relic_ids.append(id)
 	relics_changed.emit()
 	return true
 

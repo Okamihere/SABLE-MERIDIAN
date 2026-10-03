@@ -20,6 +20,9 @@ signal hit_landed(hurtbox: Hurtbox3D, damage: float)
 @export var active: bool = true
 
 ## Detecta colisão com hurtboxes.
+func _ready() -> void:
+	area_entered.connect(_on_area_entered)
+
 func _on_area_entered(area: Area3D) -> void:
 	if not active:
 		return

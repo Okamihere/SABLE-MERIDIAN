@@ -264,8 +264,12 @@ func _start_attack(data: AttackData, chain_index: int) -> void:
 	_owner_body.velocity += forward * data.forward_impulse
 	if weapon != null:
 		var effect := BASIC_VFX.instantiate()
-		get_tree().current_scene.add_child(effect)
-		effect.activate(_owner_body, weapon.weapon_id, weapon.is_heavy_attack(data))
+		var scene := get_tree().current_scene
+		if scene == null:
+			effect.queue_free()
+		else:
+			scene.add_child(effect)
+			effect.activate(_owner_body, weapon.weapon_id, weapon.is_heavy_attack(data))
 	if _animation_controller != null:
 		_animation_controller.notify_attack_started(data)
 
@@ -317,7 +321,11 @@ func _fire_basic_attack() -> void:
 			if not is_instance_valid(_owner_body):
 				return
 			var card := CARD_PROJECTILE.instantiate() as CursedCard
-			get_tree().current_scene.add_child(card)
+			var scene := get_tree().current_scene
+			if scene == null or _current_attack != attack:
+				card.queue_free()
+				return
+			scene.add_child(card)
 			card.global_position = _owner_body.global_position + Vector3.UP * 1.25 + _owner_body.global_basis.z * 0.65 + _owner_body.global_basis.x * side * 0.22
 			card.speed = projectile_speed
 			card.lifetime = attack_range / projectile_speed + 0.15
@@ -325,9 +333,15 @@ func _fire_basic_attack() -> void:
 			card.hitbox.damage *= 0.5
 			if side < 0.0:
 				await get_tree().create_timer(0.075).timeout
+				if not is_instance_valid(_owner_body) or _current_attack != attack:
+					return
 		return
 	var projectile := BASIC_PROJECTILE.instantiate()
-	get_tree().current_scene.add_child(projectile)
+	var scene := get_tree().current_scene
+	if scene == null:
+		projectile.queue_free()
+		return
+	scene.add_child(projectile)
 	projectile.activate(_owner_body, weapon.weapon_id, _current_attack, _current_delivery, attack_range, projectile_speed, forward)
 
 func _configure_hitbox_geometry(weapon: WeaponData) -> void:
@@ -374,5 +388,9 @@ func _on_hit_landed(hurtbox: HurtboxComponent, hitbox: HitboxComponent) -> void:
 func _spawn_hit_spark(world_position: Vector3, tint: Color = Color.TRANSPARENT) -> void:
 	var spark := HIT_SPARK.instantiate() as Node3D
 	spark.tint = tint
-	get_tree().current_scene.add_child(spark)
+	var scene := get_tree().current_scene
+	if scene == null:
+		spark.queue_free()
+		return
+	scene.add_child(spark)
 	spark.global_position = world_position

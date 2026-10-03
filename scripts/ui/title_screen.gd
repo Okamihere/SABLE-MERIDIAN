@@ -200,7 +200,8 @@ func _set_hovered_prop(prop: Node3D) -> void:
 			previous.kill()
 		var old_tween := create_tween()
 		old_tween.tween_property(_hovered_prop, "scale", Vector3.ONE, 0.18).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
-		old_tween.finished.connect(func(): _hover_tweens.erase(_hovered_prop))
+		var previous_prop := _hovered_prop
+		old_tween.finished.connect(func(): _hover_tweens.erase(previous_prop))
 		_hover_tweens[_hovered_prop] = old_tween
 	_hovered_prop = prop
 	if is_instance_valid(prop):
