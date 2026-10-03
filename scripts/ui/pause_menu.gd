@@ -273,7 +273,7 @@ func _setup_options_pages() -> void:
 	tabs.add_theme_constant_override("separation", 8)
 	options_page.add_child(tabs)
 	options_page.move_child(tabs, 1)
-	for category in ["VÍDEO", "ÁUDIO", "JOGABILIDADE"]:
+	for category in ["VÍDEO", "QUALIDADE", "ÁUDIO", "JOGABILIDADE"]:
 		var button := Button.new()
 		button.text = category
 		button.size_flags_horizontal = Control.SIZE_EXPAND_FILL
@@ -282,33 +282,92 @@ func _setup_options_pages() -> void:
 		tabs.add_child(button)
 		_tab_buttons.append(button)
 		button.pressed.connect(_show_tab.bind(_tab_buttons.size() - 1))
-	for category in ["Video", "Audio", "Gameplay"]:
+	for category in ["Video", "Quality", "Audio", "Gameplay"]:
 		var page := VBoxContainer.new()
 		page.name = category + "Settings"
 		page.add_theme_constant_override("separation", 10)
 		options_page.add_child(page)
 		options_page.move_child(page, 2 + _tab_pages.size())
 		_tab_pages.append(page)
+	
+	# VÍDEO tab (index 0)
 	for control in [monitor_label, monitor_selector, $Root/Panel/Margin/Content/OptionsPage/ModeLabel, mode_selector, $Root/Panel/Margin/Content/OptionsPage/ResolutionLabel, resolution_selector, resolution_hint]:
 		control.reparent(_tab_pages[0])
 	_vsync_selector = _add_selector(_tab_pages[0], "VSync", ["Desligado", "Ligado"])
 	_vsync_selector.item_selected.connect(_on_vsync_selected)
 	_fps_selector = _add_selector(_tab_pages[0], "Limite de FPS", ["30", "60", "120", "Ilimitado"])
 	_fps_selector.item_selected.connect(func(index: int) -> void:
-		var new_fps := [30, 60, 120, 0][index]
+		var new_fps: int = [30, 60, 120, 0][index]
 		Engine.max_fps = new_fps
 		if GameManager.has_method("_set_user_max_fps"):
 			GameManager._set_user_max_fps(new_fps)
 		_save_settings()
 	)
+	
+	# QUALIDADE tab (index 1)
+	_setup_quality_page(_tab_pages[1])
+	
+	# ÁUDIO tab (index 2)
 	for bus_name in ["Master", "Music", "SFX"]:
 		var display_name: String = {"Master": "Volume geral", "Music": "Música", "SFX": "Efeitos sonoros"}[bus_name]
-		var slider := _add_slider(_tab_pages[1], display_name, 0.0, 100.0, 1.0)
+		var slider := _add_slider(_tab_pages[2], display_name, 0.0, 100.0, 1.0)
 		_volume_sliders[bus_name] = slider
 		slider.value_changed.connect(_on_volume_changed.bind(bus_name))
-	_sensitivity_slider = _add_slider(_tab_pages[2], "Sensibilidade da câmera", 20.0, 200.0, 5.0)
+	
+	# JOGABILIDADE tab (index 3)
+	_sensitivity_slider = _add_slider(_tab_pages[3], "Sensibilidade da câmera", 20.0, 200.0, 5.0)
 	_sensitivity_slider.value_changed.connect(_on_sensitivity_changed)
+	
 	_show_tab(0)
+
+func _setup_quality_page(page: VBoxContainer) -> void:
+	# Graphics Preset Selector
+	var preset_selector := _add_selector(page, "Preset Gráfico", ["LOW", "MEDIUM", "HIGH", "ULTRA", "CUSTOM"])
+	preset_selector.item_selected.connect(_on_preset_selected)
+	
+	# Render Scale
+	var render_scale_slider := _add_slider(page, "Render Scale", 50.0, 100.0, 5.0)
+	render_scale_slider.value_changed.connect(_on_render_scale_changed)
+	
+	# MSAA 3D
+	var msaa_selector := _add_selector(page, "MSAA 3D", ["Desligado", "2x", "4x", "8x"])
+	msaa_selector.item_selected.connect(_on_msaa_changed)
+	
+	# FXAA
+	var fxaa_selector := _add_selector(page, "FXAA", ["Desligado", "Ligado"])
+	fxaa_selector.item_selected.connect(_on_fxaa_changed)
+	
+	# Anisotropic Filtering
+	var aniso_selector := _add_selector(page, "Filtro Anisotrópico", ["Desligado", "2x", "4x", "8x", "16x"])
+	aniso_selector.item_selected.connect(_on_aniso_changed)
+	
+	# Shadow Quality
+	var shadow_selector := _add_selector(page, "Qualidade de Sombras", ["Baixa", "Média", "Alta"])
+	shadow_selector.item_selected.connect(_on_shadow_quality_changed)
+	
+	# SSAO
+	var ssao_selector := _add_selector(page, "SSAO", ["Desligado", "Ligado"])
+	ssao_selector.item_selected.connect(_on_ssao_changed)
+	
+	# SSIL
+	var ssil_selector := _add_selector(page, "SSIL", ["Desligado", "Ligado"])
+	ssil_selector.item_selected.connect(_on_ssil_changed)
+	
+	# Volumetric Fog Quality
+	var fog_selector := _add_selector(page, "Qualidade do Fog Volumétrico", ["Baixa", "Média", "Alta", "Ultra"])
+	fog_selector.item_selected.connect(_on_fog_quality_changed)
+	
+	# Glow/Bloom
+	var glow_selector := _add_selector(page, "Glow/Bloom", ["Desligado", "Ligado"])
+	glow_selector.item_selected.connect(_on_glow_changed)
+	
+	# Restore Defaults Button
+	var restore_btn := Button.new()
+	restore_btn.text = "Restaurar Padrões (HIGH)"
+	restore_btn.custom_minimum_size.y = 44
+	_style_control(restore_btn)
+	restore_btn.pressed.connect(_on_restore_defaults)
+	page.add_child(restore_btn)
 
 func _add_selector(page: VBoxContainer, label_text: String, choices: Array[String]) -> OptionButton:
 	var label := Label.new()
@@ -369,7 +428,7 @@ func _show_tab(index: int) -> void:
 	for i in _tab_pages.size():
 		_tab_pages[i].visible = i == index
 		_tab_buttons[i].modulate = Color(1.0, 0.85, 0.58) if i == index else Color(0.78, 0.82, 0.9)
-	$Root/Panel/Margin/Content/OptionsPage/Title.text = ["VÍDEO", "ÁUDIO", "JOGABILIDADE"][index]
+	$Root/Panel/Margin/Content/OptionsPage/Title.text = ["VÍDEO", "QUALIDADE", "ÁUDIO", "JOGABILIDADE"][index]
 	_layout_panel.call_deferred()
 
 func _ensure_audio_buses() -> void:
@@ -620,6 +679,121 @@ func _style_control(control: Button) -> void:
 		style.content_margin_right = 14
 		control.add_theme_stylebox_override(state, style)
 
+
+func _on_preset_selected(index: int) -> void:
+	if not GraphicsSettings.has_method("apply_preset"):
+		return
+	GraphicsSettings.apply_preset(index)
+	_sync_quality_controls()
+	_save_settings()
+
+func _on_render_scale_changed(value: float) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("render_scale", value / 100.0)
+	_save_settings()
+
+func _on_msaa_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("msaa_3d", index)
+	_save_settings()
+
+func _on_fxaa_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("fxaa", index == 1)
+	_save_settings()
+
+func _on_aniso_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("anisotropic_filter", index)
+	_save_settings()
+
+func _on_shadow_quality_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("shadow_quality", index)
+	_save_settings()
+
+func _on_ssao_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("ssao_enabled", index == 1)
+	_save_settings()
+
+func _on_ssil_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("ssil_enabled", index == 1)
+	_save_settings()
+
+func _on_fog_quality_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("volumetric_fog_quality", index)
+	_save_settings()
+
+func _on_glow_changed(index: int) -> void:
+	if not GraphicsSettings.has_method("set_setting"):
+		return
+	GraphicsSettings.set_setting("glow_enabled", index == 1)
+	_save_settings()
+
+func _on_restore_defaults() -> void:
+	if not GraphicsSettings.has_method("restore_defaults"):
+		return
+	GraphicsSettings.restore_defaults()
+	_sync_quality_controls()
+	_save_settings()
+
+func _sync_quality_controls() -> void:
+	if not GraphicsSettings.has_method("get_current_preset_name") or not GraphicsSettings.has_method("get_effective_value"):
+		return
+	
+	# Sync preset selector (first child after preset label)
+	var quality_page := _tab_pages[1]
+	var preset_selector := quality_page.get_child(1) as OptionButton
+	if preset_selector:
+		preset_selector.select(["LOW", "MEDIUM", "HIGH", "ULTRA", "CUSTOM"].find(GraphicsSettings.get_current_preset_name()))
+	
+	# Sync other controls based on effective values
+	var render_scale_slider := quality_page.get_child(3) as HSlider
+	if render_scale_slider:
+		render_scale_slider.set_value_no_signal(GraphicsSettings.get_effective_value("render_scale") * 100.0)
+	
+	var msaa_selector := quality_page.get_child(5) as OptionButton
+	if msaa_selector:
+		msaa_selector.select(GraphicsSettings.get_effective_value("msaa_3d"))
+	
+	var fxaa_selector := quality_page.get_child(7) as OptionButton
+	if fxaa_selector:
+		fxaa_selector.select(1 if GraphicsSettings.get_effective_value("fxaa") else 0)
+	
+	var aniso_selector := quality_page.get_child(9) as OptionButton
+	if aniso_selector:
+		aniso_selector.select(GraphicsSettings.get_effective_value("anisotropic_filter"))
+	
+	var shadow_selector := quality_page.get_child(11) as OptionButton
+	if shadow_selector:
+		shadow_selector.select(GraphicsSettings.get_effective_value("shadow_quality"))
+	
+	var ssao_selector := quality_page.get_child(13) as OptionButton
+	if ssao_selector:
+		ssao_selector.select(1 if GraphicsSettings.get_effective_value("ssao_enabled") else 0)
+	
+	var ssil_selector := quality_page.get_child(15) as OptionButton
+	if ssil_selector:
+		ssil_selector.select(1 if GraphicsSettings.get_effective_value("ssil_enabled") else 0)
+	
+	var fog_selector := quality_page.get_child(17) as OptionButton
+	if fog_selector:
+		fog_selector.select(GraphicsSettings.get_effective_value("volumetric_fog_quality"))
+	
+	var glow_selector := quality_page.get_child(19) as OptionButton
+	if glow_selector:
+		glow_selector.select(1 if GraphicsSettings.get_effective_value("glow_enabled") else 0)
 
 func _quit_game() -> void:
 	get_tree().paused = false
